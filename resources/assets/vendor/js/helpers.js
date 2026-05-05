@@ -4,14 +4,14 @@ const TRANS_PROPERTIES = ['transition', 'MozTransition', 'webkitTransition', 'We
 
 // Inline styles used for full navbar layout & sticky layout
 const INLINE_STYLES = `
-.layout-menu-fixed .layout-navbar-full .layout-menu,
-.layout-menu-fixed-offcanvas .layout-navbar-full .layout-menu {
+.dd-layout-menu-fixed .dd-layout-navbar-full .dd-layout-menu,
+.dd-layout-menu-fixed-offcanvas .dd-layout-navbar-full .dd-layout-menu {
   top: {navbarHeight}px !important;
 }
-.layout-page {
+.dd-layout-page {
   padding-top: {navbarHeight}px !important;
 }
-.content-wrapper {
+.dd-content-wrapper {
   padding-bottom: {footerHeight}px !important;
 }`
 
@@ -90,7 +90,7 @@ const Helpers = {
 
     if (!layoutMenu) return
 
-    let activeEl = layoutMenu.querySelector('li.menu-item.active:not(.open)')
+    let activeEl = layoutMenu.querySelector('li.dd-menu-item.active:not(.open)')
 
     if (activeEl) {
       // t = current time
@@ -104,7 +104,7 @@ const Helpers = {
         return (-c / 2) * (t * (t - 2) - 1) + b
       }
 
-      const element = this.getLayoutMenu().querySelector('.menu-inner')
+      const element = this.getLayoutMenu().querySelector('.dd-menu-inner')
 
       if (typeof activeEl === 'string') {
         activeEl = document.querySelector(activeEl)
@@ -300,7 +300,7 @@ const Helpers = {
     const layoutMenu = this.getLayoutMenu()
 
     if (layoutMenu && layoutMenu.querySelector('.menu')) {
-      const inner = layoutMenu.querySelector('.menu-inner')
+      const inner = layoutMenu.querySelector('.dd-menu-inner')
       const { scrollTop } = inner
       const pageScrollTop = document.documentElement.scrollTop
 
@@ -380,7 +380,7 @@ const Helpers = {
   // ---
   // Set menu hover state
   _setMenuHoverState(hovered) {
-    this[hovered ? '_addClass' : '_removeClass']('layout-menu-hover')
+    this[hovered ? '_addClass' : '_removeClass']('dd-layout-menu-hover')
   },
 
   // ---
@@ -388,17 +388,17 @@ const Helpers = {
   _setCollapsed(collapsed) {
     if (this.isSmallScreen()) {
       if (collapsed) {
-        this._removeClass('layout-menu-expanded')
+        this._removeClass('dd-layout-menu-expanded')
       } else {
         setTimeout(
           () => {
-            this._addClass('layout-menu-expanded')
+            this._addClass('dd-layout-menu-expanded')
           },
           this._redrawLayoutMenu() ? 5 : 0
         )
       }
     } else {
-      this[collapsed ? '_addClass' : '_removeClass']('layout-menu-collapsed')
+      this[collapsed ? '_addClass' : '_removeClass']('dd-layout-menu-collapsed')
     }
   },
 
@@ -497,9 +497,9 @@ const Helpers = {
       this._menuMouseEnter = () => {
         if (
           this.isSmallScreen() ||
-          !this._hasClass('layout-menu-collapsed') ||
+          !this._hasClass('dd-layout-menu-collapsed') ||
           this.isOffcanvas() ||
-          this._hasClass('layout-transitioning')
+          this._hasClass('dd-layout-transitioning')
         ) {
           return this._setMenuHoverState(false)
         }
@@ -519,7 +519,7 @@ const Helpers = {
 
     if (!this._windowTouchStart) {
       this._windowTouchStart = e => {
-        if (!e || !e.target || !this._findParent(e.target, '.layout-menu')) {
+        if (!e || !e.target || !this._findParent(e.target, '.dd-layout-menu')) {
           this._setMenuHoverState(false)
         }
       }
@@ -582,7 +582,7 @@ const Helpers = {
     this._unbindLayoutAnimationEndEvent()
 
     if (animate && this._supportsTransitionEnd()) {
-      this._addClass('layout-transitioning')
+      this._addClass('dd-layout-transitioning')
       if (collapsed) this._setMenuHoverState(false)
 
       this._bindLayoutAnimationEndEvent(
@@ -591,21 +591,21 @@ const Helpers = {
           this._setCollapsed(collapsed)
         },
         () => {
-          this._removeClass('layout-transitioning')
+          this._removeClass('dd-layout-transitioning')
           this._triggerWindowEvent('resize')
           this._triggerEvent('toggle')
           this._setMenuHoverState(false)
         }
       )
     } else {
-      this._addClass('layout-no-transition')
+      this._addClass('dd-layout-no-transition')
       if (collapsed) this._setMenuHoverState(false)
 
       // Collapse / Expand
       this._setCollapsed(collapsed)
 
       setTimeout(() => {
-        this._removeClass('layout-no-transition')
+        this._removeClass('dd-layout-no-transition')
         this._triggerWindowEvent('resize')
         this._triggerEvent('toggle')
         this._setMenuHoverState(false)
@@ -622,15 +622,15 @@ const Helpers = {
   // ---
   // Set layout positioning
   setPosition(fixed = requiredParam('fixed'), offcanvas = requiredParam('offcanvas')) {
-    this._removeClass('layout-menu-offcanvas layout-menu-fixed layout-menu-fixed-offcanvas')
+    this._removeClass('dd-layout-menu-offcanvas dd-layout-menu-fixed dd-layout-menu-fixed-offcanvas')
 
     if (!fixed && offcanvas) {
-      this._addClass('layout-menu-offcanvas')
+      this._addClass('dd-layout-menu-offcanvas')
     } else if (fixed && !offcanvas) {
-      this._addClass('layout-menu-fixed')
+      this._addClass('dd-layout-menu-fixed')
       this._redrawLayoutMenu()
     } else if (fixed && offcanvas) {
-      this._addClass('layout-menu-fixed-offcanvas')
+      this._addClass('dd-layout-menu-fixed-offcanvas')
       this._redrawLayoutMenu()
     }
 
@@ -673,7 +673,7 @@ const Helpers = {
   // * Getters
 
   getLayoutMenu() {
-    return document.querySelector('.layout-menu')
+    return document.querySelector('.dd-layout-menu')
   },
 
   getMenu() {
@@ -685,41 +685,41 @@ const Helpers = {
   },
 
   getLayoutNavbar() {
-    return document.querySelector('.layout-navbar')
+    return document.querySelector('.dd-layout-navbar')
   },
 
   getLayoutFooter() {
-    return document.querySelector('.content-footer')
+    return document.querySelector('.dd-content-footer')
   },
 
   getLayoutContainer() {
-    return document.querySelector('.layout-page')
+    return document.querySelector('.dd-layout-page')
   },
 
   // *******************************************************************************
   // * Setters
 
   setNavbarFixed(fixed = requiredParam('fixed')) {
-    this[fixed ? '_addClass' : '_removeClass']('layout-navbar-fixed')
+    this[fixed ? '_addClass' : '_removeClass']('dd-layout-navbar-fixed')
     this.update()
   },
 
   setNavbar(type) {
     if (type === 'sticky') {
-      this._addClass('layout-navbar-fixed')
-      this._removeClass('layout-navbar-hidden')
+      this._addClass('dd-layout-navbar-fixed')
+      this._removeClass('dd-layout-navbar-hidden')
     } else if (type === 'hidden') {
-      this._addClass('layout-navbar-hidden')
-      this._removeClass('layout-navbar-fixed')
+      this._addClass('dd-layout-navbar-hidden')
+      this._removeClass('dd-layout-navbar-fixed')
     } else {
-      this._removeClass('layout-navbar-hidden')
-      this._removeClass('layout-navbar-fixed')
+      this._removeClass('dd-layout-navbar-hidden')
+      this._removeClass('dd-layout-navbar-fixed')
     }
     this.update()
   },
 
   setFooterFixed(fixed = requiredParam('fixed')) {
-    this[fixed ? '_addClass' : '_removeClass']('layout-footer-fixed')
+    this[fixed ? '_addClass' : '_removeClass']('dd-layout-footer-fixed')
     this.update()
   },
 
@@ -833,22 +833,22 @@ const Helpers = {
 
   setContentLayout(contentLayout = requiredParam('contentLayout')) {
     setTimeout(() => {
-      const contentArea = document.querySelector('.content-wrapper > div') // For content area
+      const contentArea = document.querySelector('.dd-content-wrapper > div') // For content area
       let navbarArea
-      if (document.querySelector('.layout-wrapper.layout-navbar-full')) {
-        navbarArea = document.querySelector('.layout-navbar-full .layout-navbar > div') // For horizontal navbar area
+      if (document.querySelector('.dd-layout-wrapper.dd-layout-navbar-full')) {
+        navbarArea = document.querySelector('.dd-layout-navbar-full .dd-layout-navbar > div') // For horizontal navbar area
       } else {
-        navbarArea = document.querySelector('.layout-content-navbar .layout-navbar') // For vertical navbar area
+        navbarArea = document.querySelector('.dd-layout-content-navbar .dd-layout-navbar') // For vertical navbar area
       }
-      const footerArea = document.querySelector('.content-footer > div') // For footer area
+      const footerArea = document.querySelector('.dd-content-footer > div') // For footer area
       const containerFluid = [].slice.call(document.querySelectorAll('.container-fluid')) // To get container-fluid
       const containerXxl = [].slice.call(document.querySelectorAll('.container-xxl')) // To get container-xxl
       let horizontalMenu = false // For horizontal menu
       let horizontalMenuArea // For horizontal menu area
       // Condition to check if layout is horizontal menu
-      if (document.querySelector('.content-wrapper > .menu-horizontal > div')) {
+      if (document.querySelector('.dd-content-wrapper > .dd-menu-horizontal > div')) {
         horizontalMenu = true
-        horizontalMenuArea = document.querySelector('.content-wrapper > .menu-horizontal > div')
+        horizontalMenuArea = document.querySelector('.dd-content-wrapper > .dd-menu-horizontal > div')
       }
       //  If compact mode layout
       if (contentLayout === 'compact') {
@@ -942,32 +942,32 @@ const Helpers = {
   },
 
   isLayoutNavbarFull() {
-    return !!document.querySelector('.layout-wrapper.layout-navbar-full')
+    return !!document.querySelector('.dd-layout-wrapper.dd-layout-navbar-full')
   },
 
   isCollapsed() {
     if (this.isSmallScreen()) {
-      return !this._hasClass('layout-menu-expanded')
+      return !this._hasClass('dd-layout-menu-expanded')
     }
-    return this._hasClass('layout-menu-collapsed')
+    return this._hasClass('dd-layout-menu-collapsed')
   },
 
   isFixed() {
-    return this._hasClass('layout-menu-fixed layout-menu-fixed-offcanvas')
+    return this._hasClass('dd-layout-menu-fixed dd-layout-menu-fixed-offcanvas')
   },
 
   isOffcanvas() {
-    return this._hasClass('layout-menu-offcanvas layout-menu-fixed-offcanvas')
+    return this._hasClass('dd-layout-menu-offcanvas dd-layout-menu-fixed-offcanvas')
   },
 
   isNavbarFixed() {
     return (
-      this._hasClass('layout-navbar-fixed') || (!this.isSmallScreen() && this.isFixed() && this.isLayoutNavbarFull())
+      this._hasClass('dd-layout-navbar-fixed') || (!this.isSmallScreen() && this.isFixed() && this.isLayoutNavbarFull())
     )
   },
 
   isFooterFixed() {
-    return this._hasClass('layout-footer-fixed')
+    return this._hasClass('dd-layout-footer-fixed')
   },
 
   isLightStyle() {
@@ -1162,7 +1162,7 @@ const Helpers = {
     if (!this._initialized) return
     this._initialized = false
 
-    this._removeClass('layout-transitioning')
+    this._removeClass('dd-layout-transitioning')
     this._removeInlineStyle()
     this._unbindLayoutAnimationEndEvent()
     this._unbindWindowResizeEvent()
@@ -1351,7 +1351,7 @@ if (typeof window !== 'undefined') {
   Helpers.init()
 
   if (Helpers.isMobileDevice() && window.chrome) {
-    document.documentElement.classList.add('layout-menu-100vh')
+    document.documentElement.classList.add('dd-layout-menu-100vh')
   }
 
   // Update layout after page load

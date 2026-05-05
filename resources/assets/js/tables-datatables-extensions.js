@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
     // Fixed header
     if (window.Helpers.isNavbarFixed()) {
-      const navHeight = document.getElementById('layout-navbar').offsetHeight;
+      const navHeight = document.getElementById('dd-layout-navbar').offsetHeight;
       new DataTable.FixedHeader(dt_fixedheader).headerOffset(navHeight);
     } else {
       new DataTable.FixedHeader(dt_fixedheader);

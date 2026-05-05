@@ -8,7 +8,7 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
 
 (function () {
   const menu = document.getElementById('navbarSupportedContent'),
-    nav = document.querySelector('.layout-navbar'),
+    nav = document.querySelector('.dd-layout-navbar'),
     navItemLink = document.querySelectorAll('.navbar-nav .nav-link');
 
   // Initialised custom options if checked
@@ -24,7 +24,7 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
 
   if (isRtl) {
     // If layout is RTL add .dropdown-menu-end class to .dropdown-menu
-    Helpers._addClass('dropdown-menu-end', document.querySelectorAll('#layout-navbar .dropdown-menu'));
+    Helpers._addClass('dropdown-menu-end', document.querySelectorAll('#dd-layout-navbar .dropdown-menu'));
     // If layout is RTL add .dropdown-menu-end class to .dropdown-menu
     Helpers._addClass('dropdown-menu-end', document.querySelectorAll('.dropdown-menu'));
   }

@@ -29,16 +29,16 @@
   if (appToggleBtn) {
     appToggleBtn.onclick = function () {
       if (layoutMenu1) {
-        layoutMenu1.classList.toggle('menu-collapsed');
+        layoutMenu1.classList.toggle('dd-menu-collapsed');
       }
       if (layoutMenu2) {
-        layoutMenu2.classList.toggle('menu-collapsed');
+        layoutMenu2.classList.toggle('dd-menu-collapsed');
       }
       if (layoutMenu3) {
-        layoutMenu3.classList.toggle('menu-collapsed');
+        layoutMenu3.classList.toggle('dd-menu-collapsed');
       }
       if (layoutMenu4) {
-        layoutMenu4.classList.toggle('menu-collapsed');
+        layoutMenu4.classList.toggle('dd-menu-collapsed');
       }
     };
   }
@@ -51,28 +51,28 @@
   if (brandNameBtn) {
     brandNameBtn.onclick = function () {
       if (layoutMenu1) {
-        layoutMenu1.classList.toggle('menu-collapsed');
+        layoutMenu1.classList.toggle('dd-menu-collapsed');
       }
     };
   }
   if (logoNameBtn) {
     logoNameBtn.onclick = function () {
       if (layoutMenu2) {
-        layoutMenu2.classList.toggle('menu-collapsed');
+        layoutMenu2.classList.toggle('dd-menu-collapsed');
       }
     };
   }
   if (logoNameTextBtn) {
     logoNameTextBtn.onclick = function () {
       if (layoutMenu3) {
-        layoutMenu3.classList.toggle('menu-collapsed');
+        layoutMenu3.classList.toggle('dd-menu-collapsed');
       }
     };
   }
   if (brandImageBtn) {
     brandImageBtn.onclick = function () {
       if (layoutMenu4) {
-        layoutMenu4.classList.toggle('menu-collapsed');
+        layoutMenu4.classList.toggle('dd-menu-collapsed');
       }
     };
   }

@@ -10,8 +10,8 @@ let menu,
   animate,
   isHorizontalLayout = false;
 
-if (document.getElementById('layout-menu')) {
-  isHorizontalLayout = document.getElementById('layout-menu').classList.contains('menu-horizontal');
+if (document.getElementById('dd-layout-menu')) {
+  isHorizontalLayout = document.getElementById('dd-layout-menu').classList.contains('dd-menu-horizontal');
 }
 document.addEventListener('DOMContentLoaded', function () {
   // class for ios specific styles
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 (function () {
   // Window scroll function for navbar
   function onScroll() {
-    var layoutPage = document.querySelector('.layout-page');
+    var layoutPage = document.querySelector('.dd-layout-page');
     if (layoutPage) {
       if (window.scrollY > 0) {
         layoutPage.classList.add('window-scrolled');
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Initialize menu
   //-----------------
 
-  let layoutMenuEl = document.querySelectorAll('#layout-menu');
+  let layoutMenuEl = document.querySelectorAll('#dd-layout-menu');
   layoutMenuEl.forEach(function (element) {
     menu = new Menu(element, {
       orientation: isHorizontalLayout ? 'horizontal' : 'vertical',
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Initialize menu togglers and bind click on each
-  let menuToggler = document.querySelectorAll('.layout-menu-toggle');
+  let menuToggler = document.querySelectorAll('.dd-layout-menu-toggle');
   menuToggler.forEach(item => {
     item.addEventListener('click', event => {
       event.preventDefault();
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Display menu toggle (layout-menu-toggle) on hover with delay
+  // Display menu toggle (dd-layout-menu-toggle) on hover with delay
   let delay = function (elem, callback) {
     let timeout = null;
     elem.onmouseenter = function () {
@@ -123,15 +123,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     elem.onmouseleave = function () {
       // Clear any timers set to timeout
-      document.querySelector('.layout-menu-toggle').classList.remove('d-block');
+      document.querySelector('.dd-layout-menu-toggle').classList.remove('d-block');
       clearTimeout(timeout);
     };
   };
-  if (document.getElementById('layout-menu')) {
-    delay(document.getElementById('layout-menu'), function () {
+  if (document.getElementById('dd-layout-menu')) {
+    delay(document.getElementById('dd-layout-menu'), function () {
       // not for small screen
       if (!Helpers.isSmallScreen()) {
-        document.querySelector('.layout-menu-toggle').classList.add('d-block');
+        document.querySelector('.dd-layout-menu-toggle').classList.add('d-block');
       }
     });
   }
@@ -144,13 +144,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Detect swipe gesture on the target element and call swipe Out
-  window.Helpers.swipeOut('#layout-menu', function (e) {
+  window.Helpers.swipeOut('#dd-layout-menu', function (e) {
     if (window.Helpers.isSmallScreen()) window.Helpers.setCollapsed(true);
   });
 
   // Display in main menu when menu scrolls
-  let menuInnerContainer = document.getElementsByClassName('menu-inner'),
-    menuInnerShadow = document.getElementsByClassName('menu-inner-shadow')[0];
+  let menuInnerContainer = document.getElementsByClassName('dd-menu-inner'),
+    menuInnerShadow = document.getElementsByClassName('dd-menu-inner-shadow')[0];
   if (menuInnerContainer.length > 0 && menuInnerShadow) {
     menuInnerContainer[0].addEventListener('ps-scroll-y', function () {
       if (this.querySelector('.ps__thumb-y').offsetTop) {
@@ -345,14 +345,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         setTimeout(function () {
           if (window.innerWidth < window.Helpers.LAYOUT_BREAKPOINT) {
-            if (document.getElementById('layout-menu')) {
-              if (document.getElementById('layout-menu').classList.contains('menu-horizontal')) {
+            if (document.getElementById('dd-layout-menu')) {
+              if (document.getElementById('dd-layout-menu').classList.contains('dd-menu-horizontal')) {
                 menu.switchMenu('vertical');
               }
             }
           } else {
-            if (document.getElementById('layout-menu')) {
-              if (document.getElementById('layout-menu').classList.contains('menu-vertical')) {
+            if (document.getElementById('dd-layout-menu')) {
+              if (document.getElementById('dd-layout-menu').classList.contains('dd-menu-vertical')) {
                 menu.switchMenu('horizontal');
               }
             }
@@ -404,7 +404,7 @@ const SearchConfig = {
     form: 'd-flex align-items-center',
     input: 'search-control border-none',
     detachedCancelButton: 'btn-search-close',
-    panel: 'flex-grow content-wrapper overflow-hidden position-relative',
+    panel: 'flex-grow dd-content-wrapper overflow-hidden position-relative',
     panelLayout: 'h-100',
     clearButton: 'd-none',
     item: 'd-block'
@@ -422,7 +422,7 @@ function isMacOS() {
 
 // Load search data
 function loadSearchData() {
-  const searchJson = $('#layout-menu').hasClass('menu-horizontal') ? 'search-horizontal.json' : 'search-vertical.json';
+  const searchJson = $('#dd-layout-menu').hasClass('dd-menu-horizontal') ? 'search-horizontal.json' : 'search-vertical.json';
 
   fetch(assetsPath + 'json/' + searchJson)
     .then(response => {

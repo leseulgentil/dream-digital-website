@@ -21,52 +21,52 @@ class Menu {
     this._menuBgClass = null
 
     el.classList.add('menu')
-    el.classList[this._animate ? 'remove' : 'add']('menu-no-animation')
+    el.classList[this._animate ? 'remove' : 'add']('dd-menu-no-animation')
 
     if (!this._horizontal) {
-      el.classList.add('menu-vertical')
-      el.classList.remove('menu-horizontal')
+      el.classList.add('dd-menu-vertical')
+      el.classList.remove('dd-menu-horizontal')
 
       const PerfectScrollbarLib = _PS || window.PerfectScrollbar
 
       if (PerfectScrollbarLib) {
-        this._scrollbar = new PerfectScrollbarLib(el.querySelector('.menu-inner'), {
+        this._scrollbar = new PerfectScrollbarLib(el.querySelector('.dd-menu-inner'), {
           suppressScrollX: true,
-          wheelPropagation: !Menu._hasClass('layout-menu-fixed layout-menu-fixed-offcanvas')
+          wheelPropagation: !Menu._hasClass('dd-layout-menu-fixed dd-layout-menu-fixed-offcanvas')
         })
 
         window.Helpers.menuPsScroll = this._scrollbar
       } else {
-        el.querySelector('.menu-inner').classList.add('overflow-auto')
+        el.querySelector('.dd-menu-inner').classList.add('overflow-auto')
       }
     } else {
-      el.classList.add('menu-horizontal')
-      el.classList.remove('menu-vertical')
+      el.classList.add('dd-menu-horizontal')
+      el.classList.remove('dd-menu-vertical')
 
-      this._inner = el.querySelector('.menu-inner')
+      this._inner = el.querySelector('.dd-menu-inner')
       const container = this._inner.parentNode
 
-      this._prevBtn = el.querySelector('.menu-horizontal-prev')
+      this._prevBtn = el.querySelector('.dd-menu-horizontal-prev')
       if (!this._prevBtn) {
         this._prevBtn = document.createElement('a')
         this._prevBtn.href = '#'
-        this._prevBtn.className = 'menu-horizontal-prev'
+        this._prevBtn.className = 'dd-menu-horizontal-prev'
         container.appendChild(this._prevBtn)
       }
 
-      this._wrapper = el.querySelector('.menu-horizontal-wrapper')
+      this._wrapper = el.querySelector('.dd-menu-horizontal-wrapper')
       if (!this._wrapper) {
         this._wrapper = document.createElement('div')
-        this._wrapper.className = 'menu-horizontal-wrapper'
+        this._wrapper.className = 'dd-menu-horizontal-wrapper'
         this._wrapper.appendChild(this._inner)
         container.appendChild(this._wrapper)
       }
 
-      this._nextBtn = el.querySelector('.menu-horizontal-next')
+      this._nextBtn = el.querySelector('.dd-menu-horizontal-next')
       if (!this._nextBtn) {
         this._nextBtn = document.createElement('a')
         this._nextBtn.href = '#'
-        this._nextBtn.className = 'menu-horizontal-next'
+        this._nextBtn.className = 'dd-menu-horizontal-next'
         container.appendChild(this._nextBtn)
       }
 
@@ -85,7 +85,7 @@ class Menu {
     el.menuInstance = this
     const semiDarkEl = localStorage.getItem(`templateCustomizer-${templateName}--SemiDark`)
     if (semiDarkEl === 'true') {
-      document.querySelector('#layout-menu').setAttribute('data-bs-theme', 'dark')
+      document.querySelector('#dd-layout-menu').setAttribute('data-bs-theme', 'dark')
     }
   }
 
@@ -93,16 +93,16 @@ class Menu {
     // Click Event
     this._evntElClick = e => {
       // Find top parent element
-      if (e.target.closest('ul') && e.target.closest('ul').classList.contains('menu-inner')) {
-        const menuItem = Menu._findParent(e.target, 'menu-item', false)
+      if (e.target.closest('ul') && e.target.closest('ul').classList.contains('dd-menu-inner')) {
+        const menuItem = Menu._findParent(e.target, 'dd-menu-item', false)
 
         // eslint-disable-next-line prefer-destructuring
         if (menuItem) this._topParent = menuItem.childNodes[0]
       }
 
-      const toggleLink = e.target.classList.contains('menu-toggle')
+      const toggleLink = e.target.classList.contains('dd-menu-toggle')
         ? e.target
-        : Menu._findParent(e.target, 'menu-toggle', false)
+        : Menu._findParent(e.target, 'dd-menu-toggle', false)
 
       if (toggleLink) {
         e.preventDefault()
@@ -143,7 +143,7 @@ class Menu {
       this._nextBtn.addEventListener('click', this._evntNextBtnClick)
 
       this._evntBodyClick = e => {
-        if (!this._inner.contains(e.target) && this._el.querySelectorAll('.menu-inner > .menu-item.open').length)
+        if (!this._inner.contains(e.target) && this._el.querySelectorAll('.dd-menu-inner > .dd-menu-item.open').length)
           this.closeAll()
       }
       document.body.addEventListener('click', this._evntBodyClick)
@@ -156,7 +156,7 @@ class Menu {
          */
         this._evntElMouseOver = e => {
           if (e.target !== e.currentTarget && !e.target.parentNode.classList.contains('open')) {
-            const toggleLink = e.target.classList.contains('menu-toggle') ? e.target : null
+            const toggleLink = e.target.classList.contains('dd-menu-toggle') ? e.target : null
 
             if (toggleLink) {
               e.preventDefault()
@@ -176,8 +176,8 @@ class Menu {
          * Horizontal Menu Mouse Out Event
          * ? e.target !== e.currentTarget condition to disable mouseout event on whole menu navbar
          * ? mouseOutEl.parentNode.classList.contains('open') to check if the mouseout element has open class or not
-         * ? !mouseOutEl.classList.contains('menu-toggle') to check if mouseout was from single menu item and not from the one which has submenu
-         * ? !mouseOverEl.parentNode.classList.contains('menu-link') to disable mouseout event for icon, text and dropdown arrow
+         * ? !mouseOutEl.classList.contains('dd-menu-toggle') to check if mouseout was from single menu item and not from the one which has submenu
+         * ? !mouseOverEl.parentNode.classList.contains('dd-menu-link') to disable mouseout event for icon, text and dropdown arrow
          */
         this._evntElMouseOut = e => {
           const mainEl = e.currentTarget
@@ -185,20 +185,20 @@ class Menu {
           const mouseOverEl = e.toElement || e.relatedTarget
 
           // Find absolute parent of any menu item from which mouseout event triggered
-          if (mouseOutEl.closest('ul') && mouseOutEl.closest('ul').classList.contains('menu-inner')) {
+          if (mouseOutEl.closest('ul') && mouseOutEl.closest('ul').classList.contains('dd-menu-inner')) {
             this._topParent = mouseOutEl
           }
 
           if (
             mouseOutEl !== mainEl &&
-            (mouseOutEl.parentNode.classList.contains('open') || !mouseOutEl.classList.contains('menu-toggle')) &&
+            (mouseOutEl.parentNode.classList.contains('open') || !mouseOutEl.classList.contains('dd-menu-toggle')) &&
             mouseOverEl &&
             mouseOverEl.parentNode &&
-            !mouseOverEl.parentNode.classList.contains('menu-link')
+            !mouseOverEl.parentNode.classList.contains('dd-menu-link')
           ) {
             // When mouse goes totally out of menu items, check mouse over element to confirm it's not the child of menu, once confirmed close the menu
             if (this._topParent && !Menu.childOf(mouseOverEl, this._topParent.parentNode)) {
-              const toggleLink = this._topParent.classList.contains('menu-toggle') ? this._topParent : null
+              const toggleLink = this._topParent.classList.contains('dd-menu-toggle') ? this._topParent : null
 
               if (toggleLink) {
                 e.preventDefault()
@@ -215,7 +215,7 @@ class Menu {
             if (Menu.childOf(mouseOverEl, mouseOutEl.parentNode)) {
               return
             }
-            const toggleLink = mouseOutEl.classList.contains('menu-toggle') ? mouseOutEl : null
+            const toggleLink = mouseOutEl.classList.contains('dd-menu-toggle') ? mouseOutEl : null
 
             if (toggleLink) {
               e.preventDefault()
@@ -281,7 +281,7 @@ class Menu {
   }
 
   static _isRoot(item) {
-    return !Menu._findParent(item, 'menu-item', false)
+    return !Menu._findParent(item, 'dd-menu-item', false)
   }
 
   static _findParent(el, cls, throwError = true) {
@@ -322,11 +322,11 @@ class Menu {
     let menu = null
 
     while (curEl && !menu) {
-      if (curEl.classList && curEl.classList.contains('menu-sub')) menu = curEl
+      if (curEl.classList && curEl.classList.contains('dd-menu-sub')) menu = curEl
       curEl = curEl.nextSibling
     }
 
-    if (!menu) throw new Error('Cannot find `.menu-sub` element for the current `.menu-toggle`')
+    if (!menu) throw new Error('Cannot find `.dd-menu-sub` element for the current `.dd-menu-toggle`')
 
     return menu
   }
@@ -389,7 +389,7 @@ class Menu {
             item.classList.remove('open')
 
             if (closeChildren) {
-              const opened = item.querySelectorAll('.menu-item.open')
+              const opened = item.querySelectorAll('.dd-menu-item.open')
               for (let i = 0, l = opened.length; i < l; i++) opened[i].classList.remove('open')
             }
 
@@ -406,7 +406,7 @@ class Menu {
   }
 
   _closeOther(item, closeChildren) {
-    const opened = Menu._findChild(item.parentNode, ['menu-item', 'open'])
+    const opened = Menu._findChild(item.parentNode, ['dd-menu-item', 'open'])
 
     for (let i = 0, l = opened.length; i < l; i++) {
       if (opened[i] !== item) this.close(opened[i], closeChildren)
@@ -426,7 +426,7 @@ class Menu {
     let subMenuItem = false
 
     if (show) {
-      if (Menu._findParent(item, 'menu-sub', false)) {
+      if (Menu._findParent(item, 'dd-menu-sub', false)) {
         subMenuItem = true
         item = this._topParent ? this._topParent.parentNode : item
       }
@@ -469,7 +469,7 @@ class Menu {
       this._closeOther(actualItem, closeChildren)
       this._updateSlider()
     } else {
-      const toggle = Menu._findChild(item, ['menu-toggle'])
+      const toggle = Menu._findChild(item, ['dd-menu-toggle'])
 
       // eslint-disable-next-line no-unused-expressions
       toggle.length && toggle[0].removeAttribute('data-hover', 'true')
@@ -477,7 +477,7 @@ class Menu {
       menu.style[this._rtl ? 'marginRight' : 'marginLeft'] = null
 
       if (closeChildren) {
-        const opened = menu.querySelectorAll('.menu-item.open')
+        const opened = menu.querySelectorAll('.dd-menu-item.open')
 
         for (let i = 0, l = opened.length; i < l; i++) opened[i].classList.remove('open')
       }
@@ -555,16 +555,16 @@ class Menu {
 
   static _getItem(el, toggle) {
     let item = null
-    const selector = toggle ? 'menu-toggle' : 'menu-link'
+    const selector = toggle ? 'dd-menu-toggle' : 'dd-menu-link'
 
-    if (el.classList.contains('menu-item')) {
+    if (el.classList.contains('dd-menu-item')) {
       if (Menu._findChild(el, [selector]).length) item = el
     } else if (el.classList.contains(selector)) {
-      item = el.parentNode.classList.contains('menu-item') ? el.parentNode : null
+      item = el.parentNode.classList.contains('dd-menu-item') ? el.parentNode : null
     }
 
     if (!item) {
-      throw new Error(`${toggle ? 'Toggable ' : ''}\`.menu-item\` element not found.`)
+      throw new Error(`${toggle ? 'Toggable ' : ''}\`.dd-menu-item\` element not found.`)
     }
 
     return item
@@ -572,10 +572,10 @@ class Menu {
 
   static _getLink(el, toggle) {
     let found = []
-    const selector = toggle ? 'menu-toggle' : 'menu-link'
+    const selector = toggle ? 'dd-menu-toggle' : 'dd-menu-link'
 
     if (el.classList.contains(selector)) found = [el]
-    else if (el.classList.contains('menu-item')) found = Menu._findChild(el, [selector])
+    else if (el.classList.contains('dd-menu-item')) found = Menu._findChild(el, [selector])
 
     if (!found.length) throw new Error(`\`${selector}\` element not found.`)
 
@@ -595,7 +595,7 @@ class Menu {
         tree.push(item)
       }
 
-      item = Menu._findParent(item, 'menu-item', false)
+      item = Menu._findParent(item, 'dd-menu-item', false)
     }
 
     if (!parentItem) return null
@@ -607,14 +607,14 @@ class Menu {
       tree[i].classList.add('open')
 
       if (this._accordion) {
-        const openedItems = Menu._findChild(tree[i].parentNode, ['menu-item', 'open'])
+        const openedItems = Menu._findChild(tree[i].parentNode, ['dd-menu-item', 'open'])
 
         for (let j = 0, k = openedItems.length; j < k; j++) {
           if (openedItems[j] !== tree[i]) {
             openedItems[j].classList.remove('open')
 
             if (closeChildren) {
-              const openedChildren = openedItems[j].querySelectorAll('.menu-item.open')
+              const openedChildren = openedItems[j].querySelectorAll('.dd-menu-item.open')
               for (let x = 0, z = openedChildren.length; x < z; x++) {
                 openedChildren[x].classList.remove('open')
               }
@@ -638,8 +638,8 @@ class Menu {
     item.style.overflow = 'hidden'
 
     const clearItemStyle = () => {
-      item.classList.remove('menu-item-animating')
-      item.classList.remove('menu-item-closing')
+      item.classList.remove('dd-menu-item-animating')
+      item.classList.remove('dd-menu-item-closing')
       item.style.overflow = null
       item.style.height = null
 
@@ -648,7 +648,7 @@ class Menu {
 
     if (open) {
       item.style.height = `${linkHeight}px`
-      item.classList.add('menu-item-animating')
+      item.classList.add('dd-menu-item-animating')
       item.classList.add('open')
 
       Menu._bindAnimationEndEvent(item, () => {
@@ -661,15 +661,15 @@ class Menu {
       }, 50)
     } else {
       item.style.height = `${linkHeight + Math.round(menu.getBoundingClientRect().height)}px`
-      item.classList.add('menu-item-animating')
-      item.classList.add('menu-item-closing')
+      item.classList.add('dd-menu-item-animating')
+      item.classList.add('dd-menu-item-closing')
 
       Menu._bindAnimationEndEvent(item, () => {
         item.classList.remove('open')
         clearItemStyle()
 
         if (closeChildren) {
-          const opened = item.querySelectorAll('.menu-item.open')
+          const opened = item.querySelectorAll('.dd-menu-item.open')
           for (let i = 0, l = opened.length; i < l; i++) opened[i].classList.remove('open')
         }
 
@@ -784,7 +784,7 @@ class Menu {
   }
 
   closeAll(closeChildren = this._closeChildren) {
-    const opened = this._el.querySelectorAll('.menu-inner > .menu-item.open')
+    const opened = this._el.querySelectorAll('.dd-menu-inner > .dd-menu-item.open')
 
     for (let i = 0, l = opened.length; i < l; i++) this.close(opened[i], closeChildren)
   }
@@ -829,7 +829,7 @@ class Menu {
 
   manageScroll() {
     const { PerfectScrollbar } = window
-    const menuInner = document.querySelector('.menu-inner')
+    const menuInner = document.querySelector('.dd-menu-inner')
 
     if (window.innerWidth < window.Helpers.LAYOUT_BREAKPOINT) {
       if (this._scrollbar !== null) {
@@ -839,7 +839,7 @@ class Menu {
       menuInner.classList.add('overflow-auto')
     } else {
       if (this._scrollbar === null) {
-        const menuScroll = new PerfectScrollbar(document.querySelector('.menu-inner'), {
+        const menuScroll = new PerfectScrollbar(document.querySelector('.dd-menu-inner'), {
           suppressScrollX: true,
           wheelPropagation: false
         })
@@ -854,17 +854,17 @@ class Menu {
     this._unbindEvents()
 
     // const html = document.documentElement
-    const navbar = document.querySelector('nav.layout-navbar')
+    const navbar = document.querySelector('nav.dd-layout-navbar')
     const navbarCollapse = document.querySelector('#navbar-collapse')
-    const asideMenuWrapper = document.querySelector('#layout-menu div')
-    const asideMenu = document.querySelector('#layout-menu')
-    const horzMenuClasses = ['layout-menu-horizontal', 'menu', 'menu-horizontal', 'container-fluid', 'flex-grow-0']
-    const vertMenuClasses = ['layout-menu', 'menu', 'menu-vertical']
-    const horzMenuWrapper = document.querySelector('.menu-horizontal-wrapper')
-    const menuInner = document.querySelector('.menu-inner')
-    const brand = document.querySelector('.app-brand')
-    const menuToggler = document.querySelector('.layout-menu-toggle')
-    const activeMenuItems = document.querySelectorAll('.menu-inner .active')
+    const asideMenuWrapper = document.querySelector('#dd-layout-menu div')
+    const asideMenu = document.querySelector('#dd-layout-menu')
+    const horzMenuClasses = ['dd-layout-menu-horizontal', 'menu', 'dd-menu-horizontal', 'container-fluid', 'flex-grow-0']
+    const vertMenuClasses = ['dd-layout-menu', 'menu', 'dd-menu-vertical']
+    const horzMenuWrapper = document.querySelector('.dd-menu-horizontal-wrapper')
+    const menuInner = document.querySelector('.dd-menu-inner')
+    const brand = document.querySelector('.dd-app-brand')
+    const menuToggler = document.querySelector('.dd-layout-menu-toggle')
+    const activeMenuItems = document.querySelectorAll('.dd-menu-inner .active')
 
     const { PerfectScrollbar } = window
 
@@ -878,9 +878,9 @@ class Menu {
       brand.classList.remove('d-none', 'd-lg-flex')
       menuToggler.classList.remove('d-none')
       if (PerfectScrollbar !== undefined) {
-        this._psScroll = new PerfectScrollbar(document.querySelector('.menu-inner'), {
+        this._psScroll = new PerfectScrollbar(document.querySelector('.dd-menu-inner'), {
           suppressScrollX: true,
-          wheelPropagation: !Menu._hasClass('layout-menu-fixed layout-menu-fixed-offcanvas')
+          wheelPropagation: !Menu._hasClass('dd-layout-menu-fixed dd-layout-menu-fixed-offcanvas')
         })
       }
 
@@ -920,10 +920,10 @@ class Menu {
 
     this._unbindEvents()
 
-    const items = this._el.querySelectorAll('.menu-item')
+    const items = this._el.querySelectorAll('.dd-menu-item')
     for (let i = 0, l = items.length; i < l; i++) {
       Menu._unbindAnimationEndEvent(items[i])
-      items[i].classList.remove('menu-item-animating')
+      items[i].classList.remove('dd-menu-item-animating')
       items[i].classList.remove('open')
       items[i].style.overflow = null
       items[i].style.height = null
@@ -935,7 +935,7 @@ class Menu {
       menus[i2].style.marginLeft = null
     }
 
-    this._el.classList.remove('menu-no-animation')
+    this._el.classList.remove('dd-menu-no-animation')
 
     if (this._wrapper) {
       this._prevBtn.parentNode.removeChild(this._prevBtn)

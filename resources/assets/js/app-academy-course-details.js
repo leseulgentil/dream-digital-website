@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   const stick = document.querySelector('.stick-top');
 
   function TopSticky() {
-    if (htmlElement.classList.contains('layout-navbar-fixed')) {
+    if (htmlElement.classList.contains('dd-layout-navbar-fixed')) {
       stick.classList.add('course-content-fixed');
     } else {
       stick.classList.remove('course-content-fixed');

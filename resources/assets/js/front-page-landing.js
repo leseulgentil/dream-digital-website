@@ -4,7 +4,7 @@
 'use strict';
 
 (function () {
-  const nav = document.querySelector('.layout-navbar'),
+  const nav = document.querySelector('.dd-layout-navbar'),
     heroAnimation = document.getElementById('hero-animation'),
     animationImg = document.querySelectorAll('.hero-dashboard-img'),
     animationElements = document.querySelectorAll('.hero-elements-img'),

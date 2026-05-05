@@ -40,6 +40,7 @@ yarn-error.log
 !/public/assets/*
 /resources/assets/vendor/fonts/flags/**
 /resources/assets/vendor/fonts/fontawesome/**
+/resources/assets/vendor/fonts/iconify/**
 /public/css
 /public/js
 /public/mix-manifest.json

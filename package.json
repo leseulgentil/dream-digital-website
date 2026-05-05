@@ -9,7 +9,8 @@
   "homepage": "https://dream-digital.info",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@algolia/autocomplete-js": "1.19.2",

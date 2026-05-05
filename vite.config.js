@@ -83,8 +83,19 @@ export default defineConfig({
     stringify: true // Helps with JSON import compatibility
   },
   build: {
+    target: 'es2020',
+    minify: 'esbuild',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1500,
     commonjsOptions: {
       include: [/node_modules/] // Helps with importing CommonJS modules
+    },
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
     }
   }
 });

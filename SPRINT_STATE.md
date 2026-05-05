@@ -15,12 +15,28 @@
 | **S1** | ✅ Done | Rebrand identité technique (composer, package, .env.example, variables.php, README, BRANDING) | `96e60e9` |
 | **S2** | ✅ Done | Désactivation Customizer via flags `hasCustomizer=false`, `displayCustomizer=false` dans `config/custom.php` | `32ddf6c` |
 | **S6** | ✅ Done | Suppression physique complète du Customizer (54 fichiers : 4 paths supprimés + 50 fichiers édités) | `4480851` |
-| **S7** | 🔄 **Ready to start** | Renommage classes Sneat génériques (`app-*`, `layout-*`, `menu-*`, `bg-*-theme`) avec préfixe `dd-` | — |
+| **S7** | ✅ **Done** | Renommage classes Sneat génériques (`app-*`, `layout-*`, `menu-*`, `bg-*-theme`) avec préfixe `dd-` — **1068 occurrences sur 62 fichiers, 66 classes uniques, 6 lots atomiques** | L1=`a5fbdd0` L2=`021f8cf` L3=`277dcff` L4=`591e02b` L5=`452bf8e` L6=`b7bd972` |
 | **S8** | ⚪ Todo | Configuration Vite production (`build.minify`, `sourcemap: false`, hashes explicites) | — |
 | **S9** | ⚪ Todo | Audit final + nettoyage 4 fichiers JS dead-code (`helpers.js`, `main.js`, `front-main.js`, `menu.js`) + 5 résidus textuels "sneat" + **réinjection dark mode switcher** | — |
 | **S3** | ⚪ Todo | Variables design Dream Digital (intégration `_dream-digital-tokens.scss`) + Google Fonts Inter/JetBrains Mono | — |
 | **S5** | ⚪ Todo | Logos PNG officiels (copie depuis `LOGO DREAM DIGITAL OR/` vers `public/img/brand/`) + favicon | — |
 | **S10** | ⚪ Todo | Validation finale (build + parcours navigateur) | — |
+
+### S7 — Synthèse (close 2026-05-05)
+
+| Lot | Description | Occ. | Files | Commit |
+|---|---|---:|---:|---|
+| L1 | Classes CSS dans SCSS sources | 633 | 13 | `a5fbdd0` |
+| L2 | Classes & IDs dans Blade templates | 160 | 37 | `021f8cf` |
+| L3 | String literals & classList ops dans JS | 185 | 9 | `277dcff` |
+| L4 | Classes générées dans `Helpers.php` | 6 | 1 | `591e02b` |
+| L5 | Classes dans config menu JSON | 84 | 2 | `452bf8e` |
+| L6 | `_class-rename-map.json` documentation | — | 1 (new) | `b7bd972` |
+| **Total** | | **1068** | **62** | **66 classes** |
+
+**Commits documentation associés** : Q14 `f729c85` · Q15+Q16 `1e0b3fb` · Q17+Q18 `8914832` · Q19 `f25f927`
+
+Détail exhaustif par classe : voir `_class-rename-map.json` à la racine.
 
 **Note** : objectif 6 du brief original (suppression demos demo-2 à demo-5) est **N/A** — la version Laravel n'a qu'une seule démo, pas de S4 dans le plan v1.2.
 

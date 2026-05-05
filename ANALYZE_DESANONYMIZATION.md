@@ -208,7 +208,50 @@ Le fichier `dream_digital` (86 KB, base SQLite de dev) est aussi commité dans `
 
 ---
 
-🟡 **En attente de validation Q10** :
-- Quelle option (A / B recommandée / C / D) ?
-- Pour la question annexe : on exclut aussi `dream_digital` et on l'ajoute au `.gitignore` ?
-- Si option B : tu valides la rotation `APP_KEY` après squash (commande : `php artisan key:generate`) ?
+✅ **Q10 résolu (2026-05-05)** : option B retenue. Filter-repo exécuté, `.env` + `dream_digital` purgés de l'historique de `feature/desanonymization`, master intact à `d604ee8`, `APP_KEY` rotée, `SECURITY.md` créé.
+
+---
+
+## C-ter. Q11 — Brand Kit v1.2 reçu (supersedes Q1, Q2 et réordonne la séquence)
+
+**Reçu 2026-05-05** : `BRAND_KIT_DREAM_DIGITAL.md` (v1.2 finale, 15 sections) + `_dream-digital-tokens.scss` à la racine du projet, + dossier `LOGO DREAM DIGITAL OR/` contenant les 4 PNG officiels.
+
+### Changements par rapport aux Q1–Q9
+
+| Décision | Avant (Q1/Q2) | Après (Brand Kit v1.2) |
+|---|---|---|
+| Couleur primaire | `#0A1F44` (deep blue) | `#335F5F` (Petrol Teal) — usage ~30% |
+| Couleur accent | `#00D9FF` (signal cyan) | `#14B8A6` (Teal-Cyan SPOT, max 5%, 3-4 occurrences/page) |
+| Couleur CTA forts | n/a | `#0E121C` (Action Black) — usage ~15% |
+| Status colors | inchangé | inchangé (sémantique uniquement) |
+| Typographie body | Outfit | **Inter** (300/400/500/600/700/800) |
+| Typographie display | Bricolage Grotesque | **Inter** (mêmes weights) |
+| Typographie code | JetBrains Mono | JetBrains Mono (inchangé) |
+| Logos | placeholder texte SVG provisoire | **PNG officiels** dans `LOGO DREAM DIGITAL OR/` à copier vers `public/img/brand/` (Phase 1) |
+| Positionnement | "panafricain" (briefs) | **GLOBAL CPaaS/ITSP**, 200+ pays, 60%+ clients hors Afrique (jamais "Afrique" comme limitation) |
+| Tagline | n/a | EN: *"Voice. SMS. eSIM. And More."* / FR: *"Voix. SMS. eSIM. Et bien plus."* |
+| Mascotte | n/a | Pango le pangolin (provisoire SVG, usages limités) |
+
+### Nouvelle séquence d'exécution (v1.2 amendée)
+
+```
+S0 → S1 → S2 → S6 → S7 → S8 → S9 → S3 → S5 → S10
+```
+
+S3 (Variables design) et S5 (Logos) sont déplacés **à la fin** car ils étaient bloqués sans Brand Kit v1.2. Désormais débloqués et exécutables. **S4 (placeholder logos provisoires) supprimé** — directement les vrais logos PNG en S5.
+
+### Stops de validation visuelle (cumulés)
+
+- ✅ Après **S0** (déjà fait)
+- 🟡 Après **S1** (en cours)
+- 🟡 Après **S3** (mandate Brand Kit v1.2)
+- 🟡 Après **S5** (mandate Brand Kit v1.2)
+- (workflow général : stop après chaque sous-tâche par défaut, conformément à `feedback_workflow`)
+
+### Notes techniques implémentation
+
+- `_dream-digital-tokens.scss` à copier dans `resources/assets/vendor/scss/_custom-variables/_dream-digital.scss` (S3)
+- Importer en TÊTE de `_bootstrap-extended.scss` : `@import "./dream-digital";`
+- Google Fonts (Inter + JetBrains Mono) à ajouter dans `commonMaster.blade.php` ET `layoutFront.blade.php` (S3)
+- Logos PNG à renommer/copier de `LOGO DREAM DIGITAL OR/` vers `public/img/brand/` (S5)
+- Dossier source `LOGO DREAM DIGITAL OR/` : à archiver dans `public/img/brand/originals/` ou à gitignorer (décision en S5)

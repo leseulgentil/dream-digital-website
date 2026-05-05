@@ -7,9 +7,15 @@
 /storage/pail
 /vendor
 
-# .env
-.env.backup
-.env.production
+# Local SQLite databases (dev environment only — never versioned)
+/dream_digital
+/dream_digital.sqlite
+/database/*.sqlite
+/database/*.sqlite-journal
+
+.env
+.env.*
+!.env.example
 .phpactor.json
 .phpunit.result.cache
 

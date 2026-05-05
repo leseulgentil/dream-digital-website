@@ -29,9 +29,9 @@
                         class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column align-items-xl-center align-items-md-start align-items-sm-center align-items-start">
                         <div class="mb-xl-0 mb-6 text-heading">
                             <div class="d-flex svg-illustration mb-6 gap-2 align-items-center">
-                                <span class="app-brand-logo demo">@include('_partials.macros')</span>
+                                <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
                                 <span
-                                    class="app-brand-text demo fw-bold ms-50 lh-1">{{ config('variables.templateName') }}</span>
+                                    class="dd-app-brand-text demo fw-bold ms-50 lh-1">{{ config('variables.templateName') }}</span>
                             </div>
                             <p class="mb-2">Office 149, 450 South Brand Brooklyn</p>
                             <p class="mb-2">San Diego County, CA 91905, USA</p>

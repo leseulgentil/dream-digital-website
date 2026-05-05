@@ -3,11 +3,11 @@ use Illuminate\Support\Facades\Route;
 $configData = Helper::appClasses();
 @endphp
 <!-- Horizontal Menu -->
-<aside id="layout-menu" class="layout-menu-horizontal menu-horizontal  menu bg-menu-theme flex-grow-0"
+<aside id="dd-layout-menu" class="dd-layout-menu-horizontal dd-menu-horizontal  menu dd-bg-menu-theme flex-grow-0"
     @foreach ($configData['menuAttributes'] as $attribute => $value)
   {{ $attribute }}="{{ $value }}" @endforeach>
   <div class="{{ $containerNav }} d-flex h-100">
-    <ul class="menu-inner">
+    <ul class="dd-menu-inner">
       @foreach ($menuData[1]->menu as $menu)
       {{-- active menu method --}}
       @php
@@ -35,9 +35,9 @@ $configData = Helper::appClasses();
       @endphp
 
       {{-- main menu --}}
-      <li class="menu-item {{ $activeClass }}">
+      <li class="dd-menu-item {{ $activeClass }}">
         <a href="{{ isset($menu->url) ? url($menu->url) : 'javascript:void(0);' }}"
-          class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and
+          class="{{ isset($menu->submenu) ? 'dd-menu-link dd-menu-toggle' : 'dd-menu-link' }}" @if (isset($menu->target) and
           !empty($menu->target)) target="_blank" @endif>
           @isset($menu->icon)
           <i class="{{ $menu->icon }}"></i>

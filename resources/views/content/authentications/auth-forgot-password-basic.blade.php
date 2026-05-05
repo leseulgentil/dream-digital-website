@@ -28,10 +28,10 @@
         <div class="card px-sm-6 px-0">
           <div class="card-body">
             <!-- Logo -->
-            <div class="app-brand justify-content-center">
-              <a href="{{ url('/') }}" class="app-brand-link gap-2">
-                <span class="app-brand-logo demo">@include('_partials.macros')</span>
-                <span class="app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
+            <div class="dd-app-brand justify-content-center">
+              <a href="{{ url('/') }}" class="dd-app-brand-link gap-2">
+                <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
+                <span class="dd-app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
               </a>
             </div>
             <!-- /Logo -->

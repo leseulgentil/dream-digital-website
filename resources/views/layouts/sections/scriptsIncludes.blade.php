@@ -1,7 +1,7 @@
 @php
   use Illuminate\Support\Facades\Vite;
 
-  $menuCollapsed = $configData['menuCollapsed'] === 'layout-menu-collapsed' ? json_encode(true) : false;
+  $menuCollapsed = $configData['menuCollapsed'] === 'dd-layout-menu-collapsed' ? json_encode(true) : false;
 
   // Get skin value directly from the config, keeping it as numeric if applicable
   $skin = $configData['skins'] ?? 0;

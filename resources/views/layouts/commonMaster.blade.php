@@ -13,10 +13,10 @@
       $configData['layout'] === 'vertical'
           ? $configData['navbarType']
           : ($configData['layout'] === 'front'
-              ? 'layout-navbar-fixed'
+              ? 'dd-layout-navbar-fixed'
               : '');
   $isFront = ($isFront ?? '') == true ? 'Front' : '';
-  $contentLayout = isset($container) ? ($container === 'container-xxl' ? 'layout-compact' : 'layout-wide') : '';
+  $contentLayout = isset($container) ? ($container === 'container-xxl' ? 'dd-layout-compact' : 'dd-layout-wide') : '';
 
   // Get skin name from configData - only applies to admin layouts
   $isAdminLayout = !Str::contains($configData['layout'] ?? '', 'front');

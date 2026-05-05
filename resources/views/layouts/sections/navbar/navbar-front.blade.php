@@ -10,11 +10,11 @@ $activeClass = in_array($currentRouteName, $activeRoutes) ? 'active' : '';
 @endsection
 
 <!-- Navbar: Start -->
-<nav class="layout-navbar shadow-none py-0">
+<nav class="dd-layout-navbar shadow-none py-0">
   <div class="container">
     <div class="navbar navbar-expand-lg landing-navbar px-3 px-md-8">
       <!-- Menu logo wrapper: Start -->
-      <div class="navbar-brand app-brand demo d-flex py-0 me-4 me-xl-8">
+      <div class="navbar-brand dd-app-brand demo d-flex py-0 me-4 me-xl-8">
         <!-- Mobile menu toggle: Start-->
         <button class="navbar-toggler border-0 px-0 me-4" type="button" data-bs-toggle="collapse"
           data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -22,9 +22,9 @@ $activeClass = in_array($currentRouteName, $activeRoutes) ? 'active' : '';
           <i class="icon-base bx bx-menu icon-lg align-middle text-heading fw-medium"></i>
         </button>
         <!-- Mobile menu toggle: End-->
-        <a href="{{url('front-pages/landing')}}" class="app-brand-link">
-          <span class="app-brand-logo demo">@include('_partials.macros')</span>
-          <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1">{{ config('variables.templateName') }}</span>
+        <a href="{{url('front-pages/landing')}}" class="dd-app-brand-link">
+          <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
+          <span class="dd-app-brand-text demo dd-menu-text fw-bold ms-2 ps-1">{{ config('variables.templateName') }}</span>
         </a>
       </div>
       <!-- Menu logo wrapper: End -->

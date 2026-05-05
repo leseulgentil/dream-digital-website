@@ -195,7 +195,7 @@
 <section id="theme-footer">
   <h5 class="pb-1 mb-6">Footer Theme</h5>
 
-  <footer class="footer bg-footer-theme">
+  <footer class="footer dd-bg-footer-theme">
     <div
       class="container-fluid d-flex flex-md-row flex-column justify-content-between align-items-md-center gap-1 container-p-x py-4">
       <div><a href="{{ config('variables.livePreview') }}" target="_blank"

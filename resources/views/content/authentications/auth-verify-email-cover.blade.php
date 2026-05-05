@@ -15,9 +15,9 @@
 @section('content')
   <div class="authentication-wrapper authentication-cover">
     <!-- Logo -->
-    <a href="{{ url('/') }}" class="app-brand auth-cover-brand gap-2">
-      <span class="app-brand-logo demo">@include('_partials.macros')</span>
-      <span class="app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
+    <a href="{{ url('/') }}" class="dd-app-brand auth-cover-brand gap-2">
+      <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
+      <span class="dd-app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
     </a>
     <!-- /Logo -->
     <div class="authentication-inner row m-0">

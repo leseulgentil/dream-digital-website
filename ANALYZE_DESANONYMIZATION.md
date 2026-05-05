@@ -397,3 +397,31 @@ La **table de renommage** de la section C-quater (Q12) qui proposait des mapping
 - Ordre de remplacement : **longueur décroissante stricte** (sous-classes AVANT classes parentes)
 - Pattern regex word-boundary strict : `\bCLASS(?![-\w])` (lookahead négatif → zéro collision préfixe/sous-classe)
 - Variables Sass `$menu-*` et mixins `@include menu-*` : **hors scope L1** (compile-time, n'apparaissent pas dans le CSS final)
+
+---
+
+## C-septies. Q16 — `menu-content` et `text-menu-icon` retirées définitivement du scope S7
+
+**Validé 2026-05-05** : suite au scan exhaustif L2 sur l'ensemble du codebase (SCSS + Blade), confirmation que les classes `menu-content` et `text-menu-icon` listées dans la table Q12 originale (et dans `BRIEF_DD_DESANONYMIZATION.md` Objectif 2) ne figurent dans **aucun fichier source** du Sneat installé.
+
+### Mesures objectives
+
+| Classe | Occurrences SCSS (sélecteurs) | Occurrences Blade (tous contextes) | Total |
+|---|---:|---:|---:|
+| `menu-content` | 0 | 0 | **0** |
+| `text-menu-icon` | 0 | 0 | **0** |
+
+### Cause probable
+
+Ces classes ont probablement existé dans des versions antérieures de Sneat (ou dans d'autres templates ThemeSelection génériques) et leur mention dans le brief/Q12 reflète une référence à l'ensemble du catalogue Sneat sans vérification du sous-set installé (Sneat Pro **Laravel 12 v4.0.0**).
+
+### Conséquences
+
+- **Retirées définitivement** du scope total S7 : aucun lot L1 → L6 ne traite ces noms
+- Aucun risque de régression : ces classes n'apparaissent dans aucun fichier source
+- Les vérifications L3 (JS) et L4 (Helpers.php) **n'auront pas** à les chercher
+- Scope final S7 : **66 classes uniques** = 58 L1 (SCSS) + 3 anomalies confirmées HTML (`layout-compact`, `layout-wide`, `bg-menu-theme`) + 5 découvertes L2 (`layout-demo-{wrapper,info,placeholder}`, `layout-example-{sidebar,content-inner}`)
+
+### Ce qu'on garde dans la mémoire du sprint
+
+Cette résolution est mémorialisée ici pour qu'un futur lecteur de l'ANALYZE / Q12 / Q14 ne perde pas de temps à chercher ces classes inexistantes. Si un jour Dream Digital migre vers une version plus récente de Sneat où ces classes apparaîtraient, il faudra réévaluer.

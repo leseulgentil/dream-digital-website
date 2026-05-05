@@ -44,6 +44,8 @@
 | **Q12** | 2026-05-05 | Scope S7 | Option **B** : préfixer classes génériques (`app-*`, `layout-*`, `menu-*`, `bg-menu-theme`, `bg-navbar-theme`) avec `dd-`. **`data-*` HORS scope.** 5 résidus textuels "sneat" → S9. ⚠️ Table de mappings **superseded by Q14**. |
 | **Q13** | 2026-05-05 | Dark mode switcher | À **réinjecter en S9** (pas maintenant). Specs : 6 points listés en section 5 ci-dessous. |
 | **Q14** | 2026-05-05 | Convention renommage S7 | Option **A** retenue : prepend simple `dd-<classe>` pour TOUTES les classes (uniforme, traçable, réversible). Supersedes table Q12. Scope L1 figé : **633 occurrences / 13 fichiers SCSS / 58 classes**, +24 découvertes incluses, −5 anomalies à vérifier en L2/L3. ⚠️ 3 classes JS-dynamiques (`layout-transitioning`, `layout-no-transition`, `menu-no-animation`) → sync L1↔L3 strict. |
+| **Q15** | 2026-05-05 | IDs partagés en L2 | Option **A** retenue : renommer aussi `id="layout-menu"` et `id="layout-navbar"` (4 occurrences) pour cohérence DOM totale. ⚠️ Contrainte L3 : tous `querySelector('#layout-menu')`, `getElementById('layout-navbar')`, etc. doivent être renommés en sync sinon menu casse silencieusement. |
+| **Q16** | 2026-05-05 | Classes brief absentes du codebase | `menu-content` et `text-menu-icon` retirées définitivement du scope total S7 (0 occurrence SCSS + 0 occurrence Blade après scan exhaustif L1+L2). Mentionnées dans BRIEF/Q12 mais absentes du Sneat Pro Laravel 12 v4.0.0 installé. Scope final S7 = **66 classes** (58 L1 + 3 anomalies HTML confirmées + 5 discoveries L2). |
 
 Détail complet de chaque arbitrage dans `ANALYZE_DESANONYMIZATION.md`.
 

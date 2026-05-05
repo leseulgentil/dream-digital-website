@@ -1,5 +1,4 @@
 @php
-  $customizerHidden = 'customizer-hide';
 @endphp
 
 @extends('layouts/layoutMaster')

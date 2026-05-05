@@ -1,5 +1,4 @@
 @php
-  $customizerHidden = 'customizer-hide';
   $configData = Helper::appClasses();
 @endphp
 

@@ -255,3 +255,81 @@ S3 (Variables design) et S5 (Logos) sont déplacés **à la fin** car ils étaie
 - Google Fonts (Inter + JetBrains Mono) à ajouter dans `commonMaster.blade.php` ET `layoutFront.blade.php` (S3)
 - Logos PNG à renommer/copier de `LOGO DREAM DIGITAL OR/` vers `public/img/brand/` (S5)
 - Dossier source `LOGO DREAM DIGITAL OR/` : à archiver dans `public/img/brand/originals/` ou à gitignorer (décision en S5)
+
+---
+
+## C-quater. Q12 — Divergence sur le scope de S7 (renommage classes)
+
+**Découverte 2026-05-05, début S7** : ton message de validation S6 décrit S7 comme *"remplacer toutes les occurrences de classes CSS, IDs HTML, attributs `data-*` et variables JS contenant le préfixe `sneat-*`"* avec des exemples comme `.sneat-vertical-menu`, `data-sneat-template-name`, `window.SneatConfig`. 
+
+**Or aucune de ces formes n'existe dans le code Sneat installé.** Sneat n'utilise pas le préfixe `sneat-` pour ses identifiants techniques.
+
+### Mesures objectives
+
+| Recherche | Résultat (hors `vendor/`) |
+|---|---|
+| Classes `.sneat-*` (case-insensitive) | **0 occurrence** dans le code applicatif |
+| Identifiants `#sneat-*`, `data-sneat-*`, `window.Sneat*` | **0 occurrence** |
+| Mention "sneat" | 4 fichiers : 3 docs (briefs/BRANDING/_template-license) + 1 URL doc dans `resources/menu/verticalMenu.json` (lien `themeselection.com/demo/sneat-...`) |
+| Classes génériques Sneat (`app-brand`, `layout-*`, `menu-*`, `bg-menu-theme`, `bg-navbar-theme`) | **521+ occurrences** sur 30+ fichiers (probablement >700 sur l'ensemble du repo) |
+
+### Quel est le vrai scope du brief ?
+
+Le BRIEF_DD_DESANONYMIZATION.md ligne 38-76 (Objectif 2) **et mon ANALYZE section A ligne 13** sont alignés : ce qu'il faut renommer, ce sont les **classes Sneat-spécifiques génériques** (préfixées `app-`, `layout-`, `menu-`, `template-`, `bg-*-theme`), en leur **AJOUTANT** le préfixe `dd-` :
+
+| Avant | Après |
+|---|---|
+| `app-brand` | `dd-brand` |
+| `app-brand-link` | `dd-brand-link` |
+| `layout-wrapper` | `dd-layout-wrapper` |
+| `layout-menu` | `dd-layout-menu` |
+| `layout-navbar-fixed` | `dd-layout-navbar-fixed` |
+| `menu-vertical` | `dd-menu-vertical` |
+| `menu-inner` | `dd-menu-inner` |
+| `menu-link` | `dd-menu-link` |
+| `bg-menu-theme` | `dd-bg-menu` |
+| `bg-navbar-theme` | `dd-bg-navbar` |
+| ... | ... |
+
+**Et NE PAS toucher** : Bootstrap (`btn`, `card`, `nav`, etc.), libs tierces (`swiper-*`, `apex-*`, `select2-*`, `dataTable*`, `sweetalert*`), icons (`ti ti-*`, `bx bx-*`).
+
+### Trois options possibles
+
+| Option | Travail | Effet |
+|---|---|---|
+| **A** | Suivre ton message à la lettre (rechercher `sneat-*`) | Quasi-rien à faire (~1 URL dans menu JSON). S7 marquée "terminée" en 5 min. **Ne résout pas l'objectif 2 du brief.** |
+| **B** ⭐ | Suivre le brief original + ANALYZE (préfixer `app-/layout-/menu-/bg-*-theme` avec `dd-`) | ~700 occurrences sur 30+ fichiers. **6 lots de commits** comme tu l'as proposé. Travail risqué nécessitant `Helpers.php` à mettre à jour en cohérence (cf. R1 dans mes risques). C'est ce que j'avais planifié. |
+| **C** | Hybride : faire B et profiter pour aussi traiter les rares résidus textuels `sneat-*` (l'URL dans verticalMenu.json + commentaires SCSS où le mot apparaît) | ~700 occurrences + ~5 résidus textuels |
+
+**Recommandation : option B (ou C qui est juste B + petit bonus).**
+
+### Risques propres à l'option B (rappel R1, R2, R3, R5 de section E)
+
+- **Helpers.php** génère dynamiquement `'layout-menu-fixed'`, `'layout-navbar-fixed'`, `'layout-footer-fixed'`, `'layout-menu-collapsed'` — doit être renommé **dans le même commit** que les classes CSS correspondantes
+- **menu.js** (~1000 lignes) utilise des sélecteurs `'#layout-menu'`, `.layout-menu-toggle` en dur dans `document.querySelector(...)` — à renommer en sync avec le HTML
+- **main.js / front-main.js / helpers.js** : idem, sélecteurs en dur
+- **Word boundary strict** : remplacer `layout-menu` casserait `layout-menu-toggle`, `layout-menu-fixed`, etc. → ordre de remplacement par longueur décroissante OBLIGATOIRE
+- **Le data-attribute `data-template="vertical-menu-template"`** et autres `data-*` ne sont PAS dans le scope (ce sont des conventions Sneat-JS internes, pas des classes CSS) — à confirmer
+
+---
+
+## C-quinquies. Q13 — Décision dark mode switcher pour S9
+
+**Validé 2026-05-05** : restaurer le dark mode switcher (Light/Dark/System) en S9 comme contrôle UX standalone, sans dépendance au customizer disparu.
+
+### Spécifications à implémenter en S9
+
+1. **Lieu de réinjection** : `resources/views/layouts/sections/navbar/navbar-partial.blade.php` + `resources/views/layouts/sections/navbar/navbar-front.blade.php` (les blocs supprimés en S6 étaient gardés par `@if hasCustomizer == true`)
+2. **Stockage** : `localStorage` sous clé `dd-theme` (indépendante du customizer), valeurs `light` / `dark` / `system`, défaut `system`
+3. **Détection initiale** : `prefers-color-scheme` du navigateur quand `system` est sélectionné
+4. **Application** : attribut `data-bs-theme` sur `<html>` (Bootstrap 5.3+ supporte nativement)
+5. **Pas de référence** à `window.templateCustomizer` (qui sera retiré des 4 fichiers JS dead-safe `helpers.js`/`main.js`/`front-main.js`/`menu.js` en S9)
+6. **Icônes** : Tabler Icons `ti-sun`, `ti-moon`, `ti-device-desktop` — cohérent avec le reste du UI
+
+Ce point est ajouté à la sous-tâche S9 du plan.
+
+---
+
+🟡 **En attente de validation Q12** :
+- Option A, **B (recommandée)** ou C pour le scope S7 ?
+- Confirmer que les `data-*` Sneat ne sont **pas** à renommer (ce sont des conventions internes de bootstrap-helpers Sneat-JS, et les renommer obligerait à modifier ~1000 lignes de menu.js)

@@ -41,8 +41,9 @@
 | Q9 | 2026-05-04 | Squash 3 commits doublons | Validé option **B** (filter-repo) — **fait** |
 | **Q10** | 2026-05-05 | `.env` dans historique Git | Option **B** : purge filter-repo + rotation `APP_KEY` + ignore SQLite db — **fait** |
 | **Q11** | 2026-05-05 | Brand Kit v1.2 reçu | Palette 4 couleurs + Inter/JetBrains Mono + nouvelle séquence S0→S1→S2→S6→S7→S8→S9→S3→S5→S10 |
-| **Q12** | 2026-05-05 | Scope S7 | Option **B** : préfixer classes génériques (`app-*`, `layout-*`, `menu-*`, `bg-menu-theme`, `bg-navbar-theme`) avec `dd-`. **`data-*` HORS scope.** 5 résidus textuels "sneat" → S9. |
+| **Q12** | 2026-05-05 | Scope S7 | Option **B** : préfixer classes génériques (`app-*`, `layout-*`, `menu-*`, `bg-menu-theme`, `bg-navbar-theme`) avec `dd-`. **`data-*` HORS scope.** 5 résidus textuels "sneat" → S9. ⚠️ Table de mappings **superseded by Q14**. |
 | **Q13** | 2026-05-05 | Dark mode switcher | À **réinjecter en S9** (pas maintenant). Specs : 6 points listés en section 5 ci-dessous. |
+| **Q14** | 2026-05-05 | Convention renommage S7 | Option **A** retenue : prepend simple `dd-<classe>` pour TOUTES les classes (uniforme, traçable, réversible). Supersedes table Q12. Scope L1 figé : **633 occurrences / 13 fichiers SCSS / 58 classes**, +24 découvertes incluses, −5 anomalies à vérifier en L2/L3. ⚠️ 3 classes JS-dynamiques (`layout-transitioning`, `layout-no-transition`, `menu-no-animation`) → sync L1↔L3 strict. |
 
 Détail complet de chaque arbitrage dans `ANALYZE_DESANONYMIZATION.md`.
 

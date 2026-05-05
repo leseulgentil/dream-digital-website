@@ -277,7 +277,9 @@ S3 (Variables design) et S5 (Logos) sont déplacés **à la fin** car ils étaie
 
 Le BRIEF_DD_DESANONYMIZATION.md ligne 38-76 (Objectif 2) **et mon ANALYZE section A ligne 13** sont alignés : ce qu'il faut renommer, ce sont les **classes Sneat-spécifiques génériques** (préfixées `app-`, `layout-`, `menu-`, `template-`, `bg-*-theme`), en leur **AJOUTANT** le préfixe `dd-` :
 
-| Avant | Après |
+> ⚠️ **Table de mappings ci-dessous SUPERSEDED par Q14** (voir section C-sextus). Les mappings hétérogènes (`app-brand → dd-brand`, `bg-menu-theme → dd-bg-menu`) sont remplacés par la convention uniforme **prepend `dd-` simple** : `<classe>` → `dd-<classe>` pour TOUTES les classes. Le scope général Q12 (catégories de classes, exclusions Bootstrap/libs/`data-*`, procédure 6-lots) reste valide.
+
+| Avant (obsolète) | Après (obsolète) |
 |---|---|
 | `app-brand` | `dd-brand` |
 | `app-brand-link` | `dd-brand-link` |
@@ -330,6 +332,68 @@ Ce point est ajouté à la sous-tâche S9 du plan.
 
 ---
 
-🟡 **En attente de validation Q12** :
-- Option A, **B (recommandée)** ou C pour le scope S7 ?
-- Confirmer que les `data-*` Sneat ne sont **pas** à renommer (ce sont des conventions internes de bootstrap-helpers Sneat-JS, et les renommer obligerait à modifier ~1000 lignes de menu.js)
+✅ **Q12 résolu (2026-05-05)** : option **B** retenue (préfixer classes génériques avec `dd-`, `data-*` hors scope, résidus textuels "sneat" → S9). Voir SPRINT_STATE.md section 2.
+
+---
+
+## C-sextus. Q14 — Convention de renommage Option A retenue (supersedes table Q12)
+
+**Validé 2026-05-05** : suite au scan exhaustif L1 du sprint S7, divergence détectée entre la table de renommage de Q12 (section C-quater — mappings hétérogènes `app-brand → dd-brand`, `bg-menu-theme → dd-bg-menu`) et la convention "prepend simple" plus naturelle. Décision : retenir l'**Option A — prepend systématique du préfixe `dd-`** pour TOUTES les classes du namespace.
+
+### Convention figée
+
+Pour toute classe Sneat ciblée par S7 : `<classe>` → `dd-<classe>` (prepend strict, aucune substitution).
+
+| Avant | Après |
+|---|---|
+| `app-brand` | `dd-app-brand` |
+| `app-brand-link` | `dd-app-brand-link` |
+| `app-brand-img-collapsed` | `dd-app-brand-img-collapsed` |
+| `layout-menu` | `dd-layout-menu` |
+| `layout-menu-toggle` | `dd-layout-menu-toggle` |
+| `layout-menu-fixed-offcanvas` | `dd-layout-menu-fixed-offcanvas` |
+| `menu-item` | `dd-menu-item` |
+| `menu-item-closing` | `dd-menu-item-closing` |
+| `bg-menu-theme` (si réintroduit) | `dd-bg-menu-theme` |
+| `bg-navbar-theme` | `dd-bg-navbar-theme` |
+
+### Justifications
+
+1. **Cohérence absolue** : préfixe `dd-` uniforme sur toutes les classes
+2. **Traçabilité Git** : `git grep "\bdd-"` liste l'ensemble du namespace Dream Digital
+3. **Réversibilité** : un revert via regex `\bdd-` est trivial si nécessaire
+4. **Conformité conventions CSS** : aligné avec préfixage standard (BEM, Tailwind, Bootstrap utility-prefix)
+
+### Conséquences sur Q12
+
+La **table de renommage** de la section C-quater (Q12) qui proposait des mappings hétérogènes est **superseded by Q14**. Le scope général Q12 (catégories de classes à renommer + procédure 6-lots + exclusions Bootstrap/libs/icons/`data-*`) **reste valide** ; seule la table de mappings est remplacée par la convention uniforme Q14 ci-dessus.
+
+### Scope L1 ajusté (post scan exhaustif 2026-05-05)
+
+**+24 classes découvertes** au-delà de la liste explicite Q12, à inclure dans L1 (Q12 disait *"etc. à scanner exhaustivement"* pour `menu-*`, l'esprit s'étend à `layout-*` et `app-brand-*`) :
+
+- **app-brand sub-classes** : `app-brand-img`, `app-brand-img-collapsed`
+- **layout state-classes** : `layout-menu-fixed-offcanvas`, `layout-menu-offcanvas`, `layout-navbar-full`, `layout-menu-hover`, `layout-menu-horizontal`, `layout-menu-expanded`, `layout-transitioning`, `layout-no-transition`, `layout-menu-100vh`, `layout-menu-link-no-transition`
+- **menu state-classes** : `menu-block`, `menu-header`, `menu-header-text`, `menu-no-animation`, `menu-item-closing`, `menu-item-animating`, `menu-horizontal-prev`, `menu-horizontal-next`, `menu-horizontal-wrapper`, `menu-divider`, `menu-collapsed`, `menu-mobile-toggler`, `menu-text`, `menu-inner-shadow`
+
+**−5 classes anomalies** retirées du scope L1 (0 occurrence en SCSS) mais à vérifier exhaustivement en L2 (Blade) et L3 (JS) — si elles apparaissent en HTML/JS sans définition SCSS, on les renomme quand même pour éviter référence Sneat orpheline :
+
+- `layout-compact` (probable état JS)
+- `layout-wide` (probable état JS)
+- `bg-menu-theme` (peut exister en Blade/JS, pas en SCSS)
+- `menu-content` (résidu doc obsolète probable, à confirmer en L2/L3)
+- `text-menu-icon` (à vérifier en L2 Blade)
+
+**⚠️ Attention JS L3 — classes ajoutées dynamiquement** : trois classes sont injectées dynamiquement par JS (`addClass`/`removeClass`) pendant les animations. Leur renommage SCSS L1 + JS L3 doit être **strictement synchrone** sinon les animations cassent silencieusement (ne se déclenchent plus, sans erreur console) :
+
+- `layout-transitioning`
+- `layout-no-transition`
+- `menu-no-animation`
+
+### Total scope L1 final
+
+- **633 occurrences** (sélecteurs CSS) sur **13 fichiers SCSS**
+- **58 classes uniques**
+- Ordre de remplacement : **longueur décroissante stricte** (sous-classes AVANT classes parentes)
+- Pattern regex word-boundary strict : `\bCLASS(?![-\w])` (lookahead négatif → zéro collision préfixe/sous-classe)
+- Variables Sass `$menu-*` et mixins `@include menu-*` : **hors scope L1** (compile-time, n'apparaissent pas dans le CSS final)

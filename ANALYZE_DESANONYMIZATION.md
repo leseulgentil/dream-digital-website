@@ -425,3 +425,31 @@ Ces classes ont probablement existé dans des versions antérieures de Sneat (ou
 ### Ce qu'on garde dans la mémoire du sprint
 
 Cette résolution est mémorialisée ici pour qu'un futur lecteur de l'ANALYZE / Q12 / Q14 ne perde pas de temps à chercher ces classes inexistantes. Si un jour Dream Digital migre vers une version plus récente de Sneat où ces classes apparaîtraient, il faudra réévaluer.
+
+---
+
+## C-octies. Q17/Q18 — Règle commentaires clarifiée pour S7 (et tout futur sprint)
+
+**Validé 2026-05-05** : suite à la détection en audit L3 d'un commentaire JS contenant une classe cible (`assets/js/main.js:112` — `// Display menu toggle (layout-menu-toggle) on hover with delay`), la règle initiale "ne pas toucher aux commentaires" a été clarifiée.
+
+### Q17 — Décision immédiate
+
+Le commentaire JS référençant explicitement une classe technique (`layout-menu-toggle`) a été **renommé** lors du commit L3 pour éviter une drift documentation (un commentaire référençant `layout-menu-toggle` alors que le code utilise désormais `dd-layout-menu-toggle` induit en erreur tout dev qui lit le code dans 6 mois).
+
+### Q18 — Règle générale codifiée
+
+| Type de commentaire | Action S7 | Justification |
+|---|---|---|
+| **Blade `{{-- --}}`** | ❌ Ne pas toucher | Supprimés au rendu serveur, jamais visibles en prod |
+| **HTML `<!-- -->`** | ✅ Renommer si référence technique | Présents dans la source HTML servie au navigateur (Ctrl+U), donc visibles |
+| **JS `//` ou `/* */` avec référence à un nom de classe/ID précis** | ✅ Renommer | Cohérence documentaire — drift code/comment inacceptable |
+| **JS contextuel sans référence technique** (ex : `// 2022 - Sneat purchased`) | ❌ Ne pas toucher | Contexte historique factuel, ne pollue pas la lecture du code |
+
+### Application rétroactive
+
+- **L2 (Blade)** : 1 commentaire HTML `<!-- ! Not required for layout-without-menu -->` déjà renommé en `dd-layout-without-menu` lors du commit L2 (`021f8cf`). Conforme à Q18.
+- **L3 (JS)** : 1 commentaire JS `// Display menu toggle (layout-menu-toggle) on hover with delay` renommé en `dd-layout-menu-toggle` lors du commit L3 (`277dcff`). Conforme à Q18.
+
+### Application future
+
+Les lots restants (L4 Helpers.php, L5 menu JSON, L6 rename-map) suivront cette règle Q18 si un commentaire technique est rencontré.

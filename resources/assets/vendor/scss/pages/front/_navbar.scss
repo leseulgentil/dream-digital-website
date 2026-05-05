@@ -1,4 +1,4 @@
-nav.layout-navbar {
+nav.dd-layout-navbar {
   backdrop-filter: unset;
   background-color: transparent;
   block-size: auto;
@@ -145,7 +145,7 @@ nav.layout-navbar {
       box-shadow: var(--#{$prefix}box-shadow-sm);
     }
   }
-  .menu-text {
+  .dd-menu-text {
     color: var(--#{$prefix}heading-color);
   }
 }
@@ -153,7 +153,7 @@ nav.layout-navbar {
 /* Dark Theme */
 @if $enable-dark-mode {
   @include color-mode(dark) {
-    nav.layout-navbar {
+    nav.dd-layout-navbar {
       .navbar {
         &.landing-navbar {
           --#{$prefix}front-navbar-bg: rgba(65, 65, 95, .38);

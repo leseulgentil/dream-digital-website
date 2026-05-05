@@ -24,7 +24,7 @@ $logistics-fleet-horizontal-height-diff: 2rem;
   }
 
   /* setting wrapper height when navbar is hidden */
-  .layout-navbar-hidden & {
+  .dd-layout-navbar-hidden & {
     block-size: calc(100vh - 6.5rem);
 
     // For Sidebar Map menu Scroll
@@ -79,7 +79,7 @@ $logistics-fleet-horizontal-height-diff: 2rem;
     }
 
     /* Setting wrapper height when navbar is hidden */
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       block-size: calc(100vh - 7.5rem);
 
       /* For Sidebar Map menu Scroll */

@@ -1,0 +1,1220 @@
+{
+    "metadata":  {
+                     "version":  "1.0",
+                     "sprint":  "S7",
+                     "sprint_name":  "Désanonymisation Sneat → Dream Digital",
+                     "generated_at":  "2026-05-05",
+                     "branch":  "feature/desanonymization",
+                     "convention":  "Q14 — prepend dd- prefix uniformly",
+                     "pattern_used":  "(?<![\\w-])CLASS(?![-\\w]) with longest-first ordering",
+                     "total_renames":  1068,
+                     "total_unique_classes":  66,
+                     "total_files_modified":  62,
+                     "lots_summary":  {
+                                          "L1_scss":  {
+                                                          "description":  "CSS class selectors in SCSS sources",
+                                                          "occurrences":  633,
+                                                          "files":  13,
+                                                          "commit":  "a5fbdd0"
+                                                      },
+                                          "L2_blade":  {
+                                                           "description":  "Class & ID attributes in Blade templates",
+                                                           "occurrences":  160,
+                                                           "files":  37,
+                                                           "commit":  "021f8cf"
+                                                       },
+                                          "L3_js":  {
+                                                        "description":  "String literals & classList ops in JS",
+                                                        "occurrences":  185,
+                                                        "files":  9,
+                                                        "commit":  "277dcff"
+                                                    },
+                                          "L4_helpers":  {
+                                                             "description":  "Server-side generated layout state classes in Helpers.php",
+                                                             "occurrences":  6,
+                                                             "files":  1,
+                                                             "commit":  "591e02b"
+                                                         },
+                                          "L5_json":  {
+                                                          "description":  "menu-icon class in menu config JSON (interpolated by Blade)",
+                                                          "occurrences":  84,
+                                                          "files":  2,
+                                                          "commit":  "452bf8e"
+                                                      },
+                                          "L6_rename_map":  {
+                                                                "description":  "This file",
+                                                                "occurrences":  0,
+                                                                "files":  1,
+                                                                "commit":  "self"
+                                                            }
+                                      },
+                     "docs_commits":  {
+                                          "Q14":  "f729c85 - rename convention Option A prepend",
+                                          "Q15_Q16":  "1e0b3fb - IDs in L2 + drop menu-content/text-menu-icon",
+                                          "Q17_Q18":  "8914832 - rename main.js:112 comment + comments rule",
+                                          "Q19":  "f25f927 - extended audit scope rule for HTML class renames"
+                                      }
+                 },
+    "renames":  [
+                    {
+                        "from":  "app-brand",
+                        "to":  "dd-app-brand",
+                        "category":  "branding",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  8,
+                                       "blade":  16,
+                                       "js":  1,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  25
+                    },
+                    {
+                        "from":  "app-brand-link",
+                        "to":  "dd-app-brand-link",
+                        "category":  "branding",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  2,
+                                       "blade":  10,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  12
+                    },
+                    {
+                        "from":  "app-brand-text",
+                        "to":  "dd-app-brand-text",
+                        "category":  "branding",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  5,
+                                       "blade":  21,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  26
+                    },
+                    {
+                        "from":  "app-brand-logo",
+                        "to":  "dd-app-brand-logo",
+                        "category":  "branding",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  21,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  25
+                    },
+                    {
+                        "from":  "app-brand-img",
+                        "to":  "dd-app-brand-img",
+                        "category":  "branding",
+                        "scope":  [
+                                      "scss"
+                                  ],
+                        "counts":  {
+                                       "scss":  3,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    },
+                    {
+                        "from":  "app-brand-img-collapsed",
+                        "to":  "dd-app-brand-img-collapsed",
+                        "category":  "branding",
+                        "scope":  [
+                                      "scss"
+                                  ],
+                        "counts":  {
+                                       "scss":  3,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    },
+                    {
+                        "from":  "layout-menu",
+                        "to":  "dd-layout-menu",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  38,
+                                       "blade":  3,
+                                       "js":  19,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  60
+                    },
+                    {
+                        "from":  "layout-navbar",
+                        "to":  "dd-layout-navbar",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  33,
+                                       "blade":  5,
+                                       "js":  8,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  46
+                    },
+                    {
+                        "from":  "layout-page",
+                        "to":  "dd-layout-page",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  17,
+                                       "blade":  2,
+                                       "js":  3,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  22
+                    },
+                    {
+                        "from":  "layout-wrapper",
+                        "to":  "dd-layout-wrapper",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  21,
+                                       "blade":  2,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  25
+                    },
+                    {
+                        "from":  "layout-container",
+                        "to":  "dd-layout-container",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  3,
+                                       "blade":  2,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  5
+                    },
+                    {
+                        "from":  "layout-overlay",
+                        "to":  "dd-layout-overlay",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  5,
+                                       "blade":  2,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "layout-horizontal",
+                        "to":  "dd-layout-horizontal",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  40,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  41
+                    },
+                    {
+                        "from":  "layout-without-menu",
+                        "to":  "dd-layout-without-menu",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  17,
+                                       "blade":  3,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  20
+                    },
+                    {
+                        "from":  "layout-content-navbar",
+                        "to":  "dd-layout-content-navbar",
+                        "category":  "layout",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  19,
+                                       "blade":  1,
+                                       "js":  1,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  21
+                    },
+                    {
+                        "from":  "layout-menu-toggle",
+                        "to":  "dd-layout-menu-toggle",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  10,
+                                       "blade":  5,
+                                       "js":  5,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  20
+                    },
+                    {
+                        "from":  "layout-menu-fixed",
+                        "to":  "dd-layout-menu-fixed",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js",
+                                      "php"
+                                  ],
+                        "counts":  {
+                                       "scss":  24,
+                                       "blade":  0,
+                                       "js":  6,
+                                       "php":  2,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  32
+                    },
+                    {
+                        "from":  "layout-menu-collapsed",
+                        "to":  "dd-layout-menu-collapsed",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js",
+                                      "php"
+                                  ],
+                        "counts":  {
+                                       "scss":  21,
+                                       "blade":  1,
+                                       "js":  3,
+                                       "php":  1,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  26
+                    },
+                    {
+                        "from":  "layout-menu-fixed-offcanvas",
+                        "to":  "dd-layout-menu-fixed-offcanvas",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  27,
+                                       "blade":  0,
+                                       "js":  7,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  34
+                    },
+                    {
+                        "from":  "layout-menu-offcanvas",
+                        "to":  "dd-layout-menu-offcanvas",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  15,
+                                       "blade":  0,
+                                       "js":  3,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  18
+                    },
+                    {
+                        "from":  "layout-menu-hover",
+                        "to":  "dd-layout-menu-hover",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  9,
+                                       "blade":  0,
+                                       "js":  1,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  10
+                    },
+                    {
+                        "from":  "layout-menu-horizontal",
+                        "to":  "dd-layout-menu-horizontal",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  1,
+                                       "js":  1,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  6
+                    },
+                    {
+                        "from":  "layout-menu-expanded",
+                        "to":  "dd-layout-menu-expanded",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  0,
+                                       "js":  3,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "layout-menu-100vh",
+                        "to":  "dd-layout-menu-100vh",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  2,
+                                       "blade":  0,
+                                       "js":  1,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    },
+                    {
+                        "from":  "layout-menu-link-no-transition",
+                        "to":  "dd-layout-menu-link-no-transition",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  1
+                    },
+                    {
+                        "from":  "layout-navbar-fixed",
+                        "to":  "dd-layout-navbar-fixed",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js",
+                                      "php"
+                                  ],
+                        "counts":  {
+                                       "scss":  16,
+                                       "blade":  1,
+                                       "js":  6,
+                                       "php":  1,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  24
+                    },
+                    {
+                        "from":  "layout-navbar-hidden",
+                        "to":  "dd-layout-navbar-hidden",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js",
+                                      "php"
+                                  ],
+                        "counts":  {
+                                       "scss":  21,
+                                       "blade":  1,
+                                       "js":  3,
+                                       "php":  1,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  26
+                    },
+                    {
+                        "from":  "layout-navbar-full",
+                        "to":  "dd-layout-navbar-full",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  12,
+                                       "blade":  1,
+                                       "js":  5,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  18
+                    },
+                    {
+                        "from":  "layout-footer-fixed",
+                        "to":  "dd-layout-footer-fixed",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "scss",
+                                      "js",
+                                      "php"
+                                  ],
+                        "counts":  {
+                                       "scss":  8,
+                                       "blade":  0,
+                                       "js":  2,
+                                       "php":  1,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  11
+                    },
+                    {
+                        "from":  "layout-transitioning",
+                        "to":  "dd-layout-transitioning",
+                        "category":  "layout-state-js",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  3,
+                                       "blade":  0,
+                                       "js":  4,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "layout-no-transition",
+                        "to":  "dd-layout-no-transition",
+                        "category":  "layout-state-js",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  2,
+                                       "blade":  0,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  4
+                    },
+                    {
+                        "from":  "layout-compact",
+                        "to":  "dd-layout-compact",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  1
+                    },
+                    {
+                        "from":  "layout-wide",
+                        "to":  "dd-layout-wide",
+                        "category":  "layout-state",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  1
+                    },
+                    {
+                        "from":  "layout-demo-wrapper",
+                        "to":  "dd-layout-demo-wrapper",
+                        "category":  "layout-demo",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  7,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "layout-demo-info",
+                        "to":  "dd-layout-demo-info",
+                        "category":  "layout-demo",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  7,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "layout-demo-placeholder",
+                        "to":  "dd-layout-demo-placeholder",
+                        "category":  "layout-demo",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  7,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "layout-example-sidebar",
+                        "to":  "dd-layout-example-sidebar",
+                        "category":  "layout-demo",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  1
+                    },
+                    {
+                        "from":  "layout-example-content-inner",
+                        "to":  "dd-layout-example-content-inner",
+                        "category":  "layout-demo",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  1
+                    },
+                    {
+                        "from":  "menu-vertical",
+                        "to":  "dd-menu-vertical",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  5,
+                                       "blade":  1,
+                                       "js":  4,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  10
+                    },
+                    {
+                        "from":  "menu-horizontal",
+                        "to":  "dd-menu-horizontal",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  11,
+                                       "blade":  1,
+                                       "js":  8,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  20
+                    },
+                    {
+                        "from":  "menu-inner",
+                        "to":  "dd-menu-inner",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  30,
+                                       "blade":  2,
+                                       "js":  15,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  47
+                    },
+                    {
+                        "from":  "menu-item",
+                        "to":  "dd-menu-item",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  47,
+                                       "blade":  3,
+                                       "js":  17,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  67
+                    },
+                    {
+                        "from":  "menu-link",
+                        "to":  "dd-menu-link",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  31,
+                                       "blade":  8,
+                                       "js":  4,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  43
+                    },
+                    {
+                        "from":  "menu-icon",
+                        "to":  "dd-menu-icon",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "json"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  84
+                                   },
+                        "occurrences_total":  88
+                    },
+                    {
+                        "from":  "menu-toggle",
+                        "to":  "dd-menu-toggle",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  14,
+                                       "blade":  3,
+                                       "js":  11,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  28
+                    },
+                    {
+                        "from":  "menu-sub",
+                        "to":  "dd-menu-sub",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  19,
+                                       "blade":  1,
+                                       "js":  3,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  23
+                    },
+                    {
+                        "from":  "menu-block",
+                        "to":  "dd-menu-block",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss"
+                                  ],
+                        "counts":  {
+                                       "scss":  8,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  8
+                    },
+                    {
+                        "from":  "menu-header",
+                        "to":  "dd-menu-header",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  7,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  8
+                    },
+                    {
+                        "from":  "menu-header-text",
+                        "to":  "dd-menu-header-text",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  2,
+                                       "blade":  1,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    },
+                    {
+                        "from":  "menu-no-animation",
+                        "to":  "dd-menu-no-animation",
+                        "category":  "menu-state-js",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  6,
+                                       "blade":  0,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  8
+                    },
+                    {
+                        "from":  "menu-item-closing",
+                        "to":  "dd-menu-item-closing",
+                        "category":  "menu-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  5,
+                                       "blade":  0,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  7
+                    },
+                    {
+                        "from":  "menu-item-animating",
+                        "to":  "dd-menu-item-animating",
+                        "category":  "menu-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  0,
+                                       "js":  4,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  5
+                    },
+                    {
+                        "from":  "menu-horizontal-prev",
+                        "to":  "dd-menu-horizontal-prev",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  0,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  6
+                    },
+                    {
+                        "from":  "menu-horizontal-next",
+                        "to":  "dd-menu-horizontal-next",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  0,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  6
+                    },
+                    {
+                        "from":  "menu-horizontal-wrapper",
+                        "to":  "dd-menu-horizontal-wrapper",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  2,
+                                       "blade":  0,
+                                       "js":  3,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  5
+                    },
+                    {
+                        "from":  "menu-divider",
+                        "to":  "dd-menu-divider",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss"
+                                  ],
+                        "counts":  {
+                                       "scss":  4,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  4
+                    },
+                    {
+                        "from":  "menu-collapsed",
+                        "to":  "dd-menu-collapsed",
+                        "category":  "menu-state",
+                        "scope":  [
+                                      "scss",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  3,
+                                       "blade":  0,
+                                       "js":  14,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  17
+                    },
+                    {
+                        "from":  "menu-mobile-toggler",
+                        "to":  "dd-menu-mobile-toggler",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  0,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  1
+                    },
+                    {
+                        "from":  "menu-text",
+                        "to":  "dd-menu-text",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  3,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  4
+                    },
+                    {
+                        "from":  "menu-inner-shadow",
+                        "to":  "dd-menu-inner-shadow",
+                        "category":  "menu",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  1,
+                                       "js":  1,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    },
+                    {
+                        "from":  "content-wrapper",
+                        "to":  "dd-content-wrapper",
+                        "category":  "content",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  6,
+                                       "blade":  2,
+                                       "js":  5,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  13
+                    },
+                    {
+                        "from":  "content-footer",
+                        "to":  "dd-content-footer",
+                        "category":  "content",
+                        "scope":  [
+                                      "scss",
+                                      "blade",
+                                      "js"
+                                  ],
+                        "counts":  {
+                                       "scss":  16,
+                                       "blade":  1,
+                                       "js":  2,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  19
+                    },
+                    {
+                        "from":  "content-backdrop",
+                        "to":  "dd-content-backdrop",
+                        "category":  "content",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  2,
+                                       "blade":  2,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  4
+                    },
+                    {
+                        "from":  "bg-menu-theme",
+                        "to":  "dd-bg-menu-theme",
+                        "category":  "bg-theme",
+                        "scope":  [
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  0,
+                                       "blade":  2,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  2
+                    },
+                    {
+                        "from":  "bg-navbar-theme",
+                        "to":  "dd-bg-navbar-theme",
+                        "category":  "bg-theme",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  2,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    },
+                    {
+                        "from":  "bg-footer-theme",
+                        "to":  "dd-bg-footer-theme",
+                        "category":  "bg-theme",
+                        "scope":  [
+                                      "scss",
+                                      "blade"
+                                  ],
+                        "counts":  {
+                                       "scss":  1,
+                                       "blade":  2,
+                                       "js":  0,
+                                       "php":  0,
+                                       "json":  0
+                                   },
+                        "occurrences_total":  3
+                    }
+                ],
+    "excluded_from_scope":  [
+                                {
+                                    "class":  "menu-content",
+                                    "reason":  "0 occurrences across entire codebase. Listed in original brief and Q12 mapping table but absent from installed Sneat Pro Laravel 12 v4.0.0. See ANALYZE Q16."
+                                },
+                                {
+                                    "class":  "text-menu-icon",
+                                    "reason":  "0 occurrences across entire codebase. Listed in original brief and Q12 mapping table but absent from installed Sneat Pro Laravel 12 v4.0.0. See ANALYZE Q16."
+                                }
+                            ],
+    "convention_notes":  [
+                             "Q14 — All renames use prepend dd- prefix for namespace consistency, traceability via git grep, and trivial reversibility",
+                             "Q15 — IDs sharing names with classes (id='layout-menu', id='layout-navbar') renamed alongside classes for full DOM namespace consistency",
+                             "Q16 — menu-content and text-menu-icon definitively removed from S7 scope (0 occurrences in entire codebase)",
+                             "Q17/Q18 — Comments referencing technical class/ID names are renamed for documentation consistency. Blade {{-- --}} comments are NOT touched (server-stripped, invisible in prod)",
+                             "Q19 — Audit scope for any future HTML class rename must extend to JSON config, PHP returning HTML fragments, JS injecting HTML via templating - lesson from L4/L5 visual bug"
+                         ],
+    "data_attributes_excluded":  "Per Q12, all data-* attributes (data-template, data-bs-theme, data-skin, etc.) are HORS scope S7 - they are Sneat-JS internal conventions, not CSS classes.",
+    "vendor_libs_excluded":  "Third-party libraries under resources/assets/vendor/libs/ are excluded by design (Bootstrap, jQuery, Swiper, Apex, etc.). Bootstrap classes and icon classes (ti ti-*, bx bx-*) are NOT in the dd- namespace.",
+    "reversibility":  {
+                          "rule":  "Q14 prepend convention enables trivial reversal",
+                          "revert_pattern":  "\\bdd-(CLASS_NAME)\\b",
+                          "revert_replacement_hint":  "Strip the dd- prefix to restore Sneat names. Useful in case of vendor template upgrade requiring re-application of this rename.",
+                          "note":  "git grep '\\bdd-' lists the entire Dream Digital namespace introduced by S7"
+                      }
+}

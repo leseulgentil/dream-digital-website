@@ -13,6 +13,10 @@
 /database/*.sqlite
 /database/*.sqlite-journal
 
+# Brand assets staging area — temporarily ignored, will be reorganized to
+# public/img/brand/originals/ in S5 (see ANALYZE_DESANONYMIZATION.md)
+/LOGO DREAM DIGITAL OR/
+
 .env
 .env.*
 !.env.example

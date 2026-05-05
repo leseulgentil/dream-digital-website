@@ -2,75 +2,75 @@
   "menu": [
     {
       "name": "Dashboards",
-      "icon": "menu-icon icon-base bx bx-home-smile",
+      "icon": "dd-menu-icon icon-base bx bx-home-smile",
       "slug": "dashboard",
       "submenu": [
         {
           "url": "/",
           "name": "Analytics",
-          "icon": "menu-icon icon-base bx bx-pie-chart-alt-2",
+          "icon": "dd-menu-icon icon-base bx bx-pie-chart-alt-2",
           "slug": "dashboard-analytics"
         },
         {
           "url": "dashboard/crm",
           "name": "CRM",
-          "icon": "menu-icon icon-base bx bx-shape-circle",
+          "icon": "dd-menu-icon icon-base bx bx-shape-circle",
           "slug": "dashboard-crm"
         },
         {
           "url": "app/ecommerce/dashboard",
           "name": "eCommerce",
-          "icon": "menu-icon icon-base bx bx-cart-alt",
+          "icon": "dd-menu-icon icon-base bx bx-cart-alt",
           "slug": "app-ecommerce-dashboard"
         },
         {
           "url": "app/logistics/dashboard",
           "name": "Logistics",
-          "icon": "menu-icon icon-base bx bx-car",
+          "icon": "dd-menu-icon icon-base bx bx-car",
           "slug": "app-logistics-dashboard"
         },
         {
           "url": "app/academy/dashboard",
           "name": "Academy",
-          "icon": "menu-icon icon-base bx bx-book-open",
+          "icon": "dd-menu-icon icon-base bx bx-book-open",
           "slug": "app-academy-dashboard"
         }
       ]
     },
     {
       "name": "Layouts",
-      "icon": "menu-icon icon-base bx bx-layout",
+      "icon": "dd-menu-icon icon-base bx bx-layout",
       "slug": "layouts",
       "submenu": [
         {
           "url": "layouts/without-menu",
           "name": "Without menu",
-          "icon": "menu-icon icon-base bx bx-menu",
+          "icon": "dd-menu-icon icon-base bx bx-menu",
           "slug": "layouts-without-menu"
         },
         {
           "url": "layouts/vertical",
           "name": "Vertical",
-          "icon": "menu-icon icon-base bx bx-vertical-center",
+          "icon": "dd-menu-icon icon-base bx bx-vertical-center",
           "slug": "layouts-vertical",
           "target": "_blank"
         },
         {
           "url": "layouts/fluid",
           "name": "Fluid",
-          "icon": "menu-icon icon-base bx bx-fullscreen",
+          "icon": "dd-menu-icon icon-base bx bx-fullscreen",
           "slug": "layouts-fluid"
         },
         {
           "url": "layouts/container",
           "name": "Container",
-          "icon": "menu-icon icon-base bx bx-exit-fullscreen",
+          "icon": "dd-menu-icon icon-base bx bx-exit-fullscreen",
           "slug": "layouts-container"
         },
         {
           "url": "layouts/blank",
           "name": "Blank",
-          "icon": "menu-icon icon-base bx bx-square-rounded",
+          "icon": "dd-menu-icon icon-base bx bx-square-rounded",
           "slug": "layouts-blank",
           "target": "_blank"
         }
@@ -78,7 +78,7 @@
     },
     {
       "name": "Apps",
-      "icon": "menu-icon icon-base bx bx-customize",
+      "icon": "dd-menu-icon icon-base bx bx-customize",
       "slug": [
         "app",
         "laravel"
@@ -87,30 +87,30 @@
         {
           "url": "app/email",
           "name": "Email",
-          "icon": "menu-icon icon-base bx bx-envelope",
+          "icon": "dd-menu-icon icon-base bx bx-envelope",
           "slug": "app-email"
         },
         {
           "url": "app/chat",
           "name": "Chat",
-          "icon": "menu-icon icon-base bx bx-chat",
+          "icon": "dd-menu-icon icon-base bx bx-chat",
           "slug": "app-chat"
         },
         {
           "url": "app/calendar",
           "name": "Calendar",
-          "icon": "menu-icon icon-base bx bx-calendar",
+          "icon": "dd-menu-icon icon-base bx bx-calendar",
           "slug": "app-calendar"
         },
         {
           "url": "app/kanban",
           "name": "Kanban",
-          "icon": "menu-icon icon-base bx bx-grid",
+          "icon": "dd-menu-icon icon-base bx bx-grid",
           "slug": "app-kanban"
         },
         {
           "name": "eCommerce",
-          "icon": "menu-icon icon-base bx bx-cart-alt",
+          "icon": "dd-menu-icon icon-base bx bx-cart-alt",
           "slug": "app-ecommerce",
           "submenu": [
             {
@@ -242,7 +242,7 @@
         },
         {
           "name": "Academy",
-          "icon": "menu-icon icon-base bx bx-book-open",
+          "icon": "dd-menu-icon icon-base bx bx-book-open",
           "slug": "app-academy",
           "submenu": [
             {
@@ -264,7 +264,7 @@
         },
         {
           "name": "Logistics",
-          "icon": "menu-icon icon-base bx bx-car",
+          "icon": "dd-menu-icon icon-base bx bx-car",
           "slug": "app-logistics",
           "submenu": [
             {
@@ -282,7 +282,7 @@
         {
           "name": "Invoice",
           "slug": "app-invoice",
-          "icon": "menu-icon icon-base bx bx-food-menu",
+          "icon": "dd-menu-icon icon-base bx bx-food-menu",
           "submenu": [
             {
               "url": "app/invoice/list",
@@ -309,7 +309,7 @@
         {
           "name": "Users",
           "slug": "app-user",
-          "icon": "menu-icon icon-base bx bx-user",
+          "icon": "dd-menu-icon icon-base bx bx-user",
           "submenu": [
             {
               "url": "app/user/list",
@@ -352,7 +352,7 @@
         {
           "name": "Roles & Permissions",
           "slug": "app-access",
-          "icon": "menu-icon icon-base bx bx-check-shield",
+          "icon": "dd-menu-icon icon-base bx bx-check-shield",
           "submenu": [
             {
               "url": "app/access-roles",
@@ -369,7 +369,7 @@
         {
           "name": "Laravel Example",
           "slug": "laravel-example",
-          "icon": "menu-icon icon-base bx bxl-php",
+          "icon": "dd-menu-icon icon-base bx bxl-php",
           "submenu": [
             {
               "url": "laravel/user-management",
@@ -382,7 +382,7 @@
     },
     {
       "name": "Pages",
-      "icon": "menu-icon icon-base bx bx-collection",
+      "icon": "dd-menu-icon icon-base bx bx-collection",
       "slug": [
         "pages",
         "auth",
@@ -392,7 +392,7 @@
       "submenu": [
         {
           "name": "Front Pages",
-          "icon": "menu-icon icon-base bx bx-store",
+          "icon": "dd-menu-icon icon-base bx bx-store",
           "slug": "front-pages",
           "submenu": [
             {
@@ -430,7 +430,7 @@
         {
           "name": "User Profile",
           "slug": "pages-profile",
-          "icon": "menu-icon icon-base bx bx-user-circle",
+          "icon": "dd-menu-icon icon-base bx bx-user-circle",
           "submenu": [
             {
               "url": "pages/profile-user",
@@ -457,7 +457,7 @@
         {
           "name": "Account Settings",
           "slug": "pages-account-settings",
-          "icon": "menu-icon icon-base bx bx-cog",
+          "icon": "dd-menu-icon icon-base bx bx-cog",
           "submenu": [
             {
               "url": "pages/account-settings-account",
@@ -489,19 +489,19 @@
         {
           "url": "pages/faq",
           "name": "FAQ",
-          "icon": "menu-icon icon-base bx bx-help-circle",
+          "icon": "dd-menu-icon icon-base bx bx-help-circle",
           "slug": "pages-faq"
         },
         {
           "url": "pages/pricing",
           "name": "Pricing",
-          "icon": "menu-icon icon-base bx bx-diamond",
+          "icon": "dd-menu-icon icon-base bx bx-diamond",
           "slug": "pages-pricing"
         },
         {
           "name": "Misc",
           "slug": "pages-misc",
-          "icon": "menu-icon icon-base bx bx-shape-circle",
+          "icon": "dd-menu-icon icon-base bx bx-shape-circle",
           "submenu": [
             {
               "url": "pages/misc-error",
@@ -532,7 +532,7 @@
         {
           "name": "Authentications",
           "slug": "auth",
-          "icon": "menu-icon icon-base bx bx-lock-open-alt",
+          "icon": "dd-menu-icon icon-base bx bx-lock-open-alt",
           "submenu": [
             {
               "name": "Login",
@@ -653,7 +653,7 @@
         {
           "name": "Wizard Examples",
           "slug": "wizard-ex",
-          "icon": "menu-icon icon-base bx bx-spreadsheet",
+          "icon": "dd-menu-icon icon-base bx bx-spreadsheet",
           "submenu": [
             {
               "url": "wizard/ex-checkout",
@@ -675,14 +675,14 @@
         {
           "url": "modal-examples",
           "name": "Modal Examples",
-          "icon": "menu-icon icon-base bx bx-window-open",
+          "icon": "dd-menu-icon icon-base bx bx-window-open",
           "slug": "modal-examples"
         }
       ]
     },
     {
       "name": "Components",
-      "icon": "menu-icon icon-base bx bx-code-block",
+      "icon": "dd-menu-icon icon-base bx bx-code-block",
       "slug": [
         "cards",
         "ui",
@@ -693,7 +693,7 @@
         {
           "name": "Cards",
           "slug": "cards",
-          "icon": "menu-icon icon-base bx bx-collection",
+          "icon": "dd-menu-icon icon-base bx bx-collection",
           "submenu": [
             {
               "url": "cards/basic",
@@ -730,7 +730,7 @@
         {
           "name": "User interface",
           "slug": "ui",
-          "icon": "menu-icon icon-base bx bx-box",
+          "icon": "dd-menu-icon icon-base bx bx-box",
           "submenu": [
             {
               "url": "ui/accordion",
@@ -832,7 +832,7 @@
         {
           "name": "Extended UI",
           "slug": "extended",
-          "icon": "menu-icon icon-base bx bx-copy",
+          "icon": "dd-menu-icon icon-base bx bx-copy",
           "submenu": [
             {
               "url": "extended/ui-avatar",
@@ -910,7 +910,7 @@
         {
           "name": "Icons",
           "slug": "icons",
-          "icon": "menu-icon icon-base bx bx-crown",
+          "icon": "dd-menu-icon icon-base bx bx-crown",
           "submenu": [
             {
               "url": "icons/boxicons",
@@ -928,7 +928,7 @@
     },
     {
       "name": "Forms",
-      "icon": "menu-icon icon-base bx bx-book-content",
+      "icon": "dd-menu-icon icon-base bx bx-book-content",
       "slug": [
         "forms",
         "form-layouts",
@@ -939,7 +939,7 @@
         {
           "name": "Form Elements",
           "slug": "forms",
-          "icon": "menu-icon icon-base bx bx-detail",
+          "icon": "dd-menu-icon icon-base bx bx-detail",
           "submenu": [
             {
               "url": "forms/basic-inputs",
@@ -996,7 +996,7 @@
         {
           "name": "Form Layouts",
           "slug": "form-layouts",
-          "icon": "menu-icon icon-base bx bx-detail",
+          "icon": "dd-menu-icon icon-base bx bx-detail",
           "submenu": [
             {
               "url": "form/layouts-vertical",
@@ -1018,7 +1018,7 @@
         {
           "name": "Form Wizard",
           "slug": "form-wizard",
-          "icon": "menu-icon icon-base bx bx-carousel",
+          "icon": "dd-menu-icon icon-base bx bx-carousel",
           "submenu": [
             {
               "url": "form/wizard-numbered",
@@ -1035,14 +1035,14 @@
         {
           "url": "form/validation",
           "name": "Form Validation",
-          "icon": "menu-icon icon-base bx bx-list-check",
+          "icon": "dd-menu-icon icon-base bx bx-list-check",
           "slug": "form-validation"
         }
       ]
     },
     {
       "name": "Tables",
-      "icon": "menu-icon icon-base bx bx-grid-alt",
+      "icon": "dd-menu-icon icon-base bx bx-grid-alt",
       "slug": [
         "tables",
         "tables-datatables"
@@ -1051,13 +1051,13 @@
         {
           "url": "tables/basic",
           "name": "Tables",
-          "icon": "menu-icon icon-base bx bx-table",
+          "icon": "dd-menu-icon icon-base bx bx-table",
           "slug": "tables-basic"
         },
         {
           "name": "Datatables",
           "slug": "tables-datatables",
-          "icon": "menu-icon icon-base bx bx-grid",
+          "icon": "dd-menu-icon icon-base bx bx-grid",
           "submenu": [
             {
               "url": "tables/datatables-basic",
@@ -1080,7 +1080,7 @@
     },
     {
       "name": "Charts",
-      "icon": "menu-icon icon-base bx bx-bar-chart-square",
+      "icon": "dd-menu-icon icon-base bx bx-bar-chart-square",
       "slug": [
         "charts",
         "maps"
@@ -1089,7 +1089,7 @@
         {
           "name": "Charts",
           "slug": "charts",
-          "icon": "menu-icon icon-base bx bx-chart",
+          "icon": "dd-menu-icon icon-base bx bx-chart",
           "submenu": [
             {
               "url": "charts/apex",
@@ -1106,14 +1106,14 @@
         {
           "url": "maps/leaflet",
           "name": "Leaflet Maps",
-          "icon": "menu-icon icon-base bx bx-map-alt",
+          "icon": "dd-menu-icon icon-base bx bx-map-alt",
           "slug": "maps-leaflet"
         }
       ]
     },
     {
       "name": "Multi Level",
-      "icon": "menu-icon icon-base bx bx-grid",
+      "icon": "dd-menu-icon icon-base bx bx-grid",
       "slug": "multi-level",
       "submenu": [
         {

@@ -453,3 +453,65 @@ Le commentaire JS référençant explicitement une classe technique (`layout-men
 ### Application future
 
 Les lots restants (L4 Helpers.php, L5 menu JSON, L6 rename-map) suivront cette règle Q18 si un commentaire technique est rencontré.
+
+---
+
+## C-novies. Q19 — Règle d'audit étendue pour les renames de classes HTML
+
+**Validé 2026-05-05** : suite au bug visuel détecté à la jonction L4/L5 du sprint S7 (icônes du menu en mode sidebar collapsée devenant invisibles/minuscules), la règle d'audit pour tout rename de classes CSS/HTML est étendue.
+
+### Le gap exposé
+
+Mon audit L2 (Blade) couvrait uniquement les fichiers `*.blade.php`. Or, dans le pattern Sneat (et de nombreux autres frameworks), des fragments de classes HTML peuvent être stockés dans des sources non-immédiates et **interpolés au render** via `{{ $variable }}`. Exemple concret rencontré :
+
+- `resources/menu/verticalMenu.json` contenait `"icon": "menu-icon icon-base bx bx-home-smile"`
+- `resources/views/layouts/sections/menu/verticalMenu.blade.php:67` faisait `<i class="{{ $menu->icon }}">`
+- Conséquence : la classe `menu-icon` était émise dans le HTML rendu **sans jamais apparaître dans une source `.blade.php`**
+
+L1 a renommé `.menu-icon` → `.dd-menu-icon` côté SCSS, L2 n'a pas touché aux JSON → règle CSS orpheline → bug visuel post-L4. L5 corrige en renommant les 84 occurrences `menu-icon` dans les 2 JSON.
+
+### Règle Q19 codifiée
+
+Tout audit de rename de classes CSS/HTML **doit étendre son scope au-delà** des fichiers `.blade.php` et `.html` directs, pour inclure :
+
+- **Fichiers config JSON** sous `resources/menu/`, `resources/config/`, ou similaire
+- **Fichiers PHP qui retournent des fragments HTML** (helpers, view composers, services qui construisent des chaînes `class="..."`)
+- **Fichiers JS qui injectent du HTML via templating** (Vue/React/Alpine si présents, ou simple `innerHTML = '...'`)
+- **Tout fichier source** qui peut être interpolé via Blade `{{ $variable }}`, `@include`, ou `@component`
+
+### Justification
+
+Les classes CSS peuvent être stockées comme strings dans des sources non-immédiates et interpolées au render. Manquer ces sources crée un **écart silencieux** entre le HTML rendu et le CSS compilé : le rename SCSS/Blade semble propre, mais le runtime émet une classe orpheline qui n'a plus de règle CSS associée. Le symptôme est typiquement un bug visuel ciblé (taille, couleur, position d'un sous-élément) qui passe inaperçu lors des tests fonctionnels mais saute aux yeux à l'inspection.
+
+### Application rétroactive
+
+- Pas de correction nécessaire pour S7 : **L5 corrige déjà** (commit `452bf8e`)
+- Documentation pour les futurs sprints
+
+### Sprints concernés
+
+Tout futur sprint qui touche à la nomenclature de classes (S7-like), notamment :
+
+- **Sprint 1.5 redesign** (à venir, post-désanonymisation)
+- **Sprint 1 fondations multi-pays + i18n** (peut introduire des fragments de classes dans des résources i18n JSON)
+- **Sprint 2** (positionnement futur, scope à définir)
+
+### Procédure d'audit Q19-conforme
+
+Avant tout rename HTML, exécuter :
+
+```powershell
+# 1. Sources Blade/HTML directes
+git grep -nE 'TARGET-PATTERN' -- '*.blade.php' '*.html'
+
+# 2. Sources JSON config pouvant être interpolées
+git grep -nE 'TARGET-PATTERN' -- '*.json' ':(exclude)package*.json' ':(exclude)composer*.json'
+
+# 3. Sources PHP émettant du HTML
+git grep -nE 'TARGET-PATTERN' -- '*.php' ':(exclude)vendor/**'
+
+# 4. Sources JS injectant du HTML
+git grep -nE 'TARGET-PATTERN' -- '*.js' ':(exclude)vendor/**' ':(exclude)*.min.js'
+```
+
+Et croiser avec les patterns d'interpolation Blade : `git grep '@include' '*.blade.php'`, `git grep '{{ \$' '*.blade.php'`, `git grep '@component' '*.blade.php'`.

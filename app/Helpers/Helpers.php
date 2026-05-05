@@ -187,33 +187,33 @@ class Helpers
 
     // sidebar Collapsed
     if ($layoutClasses['menuCollapsed'] === 'true' || $layoutClasses['menuCollapsed'] === true) {
-      $layoutClasses['menuCollapsed'] = 'layout-menu-collapsed';
+      $layoutClasses['menuCollapsed'] = 'dd-layout-menu-collapsed';
     } else {
       $layoutClasses['menuCollapsed'] = '';
     }
 
     // Header Type
     if ($layoutClasses['headerType'] == 'fixed') {
-      $layoutClasses['headerType'] = 'layout-menu-fixed';
+      $layoutClasses['headerType'] = 'dd-layout-menu-fixed';
     }
     // Navbar Type
     if ($layoutClasses['navbarType'] == 'sticky') {
-      $layoutClasses['navbarType'] = 'layout-navbar-fixed';
+      $layoutClasses['navbarType'] = 'dd-layout-navbar-fixed';
     } elseif ($layoutClasses['navbarType'] == 'static') {
       $layoutClasses['navbarType'] = '';
     } else {
-      $layoutClasses['navbarType'] = 'layout-navbar-hidden';
+      $layoutClasses['navbarType'] = 'dd-layout-navbar-hidden';
     }
 
     // Menu Fixed
     if ($layoutClasses['menuFixed'] == true) {
-      $layoutClasses['menuFixed'] = 'layout-menu-fixed';
+      $layoutClasses['menuFixed'] = 'dd-layout-menu-fixed';
     }
 
 
     // Footer Fixed
     if ($layoutClasses['footerFixed'] == true) {
-      $layoutClasses['footerFixed'] = 'layout-footer-fixed';
+      $layoutClasses['footerFixed'] = 'dd-layout-footer-fixed';
     }
 
     // RTL Layout/Mode

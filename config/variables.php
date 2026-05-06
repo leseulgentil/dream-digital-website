@@ -4,7 +4,7 @@
 // Source of truth : BRAND_KIT_DREAM_DIGITAL.md v1.2 (project root)
 //
 // Note : keys kept exhaustively (even when empty) to preserve compatibility with
-// the Blade templates inherited from Sneat that reference config('variables.*').
+// the Blade templates inherited from the source template that reference config('variables.*').
 
 return [
     // Brand identity
@@ -23,7 +23,7 @@ return [
     "productPage"         => "https://dream-digital.info",
     "support"             => "https://dream-digital.info",
 
-    // Marketing back-links (legacy Sneat keys, kept empty for Blade compatibility)
+    // Marketing back-links (legacy template keys, kept empty for Blade compatibility)
     "adminTemplates"      => "",
     "bootstrapDashboard"  => "",
 

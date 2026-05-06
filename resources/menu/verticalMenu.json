@@ -1098,14 +1098,14 @@
       ]
     },
     {
-      "url": "https://themeselection.com/support/",
+      "url": "#",
       "icon": "dd-menu-icon icon-base bx bx-support",
       "name": "Support",
       "slug": "support",
       "target": "_blank"
     },
     {
-      "url": "https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/laravel-introduction.html",
+      "url": "#",
       "icon": "dd-menu-icon icon-base bx bx-file",
       "name": "Documentation",
       "slug": "documentation",

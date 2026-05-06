@@ -1,8 +1,9 @@
 # SPRINT_STATE — Sprint 0 (Désanonymisation Sneat → Dream Digital)
 
-> **Checkpoint S3 closed** — 2026-05-06
-> Branche active : `feature/desanonymization`
-> Ce fichier est la **source de vérité** pour reprendre le sprint après reboot. Lire en premier.
+> **🏁 SPRINT 0 OFFICIELLEMENT CLOS** — 2026-05-06
+> Branche active : `feature/desanonymization` — prête à merger vers `master`
+> 36 commits · 127 fichiers modifiés · +30249 / −5144 lignes · 8 jurisprudences (Q14-Q21)
+> Identité Dream Digital complète : palette teal Petrol + typographie Inter + logos officiels + dark mode
 
 ---
 
@@ -19,8 +20,8 @@
 | **S8** | ✅ **Done** | Vite production config : `target: 'es2020'`, `minify: 'esbuild'`, `sourcemap: false`, `chunkSizeWarningLimit: 1500`, `rollupOptions.output` hashes explicites. Bonus : `npm run preview` script + iconify gitignore. Build verified : 872 assets, 17.1 MB total, 873 manifest entries, 0 sourcemap. | `ecc1482` |
 | **S9** | ✅ **Done** | Cleanup résidus textuels Sneat/ThemeSelection + suppression dead code `templateCustomizer` (38 refs / 4 JS) + réinjection dark mode switcher Q13 (Light/Dark/System, localStorage `dd-theme`, anti-FOUC inline, purge legacy keys) + fix wiring `@vite()` post-validation PO + Q20 documenté | C1=`ee173a3` C2=`9c67dd0` C3=`e26ddbb` fix=`921e249` docs=`05f0138` |
 | **S3** | ✅ **Done** | Palette teal Petrol `#335F5F` (override Bootstrap via point d'injection Sneat-natif `_custom-variables/_bootstrap-extended.scss`) + Inter (300-800) + JetBrains Mono (400-600) Google Fonts dans `commonMaster` `<head>` + Q21 SCSS override architecture documenté. Preuve runtime : `--bs-primary: #335F5F` confirmé via DevTools Computed Styles. | fix=`6813439` docs=`d419f33` |
-| **S5** | ⚪ Todo | Logos PNG officiels (copie depuis `LOGO DREAM DIGITAL OR/` vers `public/img/brand/`) + favicon | — |
-| **S10** | ⚪ Todo | Validation finale (build + parcours navigateur) | — |
+| **S5** | ✅ **Done** | Logos officiels Dream Digital intégrés (Phase 1 SVG inline, Pattern A.1) : SVG icon `logo-dd-icon.svg` (1.4 KB, 5 paths vectoriels purs, viewBox 1247×1370, couleurs teal `#336666` + blancs `#FEFEFE` calibrées sur Brand Kit) inliné dans `_partials/macros.blade.php` → 22 emplacements impactés automatiquement. Favicon SVG primary + PNG fallback. 6 logos travail dans `public/img/brand/` (icon, full, horizontal, vertical, wordmark — SVG + PNG). 18 originaux préservés en local dans `public/img/brand/originals/` (gitignored). Brand-text span Inter conservé (cohérence S3 typo). | `f818f03` |
+| **S10** | ✅ **Done** | Validation finale : audit complet sprint (36 commits, working tree clean), 0 résidu textuel Sneat dans le code production, classes Sneat 100% préfixées `dd-` dans le scope production (sidebar admin, navbar, footer, auth, invoice), `npm run build` succeed (874 entries manifest, 19 MB assets, 873 fichiers compilés), validation visuelle PO confirmée S3+S5+S9. Reste hors scope production (à traiter Sprint 1.5) : pages `/layouts-example/*` + `/front-pages/landing` contiennent du contenu marketing Sneat et un script `ui-app-brand.js` ciblant des `#layout-menu1/2/3/4` de démonstration — pas critique car non utilisé en production. | `<commit>` |
 
 ### S7 — Synthèse (close 2026-05-05)
 
@@ -39,6 +40,65 @@
 Détail exhaustif par classe : voir `_class-rename-map.json` à la racine.
 
 **Note** : objectif 6 du brief original (suppression demos demo-2 à demo-5) est **N/A** — la version Laravel n'a qu'une seule démo, pas de S4 dans le plan v1.2.
+
+### 🏁 Synthèse de clôture Sprint 0 (2026-05-06)
+
+**Sous-tâches accomplies** (10/10 dont 1 N/A) :
+1. ✅ **Pré-S0** — Sécurité : purge `.env` historique + rotation `APP_KEY` + exclusion SQLite + SECURITY.md
+2. ✅ **S0** — Scaffold `_template-license/` pour préservation licence vendor Sneat
+3. ✅ **S1** — Rebrand identité technique (composer, package, .env.example, variables.php, README, BRANDING.md)
+4. ✅ **S2** — Template Customizer désactivé via flags config
+5. ⊘ **S4** — N/A (single demo Laravel build, voir Q8)
+6. ✅ **S6** — Template Customizer supprimé physiquement (54 fichiers)
+7. ✅ **S7** — Renommage Sneat → `dd-*` (1068 occurrences sur 62 fichiers, 66 classes uniques, 6 lots atomiques)
+8. ✅ **S8** — Vite configuration production (target es2020, minify esbuild, hashes explicites)
+9. ✅ **S9** — Cleanup résidus textuels + dead code `templateCustomizer` + dark mode switcher Q13 (Light/Dark/System) + fix wiring `@vite()` + Q20 méthodologie
+10. ✅ **S3** — Design tokens Dream Digital (palette teal Petrol + Inter/JetBrains Mono) + Q21 SCSS override architecture
+11. ✅ **S5** — Logos officiels Dream Digital (SVG inline Pattern A.1, favicon SVG+PNG)
+12. ✅ **S10** — Validation finale + clôture sprint
+
+**Jurisprudences méthodologiques (Q14-Q21)** :
+
+| ID | Sujet | Pattern d'erreur protégé |
+|---|---|---|
+| Q14 | Convention rename `dd-<classe>` (Option A prepend) | Drift inconsistant entre fichiers |
+| Q15 | IDs partagés HTML/JS/CSS synchronisés en S7 | Casse silencieuse JS sélecteurs |
+| Q16 | 2 classes brief absentes du Sneat installé | Scope inflation sans valeur |
+| Q17 | Renommage commentaires JS contenant références techniques | Drift code/commentaire |
+| Q18 | Règle générale commentaires (HTML rename, Blade non, JS technique oui) | Décisions ad-hoc commentaires |
+| Q19 | Audit étendu sources interpolées (JSON config, PHP fragments HTML, JS templating) | **Classes orphelines** (CSS sans HTML rendant la classe) |
+| Q20 | Validation runtime navigateur des modules JS (Network 200 + Storage + Console + Comportement) | **Modules orphelins** (JS compilé sans HTML chargeant le module) |
+| Q21 | Architecture overrides SCSS Sneat (3 fichiers homonymes, point d'injection canonical) | **Variables orphelines** (override SCSS sans effet sur Bootstrap) |
+
+**Documentation produite** :
+
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `BRAND_KIT_DREAM_DIGITAL.md` v1.2 | Source de vérité visuelle (15 sections) | ~1500 |
+| `ANALYZE_DESANONYMIZATION.md` | Jurisprudence Q1-Q21 | ~720 |
+| `_class-rename-map.json` | 1068 renames S7 documentés | — |
+| `_dream-digital-tokens.scss` (racine + copie `_custom-variables/`) | Design tokens SCSS | 282 |
+| `BRANDING.md` | Cheatsheet dev pointant vers BRAND_KIT | court |
+| `SECURITY.md` | Procédure secrets + incident | court |
+| `README.md` | Présentation projet, stack, setup | court |
+
+**Statistiques finales** :
+- Commits : **36** (initial Sneat exclus)
+- Fichiers modifiés/créés : **127**
+- Insertions : **+30 249** lignes
+- Suppressions : **−5 144** lignes
+- Build production : **874 entrées manifest**, **19 MB d'assets**, **873 fichiers compilés**
+
+**Limites connues — scope Sprint 1.5** :
+- Pages `/layouts-example/*` (8 vues de démonstration des layouts Sneat) contiennent encore des images PNG `layouts/layout-*.png` et des classes non préfixées dans le script `ui-app-brand.js` ciblant `#layout-menu1/2/3/4` de démo
+- Page `/front-pages/landing` contient du contenu marketing Sneat (gradient violet hero, mockup PNG dashboard Sneat, copy "Production-ready Admin Template")
+- Page `/apps/ecommerce-referrals` contient un placeholder `pixinvent.com/?ref=6479`
+- Démo `extended-ui-sweetalert2.js` contient un lien `pixinvent.com`
+- → Tous ces résidus sont du **contenu marketing/démo**, pas des classes/variables de production. Refactor planifié en Sprint 1.5 (redesign vitrine ITSP avec contenu Dream Digital authentique).
+
+**État de la branche** : `feature/desanonymization` prête à merger vers `master`. Aucun blocker fonctionnel détecté. Validation visuelle PO confirmée sur dashboard back-office (Email app), sidebar, navbar, login, mode dark.
+
+**Prochaine étape** : **Sprint 1.5** — redesign vitrine ITSP avec contenu Dream Digital authentique (landing page, 6 product pages Voice/SMS/eSIM/+, about, contact). Décision stratégique de mise en ligne en cours côté PO (Scenario B planifié : landing temporaire → site complet).
 
 ---
 

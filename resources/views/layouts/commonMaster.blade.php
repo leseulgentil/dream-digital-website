@@ -44,6 +44,20 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
+  {{-- Anti-FOUC: apply user theme preference (Q13) before any CSS loads --}}
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('dd-theme');
+        if (stored !== 'light' && stored !== 'dark' && stored !== 'system') stored = 'system';
+        var resolved = stored === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : stored;
+        document.documentElement.setAttribute('data-bs-theme', resolved);
+      } catch (e) { /* localStorage may be disabled — fall back to server-rendered data-bs-theme */ }
+    })();
+  </script>
+
   <title>
     @yield('title') | {{ config('variables.templateName') ? config('variables.templateName') : 'TemplateName' }}
     - {{ config('variables.templateSuffix') ? config('variables.templateSuffix') : 'TemplateSuffix' }}

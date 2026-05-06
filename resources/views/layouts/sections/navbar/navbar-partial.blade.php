@@ -89,6 +89,31 @@ use Illuminate\Support\Facades\Route;
     </li>
     <!--/ Language -->
 
+    <!-- Theme switcher (Q13: Light/Dark/System) -->
+    <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
+      <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" aria-label="Theme">
+        <i class="icon-base bx bx-sun icon-md theme-icon-active"></i>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
+        <li>
+          <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
+            <span class="align-middle"><i class="icon-base bx bx-sun icon-md me-3"></i>Light</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
+            <span class="align-middle"><i class="icon-base bx bx-moon icon-md me-3"></i>Dark</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
+            <span class="align-middle"><i class="icon-base bx bx-desktop icon-md me-3"></i>System</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!--/ Theme switcher -->
+
     <!-- Quick links  -->
     <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
       <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"

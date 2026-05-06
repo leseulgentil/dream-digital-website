@@ -13,9 +13,10 @@
 /database/*.sqlite
 /database/*.sqlite-journal
 
-# Brand assets staging area — temporarily ignored, will be reorganized to
-# public/img/brand/originals/ in S5 (see ANALYZE_DESANONYMIZATION.md)
-/LOGO DREAM DIGITAL OR/
+# Brand asset originals — preserved locally as reference (3.7 MB of PNG/SVG/JPG
+# sources reorganized from /LOGO DREAM DIGITAL OR/ in S5). Working copies in
+# public/img/brand/*.{svg,png} are tracked; originals/ is local-only.
+/public/img/brand/originals/
 
 .env
 .env.*

@@ -84,8 +84,9 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <!-- Canonical SEO -->
   <link rel="canonical" href="{{ config('variables.productPage') ? config('variables.productPage') : '' }}" />
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+  <!-- Favicon — Dream Digital (Brand Kit v1.2, S5) -->
+  <link rel="icon" type="image/svg+xml" href="{{ asset('img/brand/logo-dd-icon.svg') }}" />
+  <link rel="alternate icon" type="image/png" href="{{ asset('img/brand/logo-dd-icon.png') }}" />
 
   <!-- Include Styles -->
   <!-- $isFront is used to append the front layout styles only on the front layout otherwise the variable will be blank -->

@@ -6,6 +6,9 @@
 <!-- BEGIN: Theme JS-->
 @vite(['resources/assets/js/front-main.js'])
 <!-- END: Theme JS-->
+<!-- BEGIN: Theme Switcher (Q13) -->
+@vite(['resources/assets/js/dd-theme-switcher.js'])
+<!-- END: Theme Switcher -->
 <!-- Pricing Modal JS-->
 @stack('pricing-script')
 <!-- END: Pricing Modal JS-->

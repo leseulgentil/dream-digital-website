@@ -10,8 +10,8 @@ let menu,
   animate,
   isHorizontalLayout = false;
 
-if (document.getElementById('layout-menu')) {
-  isHorizontalLayout = document.getElementById('layout-menu').classList.contains('menu-horizontal');
+if (document.getElementById('dd-layout-menu')) {
+  isHorizontalLayout = document.getElementById('dd-layout-menu').classList.contains('dd-menu-horizontal');
 }
 document.addEventListener('DOMContentLoaded', function () {
   // class for ios specific styles
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 (function () {
   // Window scroll function for navbar
   function onScroll() {
-    var layoutPage = document.querySelector('.layout-page');
+    var layoutPage = document.querySelector('.dd-layout-page');
     if (layoutPage) {
       if (window.scrollY > 0) {
         layoutPage.classList.add('window-scrolled');
@@ -68,17 +68,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // Initialize menu
   //-----------------
 
-  let layoutMenuEl = document.querySelectorAll('#layout-menu');
+  let layoutMenuEl = document.querySelectorAll('#dd-layout-menu');
   layoutMenuEl.forEach(function (element) {
     menu = new Menu(element, {
       orientation: isHorizontalLayout ? 'horizontal' : 'vertical',
       closeChildren: isHorizontalLayout ? true : false,
-      // ? This option only works with Horizontal menu
-      showDropdownOnHover: localStorage.getItem('templateCustomizer-' + templateName + '--ShowDropdownOnHover') // If value(showDropdownOnHover) is set in local storage
-        ? localStorage.getItem('templateCustomizer-' + templateName + '--ShowDropdownOnHover') === 'true' // Use the local storage value
-        : window.templateCustomizer !== undefined // If value is set in config.js
-          ? window.templateCustomizer.settings.defaultShowDropdownOnHover // Use the config.js value
-          : true // Use this if you are not using the config.js and want to set value directly from here
+      // ? This option only works with Horizontal menu — Dream Digital default: click-only (B2B UX)
+      showDropdownOnHover: false
     });
     // Change parameter to true if you want scroll animation
     window.Helpers.scrollToActive((animate = false));
@@ -86,30 +82,17 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Initialize menu togglers and bind click on each
-  let menuToggler = document.querySelectorAll('.layout-menu-toggle');
+  let menuToggler = document.querySelectorAll('.dd-layout-menu-toggle');
   menuToggler.forEach(item => {
     item.addEventListener('click', event => {
       event.preventDefault();
       window.Helpers.toggleCollapsed();
-      // Enable menu state with local storage support if enableMenuLocalStorage = true from config.js
-      if (config.enableMenuLocalStorage && !window.Helpers.isSmallScreen()) {
-        try {
-          localStorage.setItem(
-            'templateCustomizer-' + templateName + '--LayoutCollapsed',
-            String(window.Helpers.isCollapsed())
-          );
-          // Update customizer checkbox state on click of menu toggler
-          let layoutCollapsedCustomizerOptions = document.querySelector('.template-customizer-layouts-options');
-          if (layoutCollapsedCustomizerOptions) {
-            let layoutCollapsedVal = window.Helpers.isCollapsed() ? 'collapsed' : 'expanded';
-            layoutCollapsedCustomizerOptions.querySelector(`input[value="${layoutCollapsedVal}"]`).click();
-          }
-        } catch (e) {}
-      }
+      // Menu collapsed state persistence is handled server-side via the
+      // LayoutCollapsed cookie (see app/Helpers/Helpers.php).
     });
   });
 
-  // Display menu toggle (layout-menu-toggle) on hover with delay
+  // Display menu toggle (dd-layout-menu-toggle) on hover with delay
   let delay = function (elem, callback) {
     let timeout = null;
     elem.onmouseenter = function () {
@@ -123,15 +106,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     elem.onmouseleave = function () {
       // Clear any timers set to timeout
-      document.querySelector('.layout-menu-toggle').classList.remove('d-block');
+      document.querySelector('.dd-layout-menu-toggle').classList.remove('d-block');
       clearTimeout(timeout);
     };
   };
-  if (document.getElementById('layout-menu')) {
-    delay(document.getElementById('layout-menu'), function () {
+  if (document.getElementById('dd-layout-menu')) {
+    delay(document.getElementById('dd-layout-menu'), function () {
       // not for small screen
       if (!Helpers.isSmallScreen()) {
-        document.querySelector('.layout-menu-toggle').classList.add('d-block');
+        document.querySelector('.dd-layout-menu-toggle').classList.add('d-block');
       }
     });
   }
@@ -144,13 +127,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Detect swipe gesture on the target element and call swipe Out
-  window.Helpers.swipeOut('#layout-menu', function (e) {
+  window.Helpers.swipeOut('#dd-layout-menu', function (e) {
     if (window.Helpers.isSmallScreen()) window.Helpers.setCollapsed(true);
   });
 
   // Display in main menu when menu scrolls
-  let menuInnerContainer = document.getElementsByClassName('menu-inner'),
-    menuInnerShadow = document.getElementsByClassName('menu-inner-shadow')[0];
+  let menuInnerContainer = document.getElementsByClassName('dd-menu-inner'),
+    menuInnerShadow = document.getElementsByClassName('dd-menu-inner-shadow')[0];
   if (menuInnerContainer.length > 0 && menuInnerShadow) {
     menuInnerContainer[0].addEventListener('ps-scroll-y', function () {
       if (this.querySelector('.ps__thumb-y').offsetTop) {
@@ -161,12 +144,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Get style from local storage or use 'system' as default
-  let storedStyle =
-    localStorage.getItem('templateCustomizer-' + templateName + '--Theme') || // if no template style then use Customizer style
-    (window.templateCustomizer && window.templateCustomizer.settings && window.templateCustomizer.settings.defaultStyle
-      ? window.templateCustomizer.settings.defaultStyle
-      : document.documentElement.getAttribute('data-bs-theme')); //!if there is no Customizer then use default style as light
+  // Get style from data-bs-theme attribute (set by anti-FOUC inline script reading dd-theme localStorage)
+  let storedStyle = document.documentElement.getAttribute('data-bs-theme') || 'light';
 
   // Run switchImage function based on the stored style
   window.Helpers.switchImage(storedStyle);
@@ -194,21 +173,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
       toggle.addEventListener('click', () => {
         const theme = toggle.getAttribute('data-bs-theme-value');
-        window.Helpers.setStoredTheme(templateName, theme);
+        window.Helpers.setStoredTheme(theme);
         window.Helpers.setTheme(theme);
         window.Helpers.showActiveTheme(theme, true);
-        window.Helpers.syncCustomOptions(theme);
         let currTheme = theme;
         if (theme === 'system') {
           currTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        const semiDarkL = document.querySelector('.template-customizer-semiDark');
-        if (semiDarkL) {
-          if (theme === 'dark') {
-            semiDarkL.classList.add('d-none');
-          } else {
-            semiDarkL.classList.remove('d-none');
-          }
         }
         window.Helpers.switchImage(currTheme);
       });
@@ -226,33 +196,14 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < dropdownItems.length; i++) {
       dropdownItems[i].addEventListener('click', function () {
         let textDirection = this.getAttribute('data-text-direction');
-        window.templateCustomizer.setLang(this.getAttribute('data-language'));
         directionChange(textDirection);
       });
     }
 
     function directionChange(textDirection) {
       document.documentElement.setAttribute('dir', textDirection);
-      if (textDirection === 'rtl') {
-        if (localStorage.getItem('templateCustomizer-' + templateName + '--Rtl') !== 'true')
-          if (window.templateCustomizer) window.templateCustomizer.setRtl(true);
-      } else {
-        if (localStorage.getItem('templateCustomizer-' + templateName + '--Rtl') === 'true')
-          if (window.templateCustomizer) window.templateCustomizer.setRtl(false);
-      }
     }
   }
-
-  // add on click javascript for template customizer reset button id template-customizer-reset-btn
-
-  setTimeout(function () {
-    let templateCustomizerResetBtn = document.querySelector('.template-customizer-reset-btn');
-    if (templateCustomizerResetBtn) {
-      templateCustomizerResetBtn.onclick = function () {
-        window.location.href = baseUrl + 'lang/en';
-      };
-    }
-  }, 1500);
 
   // Notification
   // ------------
@@ -345,14 +296,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         setTimeout(function () {
           if (window.innerWidth < window.Helpers.LAYOUT_BREAKPOINT) {
-            if (document.getElementById('layout-menu')) {
-              if (document.getElementById('layout-menu').classList.contains('menu-horizontal')) {
+            if (document.getElementById('dd-layout-menu')) {
+              if (document.getElementById('dd-layout-menu').classList.contains('dd-menu-horizontal')) {
                 menu.switchMenu('vertical');
               }
             }
           } else {
-            if (document.getElementById('layout-menu')) {
-              if (document.getElementById('layout-menu').classList.contains('menu-vertical')) {
+            if (document.getElementById('dd-layout-menu')) {
+              if (document.getElementById('dd-layout-menu').classList.contains('dd-menu-vertical')) {
                 menu.switchMenu('horizontal');
               }
             }
@@ -363,35 +314,9 @@ document.addEventListener('DOMContentLoaded', function () {
     true
   );
 
-  // Manage menu expanded/collapsed with templateCustomizer & local storage
-  //------------------------------------------------------------------
-
-  // If current layout is horizontal OR current window screen is small (overlay menu) than return from here
-  if (isHorizontalLayout || window.Helpers.isSmallScreen()) {
-    return;
-  }
-
-  // Auto update menu collapsed/expanded based on the themeConfig
-  if (typeof window.templateCustomizer !== 'undefined') {
-    if (window.templateCustomizer.settings.defaultMenuCollapsed) {
-      window.Helpers.setCollapsed(true, false);
-    } else {
-      window.Helpers.setCollapsed(false, false);
-    }
-  }
-
-  // Manage menu expanded/collapsed state with local storage support If enableMenuLocalStorage = true in config.js
-  if (typeof config !== 'undefined') {
-    if (config.enableMenuLocalStorage) {
-      try {
-        if (localStorage.getItem('templateCustomizer-' + templateName + '--LayoutCollapsed') !== null)
-          window.Helpers.setCollapsed(
-            localStorage.getItem('templateCustomizer-' + templateName + '--LayoutCollapsed') === 'true',
-            false
-          );
-      } catch (e) {}
-    }
-  }
+  // Menu expanded/collapsed state is now managed entirely server-side via the
+  // LayoutCollapsed cookie (see app/Helpers/Helpers.php). Client-side localStorage
+  // duplication was removed with the Template Customizer (S6).
 })();
 
 // Search Configuration
@@ -404,7 +329,7 @@ const SearchConfig = {
     form: 'd-flex align-items-center',
     input: 'search-control border-none',
     detachedCancelButton: 'btn-search-close',
-    panel: 'flex-grow content-wrapper overflow-hidden position-relative',
+    panel: 'flex-grow dd-content-wrapper overflow-hidden position-relative',
     panelLayout: 'h-100',
     clearButton: 'd-none',
     item: 'd-block'
@@ -422,7 +347,7 @@ function isMacOS() {
 
 // Load search data
 function loadSearchData() {
-  const searchJson = $('#layout-menu').hasClass('menu-horizontal') ? 'search-horizontal.json' : 'search-vertical.json';
+  const searchJson = $('#dd-layout-menu').hasClass('dd-menu-horizontal') ? 'search-horizontal.json' : 'search-vertical.json';
 
   fetch(assetsPath + 'json/' + searchJson)
     .then(response => {

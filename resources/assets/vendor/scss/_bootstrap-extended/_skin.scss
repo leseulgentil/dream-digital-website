@@ -15,7 +15,7 @@
       --tagify-dropdown-box-shadow: none;
       --tagify-dropdown-border-width: #{$border-width};
 
-      .layout-navbar.navbar-detached {
+      .dd-layout-navbar.navbar-detached {
         box-shadow: 0 0 0 1px var(--#{$prefix}border-color);
       }
 

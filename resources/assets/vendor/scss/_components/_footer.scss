@@ -24,7 +24,7 @@
     }
   }
 
-  &.content-footer .footer-container {
+  &.dd-content-footer .footer-container {
     block-size: 54px;
   }
 
@@ -39,7 +39,7 @@
       color: var(--#{$prefix}footer-link-disabled-color) !important;
     }
   }
-  &.bg-footer-theme {
+  &.dd-bg-footer-theme {
     --#{$prefix}footer-brand-color: var(--#{$prefix}body-color);
   }
   &.bg-white {

@@ -1,0 +1,8 @@
+# Local-only storage for the ThemeSelection commercial license proof of purchase
+# (PDF receipt, license key, order confirmation email, etc.).
+# Files dropped in this folder are NOT tracked by Git, but the folder itself
+# (with this .gitignore and README.md) is, so the structure is documented.
+
+*
+!.gitignore
+!README.md

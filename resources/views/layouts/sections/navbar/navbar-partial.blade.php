@@ -5,25 +5,25 @@ use Illuminate\Support\Facades\Route;
 
 <!--  Brand demo (display only for navbar-full and hide on below xl) -->
 @if (isset($navbarFull))
-<div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-6">
-  <a href="{{ url('/') }}" class="app-brand-link gap-2">
-    <span class="app-brand-logo demo">@include('_partials.macros')</span>
-    <span class="app-brand-text demo menu-text fw-bold text-heading">{{ config('variables.templateName') }}</span>
+<div class="navbar-brand dd-app-brand demo d-none d-xl-flex py-0 me-6">
+  <a href="{{ url('/') }}" class="dd-app-brand-link gap-2">
+    <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
+    <span class="dd-app-brand-text demo dd-menu-text fw-bold text-heading">{{ config('variables.templateName') }}</span>
   </a>
 
   <!-- Display menu close icon only for horizontal-menu with navbar-full -->
   @if (isset($menuHorizontal))
-  <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
+  <a href="javascript:void(0);" class="dd-layout-menu-toggle dd-menu-link text-large ms-auto d-xl-none">
     <i class="icon-base bx bx-chevron-left d-flex align-items-center justify-content-center"></i>
   </a>
   @endif
 </div>
 @endif
 
-<!-- ! Not required for layout-without-menu -->
+<!-- ! Not required for dd-layout-without-menu -->
 @if (!isset($navbarHideToggle))
 <div
-  class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0{{ isset($menuHorizontal) ? ' d-xl-none ' : '' }} {{ isset($contentNavbar) ? ' d-xl-none ' : '' }}">
+  class="dd-layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0{{ isset($menuHorizontal) ? ' d-xl-none ' : '' }} {{ isset($contentNavbar) ? ' d-xl-none ' : '' }}">
   <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
     <i class="icon-base bx bx-menu icon-md"></i>
   </a>
@@ -89,36 +89,30 @@ use Illuminate\Support\Facades\Route;
     </li>
     <!--/ Language -->
 
-    @if ($configData['hasCustomizer'] == true)
-    <!-- Style Switcher -->
-    <li class="nav-item dropdown me-2 me-xl-0">
-      <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);"
-        data-bs-toggle="dropdown">
+    <!-- Theme switcher (Q13: Light/Dark/System) -->
+    <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
+      <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" aria-label="Theme">
         <i class="icon-base bx bx-sun icon-md theme-icon-active"></i>
-        <span class="d-none ms-2" id="nav-theme-text">Toggle theme</span>
       </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-theme-text">
+      <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
         <li>
-          <button type="button" class="dropdown-item align-items-center active" data-bs-theme-value="light"
-            aria-pressed="false">
-            <span><i class="icon-base bx bx-sun icon-md me-3" data-icon="sun"></i>Light</span>
-          </button>
+          <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
+            <span class="align-middle"><i class="icon-base bx bx-sun icon-md me-3"></i>Light</span>
+          </a>
         </li>
         <li>
-          <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="dark" aria-pressed="true">
-            <span><i class="icon-base bx bx-moon icon-md me-3" data-icon="moon"></i>Dark</span>
-          </button>
+          <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
+            <span class="align-middle"><i class="icon-base bx bx-moon icon-md me-3"></i>Dark</span>
+          </a>
         </li>
         <li>
-          <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="system"
-            aria-pressed="false">
-            <span><i class="icon-base bx bx-desktop icon-md me-3" data-icon="desktop"></i>System</span>
-          </button>
+          <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
+            <span class="align-middle"><i class="icon-base bx bx-desktop icon-md me-3"></i>System</span>
+          </a>
         </li>
       </ul>
     </li>
-    <!-- / Style Switcher-->
-    @endif
+    <!--/ Theme switcher -->
 
     <!-- Quick links  -->
     <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">

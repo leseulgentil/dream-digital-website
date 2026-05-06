@@ -2,10 +2,6 @@
 
 @vite(['resources/assets/vendor/libs/jquery/jquery.js', 'resources/assets/vendor/libs/popper/popper.js', 'resources/assets/vendor/js/bootstrap.js', 'resources/assets/vendor/libs/@algolia/autocomplete-js.js'])
 
-@if ($configData['hasCustomizer'])
-    @vite('resources/assets/vendor/libs/pickr/pickr.js')
-@endif
-
 @vite(['resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js', 'resources/assets/vendor/libs/hammer/hammer.js', 'resources/assets/vendor/js/menu.js'])
 
 @yield('vendor-script')
@@ -14,6 +10,9 @@
 @vite(['resources/assets/js/main.js'])
 
 <!-- END: Theme JS-->
+<!-- BEGIN: Theme Switcher (Q13) -->
+@vite(['resources/assets/js/dd-theme-switcher.js'])
+<!-- END: Theme Switcher -->
 <!-- Pricing Modal JS-->
 @stack('pricing-script')
 <!-- END: Pricing Modal JS-->

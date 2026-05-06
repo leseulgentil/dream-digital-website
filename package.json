@@ -1,12 +1,16 @@
 {
-  "name": "Sneat",
-  "version": "4.0.0",
+  "name": "dream-digital-website",
+  "version": "0.1.0",
+  "description": "Dream Digital corporate website and client portal — programmable telecom platform (Voice, SMS, eSIM and more).",
   "private": true,
   "type": "module",
-  "license": "Commercial",
+  "license": "UNLICENSED",
+  "author": "Lukoo Mapendo Gentil <gentil@dream-digital.info>",
+  "homepage": "https://dream-digital.info",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@algolia/autocomplete-js": "1.19.2",

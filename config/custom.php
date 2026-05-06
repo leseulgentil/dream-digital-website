@@ -13,8 +13,6 @@ return [
     'mySkins' => 'default', // Skin options: 'default', 'bordered'
     'hasSemiDark' => false, // Semi-dark mode: true/false (false by default)
     'myRTLMode' => false, // Right-to-left (RTL) layout: true/false (false by default)
-    'hasCustomizer' => true, // Enable/Disable customizer: true (default) or false
-    'displayCustomizer' => true, // Display customizer UI: true (default) or false
     'contentLayout' => 'compact', // Layout size: 'compact' (container-xxl) or 'wide' (container-fluid)
     'navbarType' => 'sticky', // Navbar type: 'sticky', 'static', or 'hidden' (only for vertical layout)
     'footerFixed' => false, // Footer fixed position: true/false (false by default)
@@ -22,16 +20,5 @@ return [
     'menuCollapsed' => false, // Menu collapsed state: true/false (false by default)
     'headerType' => 'fixed', // Header type: 'static' or 'fixed' (only for horizontal layout)
     'showDropdownOnHover' => true, // Dropdown on hover for horizontal layout: true/false
-    'customizerControls' => [
-      'color', // Enable/Disable color picker in customizer
-      'theme', // Enable/Disable theme selection in customizer
-      'skins', // Enable/Disable skin options in customizer
-      'semiDark', // Enable/Disable semi-dark mode in customizer
-      'layoutCollapsed', // Enable/Disable collapsed layout in customizer
-      'layoutNavbarOptions', // Enable/Disable navbar options in customizer
-      'headerType', // Enable/Disable header type selection in customizer
-      'contentLayout', // Enable/Disable content layout options in customizer
-      'rtl' // Enable/Disable RTL layout options in customizer
-    ], // List of available customizer controls
   ],
 ];

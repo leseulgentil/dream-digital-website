@@ -36,11 +36,11 @@ $chat-list-margin: 3rem;
   --#{$prefix}chat-bg: #f7f8f8;
   position: relative;
   block-size: $chat-app-height;
-  .layout-navbar-hidden & {
+  .dd-layout-navbar-hidden & {
     block-size: $chat-app-height-with-no-navbar;
   }
   @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-    .layout-horizontal & {
+    .dd-layout-horizontal & {
       block-size: calc($chat-app-height - $chat-app-horizontal-height-diff);
     }
   }
@@ -119,11 +119,11 @@ $chat-list-margin: 3rem;
     .sidebar-header {
       block-size: 4.75rem;
     }
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       block-size: $chat-app-height-with-no-navbar;
     }
     @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc($chat-app-height - $chat-app-horizontal-height-diff);
       }
     }
@@ -138,11 +138,11 @@ $chat-list-margin: 3rem;
 
     .sidebar-body {
       block-size: calc(#{$chat-app-height} - 4.7rem);
-      .layout-navbar-hidden & {
+      .dd-layout-navbar-hidden & {
         block-size: calc(#{$chat-app-height-with-no-navbar} - 4.7rem);
       }
       @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-        .layout-horizontal & {
+        .dd-layout-horizontal & {
           block-size: calc(#{$chat-app-height} - 4.7rem - #{$chat-app-horizontal-height-diff});
         }
       }
@@ -187,11 +187,11 @@ $chat-list-margin: 3rem;
     inset-block-start: 0;
     opacity: 0;
     transition: all .25s ease;
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       block-size: $chat-app-height-with-no-navbar;
     }
     @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc($chat-app-height - $chat-app-horizontal-height-diff);
       }
     }
@@ -208,11 +208,11 @@ $chat-list-margin: 3rem;
     }
     .sidebar-body {
       block-size: calc(#{$chat-app-height} - 12.5rem);
-      .layout-navbar-hidden & {
+      .dd-layout-navbar-hidden & {
         block-size: calc(#{$chat-app-height-with-no-navbar} - 12.5rem);
       }
       @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-        .layout-horizontal & {
+        .dd-layout-horizontal & {
           block-size: calc(#{$chat-app-height} - 12.3rem - #{$chat-app-horizontal-height-diff});
         }
       }
@@ -222,11 +222,11 @@ $chat-list-margin: 3rem;
   .app-chat-conversation {
     background-color: var(--#{$prefix}chat-bg);
     block-size: $chat-app-height;
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       block-size: $chat-app-height-with-no-navbar;
     }
     @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc($chat-app-height - $chat-app-horizontal-height-diff);
       }
     }
@@ -243,11 +243,11 @@ $chat-list-margin: 3rem;
     background-color: var(--#{$prefix}chat-bg);
     block-size: $chat-app-height;
     transition: all .25s ease;
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       block-size: $chat-app-height-with-no-navbar;
     }
     @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc($chat-app-height - $chat-app-horizontal-height-diff);
       }
     }
@@ -272,11 +272,11 @@ $chat-list-margin: 3rem;
       block-size: $chat-history-height;
       padding-block: $chat-history-padding-y;
       padding-inline: $chat-history-padding-x;
-      .layout-navbar-hidden & {
+      .dd-layout-navbar-hidden & {
         block-size: $chat-history-height-with-no-nabvar;
       }
       @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-        .layout-horizontal & {
+        .dd-layout-horizontal & {
           block-size: calc($chat-history-height - $chat-app-horizontal-height-diff);
         }
       }
@@ -340,11 +340,11 @@ $chat-list-margin: 3rem;
     }
     .sidebar-body {
       block-size: calc(#{$chat-app-height} - 12.3rem);
-      .layout-navbar-hidden & {
+      .dd-layout-navbar-hidden & {
         block-size: calc(#{$chat-app-height-with-no-navbar} - 12.3rem);
       }
       @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-        .layout-horizontal & {
+        .dd-layout-horizontal & {
           block-size: calc(#{$chat-app-height} - 12.1rem - #{$chat-app-horizontal-height-diff});
         }
       }

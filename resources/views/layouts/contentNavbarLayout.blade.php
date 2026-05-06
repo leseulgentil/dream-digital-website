@@ -14,7 +14,6 @@ $isNavbar = $isNavbar ?? true;
 $isMenu = $isMenu ?? true;
 $isFlex = $isFlex ?? false;
 $isFooter = $isFooter ?? true;
-$customizerHidden = $customizerHidden ?? '';
 
 /* HTML Classes */
 $navbarDetached = 'navbar-detached';
@@ -35,8 +34,8 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
 @endphp
 
 @section('layoutContent')
-<div class="layout-wrapper layout-content-navbar {{ $isMenu ? '' : 'layout-without-menu' }}">
-    <div class="layout-container">
+<div class="dd-layout-wrapper dd-layout-content-navbar {{ $isMenu ? '' : 'dd-layout-without-menu' }}">
+    <div class="dd-layout-container">
 
         @if ($isMenu)
         @include('layouts/sections/menu/verticalMenu')
@@ -44,7 +43,7 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
 
 
         <!-- Layout page -->
-        <div class="layout-page">
+        <div class="dd-layout-page">
 
             {{-- Below commented code read by artisan command while installing jetstream. !! Do not remove if you want to use jetstream. --}}
             {{-- <x-banner /> --}}
@@ -57,7 +56,7 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
 
 
             <!-- Content wrapper -->
-            <div class="content-wrapper">
+            <div class="dd-content-wrapper">
 
                 <!-- Content -->
                 @if ($isFlex)
@@ -76,7 +75,7 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
                     @include('layouts/sections/footer/footer')
                     @endif
                     <!-- / Footer -->
-                    <div class="content-backdrop fade"></div>
+                    <div class="dd-content-backdrop fade"></div>
                 </div>
                 <!--/ Content wrapper -->
             </div>
@@ -85,7 +84,7 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
 
         @if ($isMenu)
         <!-- Overlay -->
-        <div class="layout-overlay layout-menu-toggle"></div>
+        <div class="dd-layout-overlay dd-layout-menu-toggle"></div>
         @endif
         <!-- Drag Target Area To SlideIn Menu On Small Screens -->
         <div class="drag-target"></div>

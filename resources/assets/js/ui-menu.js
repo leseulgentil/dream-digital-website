@@ -16,7 +16,7 @@
   }
   if (menu1Btn) {
     menu1Btn.onclick = function () {
-      menu1.classList.toggle('menu-collapsed');
+      menu1.classList.toggle('dd-menu-collapsed');
     };
   }
 
@@ -48,7 +48,7 @@
 
   if (menu5Btn) {
     menu5Btn.onclick = function () {
-      menu5.classList.toggle('menu-collapsed');
+      menu5.classList.toggle('dd-menu-collapsed');
     };
   }
   const menu6 = document.querySelector('#menu-6');
@@ -70,7 +70,7 @@
   }
   if (menu7Btn) {
     menu7Btn.onclick = function () {
-      menu7.classList.toggle('menu-collapsed');
+      menu7.classList.toggle('dd-menu-collapsed');
     };
   }
 
@@ -93,7 +93,7 @@
   if (menu9Btn) {
     menu9Btn.onclick = function () {
       menus9List.forEach(e => {
-        e.classList.toggle('menu-collapsed');
+        e.classList.toggle('dd-menu-collapsed');
       });
     };
   }
@@ -109,7 +109,7 @@
   if (menu10Btn) {
     menu10Btn.onclick = function () {
       menus10List.forEach(e => {
-        e.classList.toggle('menu-collapsed');
+        e.classList.toggle('dd-menu-collapsed');
       });
     };
   }
@@ -135,7 +135,7 @@
   if (menu12Btn) {
     menu12Btn.onclick = function () {
       menus12List.forEach(e => {
-        e.classList.toggle('menu-collapsed');
+        e.classList.toggle('dd-menu-collapsed');
       });
     };
   }

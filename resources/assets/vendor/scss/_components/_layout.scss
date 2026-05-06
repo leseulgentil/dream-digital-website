@@ -1,67 +1,67 @@
 /* Layouts
 ******************************************************************************* */
 
-.layout-container {
+.dd-layout-container {
   min-block-size: 100vh;
 }
 
-.layout-wrapper,
-.layout-container {
+.dd-layout-wrapper,
+.dd-layout-container {
   display: flex;
   flex: 1 1 auto;
   align-items: stretch;
   inline-size: 100%;
 }
 
-.layout-menu-offcanvas .layout-wrapper,
-.layout-menu-fixed-offcanvas .layout-wrapper {
+.dd-layout-menu-offcanvas .dd-layout-wrapper,
+.dd-layout-menu-fixed-offcanvas .dd-layout-wrapper {
   overflow: hidden;
 }
 
-/* Display menu toggle on navbar for .layout-menu-offcanvas, .layout-menu-fixed-offcanvas */
+/* Display menu toggle on navbar for .dd-layout-menu-offcanvas, .dd-layout-menu-fixed-offcanvas */
 
-.layout-menu-offcanvas .layout-navbar .layout-menu-toggle,
-.layout-menu-fixed-offcanvas .layout-navbar .layout-menu-toggle {
+.dd-layout-menu-offcanvas .dd-layout-navbar .dd-layout-menu-toggle,
+.dd-layout-menu-fixed-offcanvas .dd-layout-navbar .dd-layout-menu-toggle {
   display: block !important;
 }
 
-/* Hide menu close icon from large screen for .layout-menu-offcanvas, .layout-menu-fixed-offcanvas */
+/* Hide menu close icon from large screen for .dd-layout-menu-offcanvas, .dd-layout-menu-fixed-offcanvas */
 
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-  .layout-menu-offcanvas .layout-menu .layout-menu-toggle,
-  .layout-menu-fixed-offcanvas .layout-menu .layout-menu-toggle {
+  .dd-layout-menu-offcanvas .dd-layout-menu .dd-layout-menu-toggle,
+  .dd-layout-menu-fixed-offcanvas .dd-layout-menu .dd-layout-menu-toggle {
     display: none;
   }
-  .layout-horizontal .layout-page .menu-horizontal {
+  .dd-layout-horizontal .dd-layout-page .dd-menu-horizontal {
     box-shadow: var(--#{$prefix}menu-box-shadow);
   }
 }
 
-.layout-page,
-.content-wrapper,
-.content-wrapper > *,
-.layout-menu {
+.dd-layout-page,
+.dd-content-wrapper,
+.dd-content-wrapper > *,
+.dd-layout-menu {
   min-block-size: 1px;
 }
 
-.layout-navbar,
-.content-footer {
+.dd-layout-navbar,
+.dd-content-footer {
   flex: 0 0 auto;
 }
 
-.layout-page {
+.dd-layout-page {
   display: flex;
   flex: 1 1 auto;
   align-items: stretch;
   padding: 0;
 
   // Without menu
-  .layout-without-menu & {
+  .dd-layout-without-menu & {
     padding-inline: 0 !important;
   }
 }
 
-.content-wrapper {
+.dd-content-wrapper {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -70,17 +70,17 @@
 }
 
 /* Content backdrop */
-.content-backdrop {
+.dd-content-backdrop {
   /* z-index: 1 (layout static) */
   @include overlay-backdrop(1, $modal-backdrop-bg, $modal-backdrop-opacity);
 
   // z-index: 10 (layout fixed)
-  .layout-menu-fixed & {
+  .dd-layout-menu-fixed & {
     z-index: 10;
   }
 
   // z-index: 9 (layout-horizontal)
-  .layout-horizontal &:not(.fade) {
+  .dd-layout-horizontal &:not(.fade) {
     z-index: 9;
 
     /* Horizontal fix for search background with opacity */
@@ -114,18 +114,18 @@
     inset-block-start: 0;
     @include border-top-radius(0);
   }
-  .layout-navbar-fixed & {
+  .dd-layout-navbar-fixed & {
     inset-block-start: calc($navbar-height + $spacer - .5625rem);
   }
-  .layout-menu-fixed .layout-horizontal & {
+  .dd-layout-menu-fixed .dd-layout-horizontal & {
     inset-block-start: calc($navbar-height * 2 - .25rem);
   }
-  .layout-menu-fixed.layout-navbar-fixed .layout-horizontal & {
+  .dd-layout-menu-fixed.dd-layout-navbar-fixed .dd-layout-horizontal & {
     inset-block-start: $navbar-height;
   }
 }
 
-.layout-navbar {
+.dd-layout-navbar {
   position: relative;
   z-index: 2;
   flex-wrap: nowrap;
@@ -158,7 +158,7 @@
     }
 
     // Navbar fixed
-    .layout-navbar-fixed & {
+    .dd-layout-navbar-fixed & {
       inline-size: calc(100% - calc(#{$container-padding-x} * 2) - #{$menu-width});
       @include media-breakpoint-down(xl) {
         inline-size: calc(100% - calc(#{$container-padding-x} * 2)) !important;
@@ -167,17 +167,17 @@
         inline-size: calc(100% - calc(#{$container-padding-x-sm} * 2)) !important;
       }
     }
-    .layout-navbar-fixed.layout-menu-collapsed & {
+    .dd-layout-navbar-fixed.dd-layout-menu-collapsed & {
       inline-size: calc(100% - calc(#{$container-padding-x} * 2) - #{$menu-collapsed-width});
     }
-    .layout-menu-collapsed &,
-    .layout-without-menu & {
+    .dd-layout-menu-collapsed &,
+    .dd-layout-without-menu & {
       inline-size: calc(100% - calc(#{$container-padding-x} * 2));
     }
   }
 
   .dropdown-menu[data-bs-popper] {
-    .layout-wrapper:not(.layout-horizontal) & {
+    .dd-layout-wrapper:not(.dd-layout-horizontal) & {
       inset-block-start: 144%;
       @include media-breakpoint-down(md) {
         inset-block-start: 110%;
@@ -295,7 +295,7 @@
     }
   }
 
-  &[class*="bg-"]:not(.bg-navbar-theme) {
+  &[class*="bg-"]:not(.dd-bg-navbar-theme) {
     .nav-item {
       .input-group-text,
       .dropdown-toggle {
@@ -340,14 +340,14 @@
 
 /* Navbar require high z-index as we use z-index for menu slide-out for below large screen */
 @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
-  .layout-navbar {
+  .dd-layout-navbar {
     z-index: $zindex-menu-fixed;
   }
 }
 
 /* Layout Menu
 ******************************************************************************* */
-.layout-menu {
+.dd-layout-menu {
   position: relative;
   flex: 1 0 auto;
   a:focus-visible {
@@ -357,10 +357,10 @@
     transform: translate3d(0, 0, 0);
   }
 
-  &.menu-vertical {
-    ~ .layout-page {
+  &.dd-menu-vertical {
+    ~ .dd-layout-page {
       &.window-scrolled {
-        .layout-navbar {
+        .dd-layout-navbar {
           backdrop-filter: saturate(200%) blur(6px);
           background-color: rgba(var(--#{$prefix}paper-bg-rgb), .88);
         }
@@ -372,8 +372,8 @@
 /* Layout Content navbar
 ******************************************************************************* */
 
-.layout-content-navbar {
-  .layout-page {
+.dd-layout-content-navbar {
+  .dd-layout-page {
     flex-basis: 100%;
     flex-direction: column;
     inline-size: 0;
@@ -381,7 +381,7 @@
     min-inline-size: 0;
   }
 
-  .content-wrapper {
+  .dd-content-wrapper {
     inline-size: 100%;
   }
 }
@@ -389,24 +389,24 @@
 /* Layout Navbar full
 ******************************************************************************* */
 
-.layout-navbar-full {
-  .layout-container {
+.dd-layout-navbar-full {
+  .dd-layout-container {
     flex-direction: column;
   }
   @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-    &:not(.layout-horizontal) .menu-inner {
+    &:not(.dd-layout-horizontal) .dd-menu-inner {
       margin-block-start: .75rem;
     }
   }
 
-  .content-wrapper {
+  .dd-content-wrapper {
     flex-basis: 100%;
     inline-size: 0;
     max-inline-size: 100%;
     min-inline-size: 0;
   }
 
-  &.layout-horizontal .layout-navbar {
+  &.dd-layout-horizontal .dd-layout-navbar {
     background-color: var(--#{$prefix}navbar-bg);
     box-shadow: 0 1px 0 var(--#{$prefix}border-color);
 
@@ -422,14 +422,14 @@
   }
 
   // Adjust content backdrop z-index as per layout navbar full
-  .content-backdrop {
+  .dd-content-backdrop {
     // static layout
     &.show {
       z-index: 9;
 
       // fixed/fixed-offcanvas layout
-      .layout-menu-fixed &,
-      .layout-menu-fixed-offcanvas & {
+      .dd-layout-menu-fixed &,
+      .dd-layout-menu-fixed-offcanvas & {
         z-index: 1076;
       }
     }
@@ -439,7 +439,7 @@
 /* Toggle
 ******************************************************************************* */
 
-.layout-menu-toggle .icon-base {
+.dd-layout-menu-toggle .icon-base {
   transform: rotate(0deg);
   :dir(rtl) & {
     transform: rotate(180deg);
@@ -448,8 +448,8 @@
   transition-property: transform;
 }
 @include media-breakpoint-up(lg) {
-  .layout-menu-toggle {
-    .layout-menu-hover & {
+  .dd-layout-menu-toggle {
+    .dd-layout-menu-hover & {
       display: none;
     }
   }
@@ -461,19 +461,19 @@
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
   /* Menu style */
 
-  .layout-menu-collapsed:not(.layout-menu-hover, .layout-menu-offcanvas, .layout-menu-fixed-offcanvas) {
-    .layout-menu .menu-vertical,
-    .layout-menu.menu-vertical {
+  .dd-layout-menu-collapsed:not(.dd-layout-menu-hover, .dd-layout-menu-offcanvas, .dd-layout-menu-fixed-offcanvas) {
+    .dd-layout-menu .dd-menu-vertical,
+    .dd-layout-menu.dd-menu-vertical {
       @include layout-menu-collapsed ();
     }
   }
 
   /* Menu position */
 
-  .layout-menu-hover.layout-menu-collapsed {
-    .layout-menu {
+  .dd-layout-menu-hover.dd-layout-menu-collapsed {
+    .dd-layout-menu {
       margin-inline-end: -calc(var(--#{$prefix}menu-width) + var(--#{$prefix}menu-collapsed-width));
-      .layout-menu-toggle .icon-base {
+      .dd-layout-menu-toggle .icon-base {
         transform: rotate(180deg);
         transition-duration: .3s;
         transition-property: transform;
@@ -489,8 +489,8 @@
 ******************************************************************************* */
 
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-  .layout-menu-collapsed.layout-menu-offcanvas {
-    .layout-menu {
+  .dd-layout-menu-collapsed.dd-layout-menu-offcanvas {
+    .dd-layout-menu {
       margin-inline-end: calc(var(--#{$prefix}menu-width) * -1);
       transform: translateX(-100%);
     }
@@ -503,9 +503,9 @@
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
   /* Menu */
 
-  .layout-menu-fixed,
-  .layout-menu-fixed-offcanvas {
-    .layout-menu {
+  .dd-layout-menu-fixed,
+  .dd-layout-menu-fixed-offcanvas {
+    .dd-layout-menu {
       position: fixed;
       inset-block: 0;
       inset-inline-start: 0;
@@ -516,8 +516,8 @@
   /* Fixed off-canvas */
 
   /* Menu collapsed */
-  .layout-menu-fixed-offcanvas.layout-menu-collapsed {
-    .layout-menu {
+  .dd-layout-menu-fixed-offcanvas.dd-layout-menu-collapsed {
+    .dd-layout-menu {
       transform: translateX(-100%);
     }
   }
@@ -525,45 +525,45 @@
   /* Container */
 
   /* Menu expanded */
-  .layout-menu-fixed:not(.layout-menu-collapsed),
-  .layout-menu-fixed-offcanvas:not(.layout-menu-collapsed) {
-    .layout-page {
+  .dd-layout-menu-fixed:not(.dd-layout-menu-collapsed),
+  .dd-layout-menu-fixed-offcanvas:not(.dd-layout-menu-collapsed) {
+    .dd-layout-page {
       padding-inline-start: var(--#{$prefix}menu-width);
     }
   }
 
   /* Menu collapsed */
-  .layout-menu-fixed.layout-menu-collapsed {
-    .layout-page {
+  .dd-layout-menu-fixed.dd-layout-menu-collapsed {
+    .dd-layout-page {
       padding-inline-start: var(--#{$prefix}menu-collapsed-width);
     }
   }
 }
 
 /* Reset paddings (for non fixed entities) */
-html:not(.layout-navbar-fixed, .layout-menu-fixed, .layout-menu-fixed-offcanvas) .layout-page,
-html:not(.layout-navbar-fixed) .layout-content-navbar .layout-page {
+html:not(.dd-layout-navbar-fixed, .dd-layout-menu-fixed, .dd-layout-menu-fixed-offcanvas) .dd-layout-page,
+html:not(.dd-layout-navbar-fixed) .dd-layout-content-navbar .dd-layout-page {
   padding-block-start: 0 !important;
 }
-html:not(.layout-footer-fixed) .content-wrapper {
+html:not(.dd-layout-footer-fixed) .dd-content-wrapper {
   padding-block-end: 0 !important;
 }
 
 @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
-  .layout-menu-fixed .layout-wrapper.layout-navbar-full .layout-menu,
-  .layout-menu-fixed-offcanvas .layout-wrapper.layout-navbar-full .layout-menu {
+  .dd-layout-menu-fixed .dd-layout-wrapper.dd-layout-navbar-full .dd-layout-menu,
+  .dd-layout-menu-fixed-offcanvas .dd-layout-wrapper.dd-layout-navbar-full .dd-layout-menu {
     inset-block-start: 0 !important;
   }
 
-  html:not(.layout-navbar-fixed) .layout-navbar-full .layout-page {
+  html:not(.dd-layout-navbar-fixed) .dd-layout-navbar-full .dd-layout-page {
     padding-block-start: 0 !important;
   }
 }
 
 /* Hidden navbar layout
 ******************************************************************************* */
-.layout-navbar-hidden {
-  .layout-navbar {
+.dd-layout-navbar-hidden {
+  .dd-layout-navbar {
     display: none;
   }
 }
@@ -571,8 +571,8 @@ html:not(.layout-footer-fixed) .content-wrapper {
 /* Fixed navbar layout
 ******************************************************************************* */
 
-.layout-navbar-fixed {
-  .layout-navbar {
+.dd-layout-navbar-fixed {
+  .dd-layout-navbar {
     position: fixed;
     inset-block-start: 0;
     inset-inline: 0;
@@ -584,7 +584,7 @@ html:not(.layout-footer-fixed) .content-wrapper {
   }
 }
 
-.layout-navbar-fixed .layout-wrapper:not(.layout-horizontal) .layout-page::before {
+.dd-layout-navbar-fixed .dd-layout-wrapper:not(.dd-layout-horizontal) .dd-layout-page::before {
   position: fixed;
   z-index: 10;
   backdrop-filter: saturate(200%) blur(10px);
@@ -598,88 +598,88 @@ html:not(.layout-footer-fixed) .content-wrapper {
 
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
   /* Fix navbar within Navbar Full layout in fixed mode */
-  .layout-menu-fixed .layout-navbar-full .layout-navbar,
-  .layout-menu-fixed-offcanvas .layout-navbar-full .layout-navbar {
+  .dd-layout-menu-fixed .dd-layout-navbar-full .dd-layout-navbar,
+  .dd-layout-menu-fixed-offcanvas .dd-layout-navbar-full .dd-layout-navbar {
     position: fixed;
     inset-block-start: 0;
     inset-inline: 0;
   }
 
   /* Fix navbar within Content Navbar layout in fixed mode - Menu expanded */
-  .layout-navbar-fixed:not(.layout-menu-collapsed),
-  .layout-menu-fixed.layout-navbar-fixed:not(.layout-menu-collapsed),
-  .layout-menu-fixed-offcanvas.layout-navbar-fixed:not(.layout-menu-collapsed) {
-    .layout-content-navbar:not(.layout-without-menu) .layout-navbar {
+  .dd-layout-navbar-fixed:not(.dd-layout-menu-collapsed),
+  .dd-layout-menu-fixed.dd-layout-navbar-fixed:not(.dd-layout-menu-collapsed),
+  .dd-layout-menu-fixed-offcanvas.dd-layout-navbar-fixed:not(.dd-layout-menu-collapsed) {
+    .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar {
       inset-inline-start: var(--#{$prefix}menu-width);
     }
 
     &.swal2-shown,
     & .modal-open {
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar {
         inset-inline-start: calc($menu-width - var(--#{$prefix}scrollbar-width));
       }
     }
     &:dir(rtl).swal2-shown,
     &:dir(rtl) .modal-open {
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar {
         inset-inline-start: calc($menu-width + var(--#{$prefix}scrollbar-width));
       }
     }
   }
 
   /* Horizontal Layout when menu fixed */
-  .layout-menu-fixed.swal2-shown,
-  .layout-menu-fixed .modal-open {
-    .layout-horizontal .layout-navbar,
-    .layout-horizontal .layout-menu-horizontal {
+  .dd-layout-menu-fixed.swal2-shown,
+  .dd-layout-menu-fixed .modal-open {
+    .dd-layout-horizontal .dd-layout-navbar,
+    .dd-layout-horizontal .dd-layout-menu-horizontal {
       inline-size: calc(100% - var(--#{$prefix}scrollbar-width));
     }
   }
-  :dir(rtl).layout-menu-fixed.swal2-shown,
-  :dir(rtl).layout-menu-fixed .modal-open {
-    .layout-horizontal .layout-navbar {
+  :dir(rtl).dd-layout-menu-fixed.swal2-shown,
+  :dir(rtl).dd-layout-menu-fixed .modal-open {
+    .dd-layout-horizontal .dd-layout-navbar {
       inline-size: calc(100% + var(--#{$prefix}scrollbar-width));
     }
   }
 
-  .layout-menu-fixed:not(.layout-navbar-hidden) .layout-horizontal .layout-page .menu-horizontal,
-  .layout-menu-fixed-offcanvas:not(.layout-navbar-hidden) .layout-horizontal .layout-page .menu-horizontal {
+  .dd-layout-menu-fixed:not(.dd-layout-navbar-hidden) .dd-layout-horizontal .dd-layout-page .dd-menu-horizontal,
+  .dd-layout-menu-fixed-offcanvas:not(.dd-layout-navbar-hidden) .dd-layout-horizontal .dd-layout-page .dd-menu-horizontal {
     position: fixed;
     inset-block-start: $navbar-height;
   }
 
-  .layout-menu-fixed:not(.layout-navbar-hidden) .layout-horizontal .layout-page .menu-horizontal + [class*="container-"],
-  .layout-menu-fixed-offcanvas:not(.layout-navbar-hidden) .layout-horizontal .layout-page .menu-horizontal + [class*="container-"] {
+  .dd-layout-menu-fixed:not(.dd-layout-navbar-hidden) .dd-layout-horizontal .dd-layout-page .dd-menu-horizontal + [class*="container-"],
+  .dd-layout-menu-fixed-offcanvas:not(.dd-layout-navbar-hidden) .dd-layout-horizontal .dd-layout-page .dd-menu-horizontal + [class*="container-"] {
     padding-block-start: calc($container-padding-y + 3.75rem) !important;
   }
 
   /* Layout fixed not off-canvas - Menu collapsed */
 
-  .layout-navbar-fixed.layout-menu-collapsed:not(.layout-menu-offcanvas, .layout-menu-fixed-offcanvas),
-  .layout-menu-fixed.layout-navbar-fixed.layout-menu-collapsed {
-    .layout-content-navbar .layout-navbar {
+  .dd-layout-navbar-fixed.dd-layout-menu-collapsed:not(.dd-layout-menu-offcanvas, .dd-layout-menu-fixed-offcanvas),
+  .dd-layout-menu-fixed.dd-layout-navbar-fixed.dd-layout-menu-collapsed {
+    .dd-layout-content-navbar .dd-layout-navbar {
       inset-inline-start: var(--#{$prefix}menu-collapsed-width);
     }
 
     &.swal2-shown,
     & .modal-open {
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar:has(.container-xxl),
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar:has(.container-fluid) {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar:has(.container-xxl),
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar:has(.container-fluid) {
         inset-inline-start: calc(var(--#{$prefix}menu-collapsed-width) - var(--#{$prefix}scrollbar-width));
       }
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar:has(.container-fluid) {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar:has(.container-fluid) {
         inline-size: calc(100% - calc(#{$container-padding-x} * 2) - var(--#{$prefix}menu-collapsed-width) - var(--#{$prefix}scrollbar-width));
       }
     }
     &:dir(rtl).swal2-shown,
     &:dir(rtl) .modal-open {
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar:has(.container-xxl) {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar:has(.container-xxl) {
         inset-inline-start: calc(var(--#{$prefix}menu-collapsed-width) + var(--#{$prefix}scrollbar-width));
       }
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar {
         inline-size: calc(100% - calc(#{$container-padding-x} * 2) - var(--#{$prefix}menu-collapsed-width) - var(--#{$prefix}scrollbar-width));
       }
-      .layout-content-navbar:not(.layout-without-menu) .layout-navbar:has(.container-fluid) {
+      .dd-layout-content-navbar:not(.dd-layout-without-menu) .dd-layout-navbar:has(.container-fluid) {
         inset-inline-start: calc(var(--#{$prefix}menu-collapsed-width) + var(--#{$prefix}scrollbar-width));
       }
     }
@@ -689,20 +689,20 @@ html:not(.layout-footer-fixed) .content-wrapper {
 /* Fixed footer
 ******************************************************************************* */
 
-.layout-footer-fixed .content-footer {
+.dd-layout-footer-fixed .dd-content-footer {
   position: fixed;
   z-index: 9;
   inset-block-end: 0;
   inset-inline: 0;
 }
 
-.layout-footer-fixed .layout-wrapper:not(.layout-horizontal) .content-footer .footer-container,
-.layout-footer-fixed .layout-wrapper.layout-horizontal .content-footer {
+.dd-layout-footer-fixed .dd-layout-wrapper:not(.dd-layout-horizontal) .dd-content-footer .footer-container,
+.dd-layout-footer-fixed .dd-layout-wrapper.dd-layout-horizontal .dd-content-footer {
   background-color: var(--#{$prefix}footer-bg);
   box-shadow: var(--#{$prefix}footer-box-shadow);
 }
 
-.layout-footer-fixed .layout-wrapper:not(.layout-horizontal) .content-footer .footer-container {
+.dd-layout-footer-fixed .dd-layout-wrapper:not(.dd-layout-horizontal) .dd-content-footer .footer-container {
   border: var(--#{$prefix}footer-border-width) solid var(--#{$prefix}footer-border-color);
   padding-inline: 1.5rem;
   @include border-top-radius($border-radius);
@@ -710,47 +710,47 @@ html:not(.layout-footer-fixed) .content-wrapper {
 
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
   /* Fixed footer - Menu expanded */
-  .layout-footer-fixed:not(.layout-menu-collapsed) {
-    .layout-wrapper:not(.layout-without-menu) .content-footer {
+  .dd-layout-footer-fixed:not(.dd-layout-menu-collapsed) {
+    .dd-layout-wrapper:not(.dd-layout-without-menu) .dd-content-footer {
       inset-inline-start: var(--#{$prefix}menu-width);
     }
 
     &.swal2-shown,
     & .modal-open {
-      .layout-wrapper .content-footer:has(.container-fluid) {
+      .dd-layout-wrapper .dd-content-footer:has(.container-fluid) {
         inline-size: calc(100% - $menu-width - var(--#{$prefix}scrollbar-width));
       }
     }
     &:dir(rtl).swal2-shown,
     &:dir(rtl) .modal-open {
-      .layout-wrapper:not(.layout-without-menu) .content-footer:has(.container-xxl) {
+      .dd-layout-wrapper:not(.dd-layout-without-menu) .dd-content-footer:has(.container-xxl) {
         inset-inline-start: calc($menu-width + var(--#{$prefix}scrollbar-width));
       }
-      .layout-wrapper .content-footer:has(.container-fluid) {
+      .dd-layout-wrapper .dd-content-footer:has(.container-fluid) {
         inset-inline-start: calc(var(--#{$prefix}menu-width) + var(--#{$prefix}scrollbar-width));
       }
     }
   }
 
   /* Fixed footer - Menu collapsed */
-  .layout-footer-fixed.layout-menu-collapsed:not(.layout-menu-offcanvas, .layout-menu-fixed-offcanvas) {
-    .layout-wrapper:not(.layout-without-menu) .content-footer {
+  .dd-layout-footer-fixed.dd-layout-menu-collapsed:not(.dd-layout-menu-offcanvas, .dd-layout-menu-fixed-offcanvas) {
+    .dd-layout-wrapper:not(.dd-layout-without-menu) .dd-content-footer {
       inset-inline-start: var(--#{$prefix}menu-collapsed-width);
     }
 
     &.swal2-shown,
     & .modal-open {
-      .layout-wrapper:not(.layout-without-menu) .content-footer:has(.container-xxl) {
+      .dd-layout-wrapper:not(.dd-layout-without-menu) .dd-content-footer:has(.container-xxl) {
         inset-inline-start: calc($menu-collapsed-width - var(--#{$prefix}scrollbar-width));
       }
-      .layout-wrapper:not(.layout-without-menu) .content-footer:has(.container-fluid) {
+      .dd-layout-wrapper:not(.dd-layout-without-menu) .dd-content-footer:has(.container-fluid) {
         inline-size: calc(100% - $menu-collapsed-width - var(--#{$prefix}scrollbar-width));
         inset-inline-start: $menu-collapsed-width;
       }
     }
     &:dir(rtl).swal2-shown,
     &:dir(rtl) .modal-open {
-      .layout-wrapper:not(.layout-without-menu) .content-footer {
+      .dd-layout-wrapper:not(.dd-layout-without-menu) .dd-content-footer {
         inset-inline-start: calc($menu-collapsed-width + var(--#{$prefix}scrollbar-width));
       }
     }
@@ -761,7 +761,7 @@ html:not(.layout-footer-fixed) .content-wrapper {
 ******************************************************************************* */
 
 @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
-  .layout-menu {
+  .dd-layout-menu {
     position: fixed !important;
     block-size: 100% !important;
     inset-block-start: 0 !important;
@@ -777,16 +777,16 @@ html:not(.layout-footer-fixed) .content-wrapper {
     }
 
 
-    .layout-menu-expanded & {
+    .dd-layout-menu-expanded & {
       transform: translate3d(0, 0, 0) !important;
     }
   }
 
-  .layout-menu-expanded body {
+  .dd-layout-menu-expanded body {
     overflow: hidden;
   }
 
-  .layout-overlay {
+  .dd-layout-overlay {
     position: fixed;
     display: none;
     background: $modal-backdrop-bg;
@@ -796,13 +796,13 @@ html:not(.layout-footer-fixed) .content-wrapper {
     inset-inline: 0;
     opacity: $modal-backdrop-opacity;
 
-    .layout-menu-expanded & {
+    .dd-layout-menu-expanded & {
       display: block;
     }
   }
 
-  .layout-menu-100vh .layout-menu,
-  .layout-menu-100vh .layout-overlay {
+  .dd-layout-menu-100vh .dd-layout-menu,
+  .dd-layout-menu-100vh .dd-layout-overlay {
     block-size: 100dvh !important;
   }
 
@@ -821,11 +821,11 @@ html:not(.layout-footer-fixed) .content-wrapper {
 
 /* Navbar (fixed) */
 body:not(.modal-open) {
-  .layout-navbar-full .layout-navbar {
+  .dd-layout-navbar-full .dd-layout-navbar {
     z-index: $zindex-menu-fixed;
   }
 
-  .layout-content-navbar .layout-navbar {
+  .dd-layout-content-navbar .dd-layout-navbar {
     z-index: $zindex-menu-fixed - 5;
   }
 }
@@ -833,16 +833,16 @@ body:not(.modal-open) {
 // Footer (fixed)
 
 /* Menu horizontal */
-.layout-menu-horizontal {
+.dd-layout-menu-horizontal {
   z-index: 9;
 }
 
 @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
-  .layout-menu {
+  .dd-layout-menu {
     z-index: $zindex-layout-mobile;
   }
 
-  .layout-overlay {
+  .dd-layout-overlay {
     z-index: $zindex-layout-mobile - 1;
   }
 }
@@ -851,37 +851,37 @@ body:not(.modal-open) {
   // Default expanded
 
   /* Navbar full layout */
-  .layout-navbar-full {
-    .layout-navbar {
+  .dd-layout-navbar-full {
+    .dd-layout-navbar {
       z-index: 10;
     }
 
-    .layout-menu {
+    .dd-layout-menu {
       z-index: 9;
     }
   }
 
   /* Content Navbar layout */
-  .layout-content-navbar {
-    .layout-navbar {
+  .dd-layout-content-navbar {
+    .dd-layout-navbar {
       z-index: 9;
     }
 
-    .layout-menu {
+    .dd-layout-menu {
       z-index: 11;
     }
   }
 
   /* Collapsed */
 
-  .layout-menu-collapsed:not(.layout-menu-offcanvas, .layout-menu-fixed-offcanvas) {
+  .dd-layout-menu-collapsed:not(.dd-layout-menu-offcanvas, .dd-layout-menu-fixed-offcanvas) {
     // Navbar full layout
-    &.layout-menu-hover .layout-navbar-full .layout-menu {
+    &.dd-layout-menu-hover .dd-layout-navbar-full .dd-layout-menu {
       z-index: $zindex-menu-fixed - 5 !important;
     }
 
     // Content Navbar layout
-    .layout-content-navbar .layout-menu {
+    .dd-layout-content-navbar .dd-layout-menu {
       z-index: $zindex-menu-fixed + 5 !important;
     }
   }
@@ -889,15 +889,15 @@ body:not(.modal-open) {
   // Fixed
 
   /* Navbar full layout */
-  .layout-menu-fixed body:not(.modal-open) .layout-navbar-full .layout-menu,
-  .layout-menu-fixed-offcanvas body:not(.modal-open) .layout-navbar-full .layout-menu {
+  .dd-layout-menu-fixed body:not(.modal-open) .dd-layout-navbar-full .dd-layout-menu,
+  .dd-layout-menu-fixed-offcanvas body:not(.modal-open) .dd-layout-navbar-full .dd-layout-menu {
     z-index: $zindex-menu-fixed - 5;
   }
 
   /* Content Navbar layout */
-  .layout-navbar-fixed body:not(.modal-open) .layout-content-navbar .layout-menu,
-  .layout-menu-fixed body:not(.modal-open) .layout-content-navbar .layout-menu,
-  .layout-menu-fixed-offcanvas body:not(.modal-open) .layout-content-navbar .layout-menu {
+  .dd-layout-navbar-fixed body:not(.modal-open) .dd-layout-content-navbar .dd-layout-menu,
+  .dd-layout-menu-fixed body:not(.modal-open) .dd-layout-content-navbar .dd-layout-menu,
+  .dd-layout-menu-fixed-offcanvas body:not(.modal-open) .dd-layout-content-navbar .dd-layout-menu {
     z-index: $zindex-menu-fixed;
   }
 }
@@ -906,32 +906,32 @@ body:not(.modal-open) {
 ******************************************************************************* */
 
 /* Disable navbar link hover transition */
-.layout-menu-link-no-transition {
-  .layout-menu .menu-link,
-  .layout-menu-horizontal .menu-link {
+.dd-layout-menu-link-no-transition {
+  .dd-layout-menu .dd-menu-link,
+  .dd-layout-menu-horizontal .dd-menu-link {
     animation: none !important;
     transition: none !important;
   }
 }
 
 /* Disable navbar link hover transition */
-.layout-no-transition .layout-menu,
-.layout-no-transition .layout-menu-horizontal {
+.dd-layout-no-transition .dd-layout-menu,
+.dd-layout-no-transition .dd-layout-menu-horizontal {
   &,
   & .menu,
-  & .menu-item {
+  & .dd-menu-item {
     animation: none !important;
     transition: none !important;
   }
 }
 
 @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
-  .layout-transitioning {
-    .layout-overlay {
+  .dd-layout-transitioning {
+    .dd-layout-overlay {
       animation: menuAnimation $menu-animation-duration;
     }
 
-    .layout-menu {
+    .dd-layout-menu {
       transition-duration: $menu-animation-duration;
       transition-property:
         transform,
@@ -941,13 +941,13 @@ body:not(.modal-open) {
 }
 
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-  .layout-menu-collapsed:not(.layout-transitioning, .layout-menu-offcanvas, .layout-menu-fixed, .layout-menu-fixed-offcanvas) .layout-menu {
+  .dd-layout-menu-collapsed:not(.dd-layout-transitioning, .dd-layout-menu-offcanvas, .dd-layout-menu-fixed, .dd-layout-menu-fixed-offcanvas) .dd-layout-menu {
     transition-duration: $menu-animation-duration;
     transition-property: margin-inline-start, margin-inline-end, inline-size;
   }
 
-  .layout-transitioning {
-    &.layout-menu-offcanvas .layout-menu {
+  .dd-layout-transitioning {
+    &.dd-layout-menu-offcanvas .dd-layout-menu {
       transition-duration: $menu-animation-duration;
       transition-property:
         margin-inline-start,
@@ -956,22 +956,22 @@ body:not(.modal-open) {
         -webkit-transform;
     }
 
-    &.layout-menu-fixed,
-    &.layout-menu-fixed-offcanvas {
-      .layout-page {
+    &.dd-layout-menu-fixed,
+    &.dd-layout-menu-fixed-offcanvas {
+      .dd-layout-page {
         transition-duration: $menu-animation-duration;
         transition-property: padding-inline-start, padding-inline-end;
       }
     }
 
-    &.layout-menu-fixed {
-      .layout-menu {
+    &.dd-layout-menu-fixed {
+      .dd-layout-menu {
         transition: inline-size $menu-animation-duration;
       }
     }
 
-    &.layout-menu-fixed-offcanvas {
-      .layout-menu {
+    &.dd-layout-menu-fixed-offcanvas {
+      .dd-layout-menu {
         transition-duration: $menu-animation-duration;
         transition-property:
           transform,
@@ -979,13 +979,13 @@ body:not(.modal-open) {
       }
     }
 
-    &.layout-navbar-fixed .layout-content-navbar .layout-navbar,
-    &.layout-footer-fixed .content-footer {
+    &.dd-layout-navbar-fixed .dd-layout-content-navbar .dd-layout-navbar,
+    &.dd-layout-footer-fixed .dd-content-footer {
       transition-duration: $menu-animation-duration;
       transition-property: inset-inline-start, inset-inline-end;
     }
 
-    &:not(.layout-menu-offcanvas, .layout-menu-fixed, .layout-menu-fixed-offcanvas) .layout-menu {
+    &:not(.dd-layout-menu-offcanvas, .dd-layout-menu-fixed, .dd-layout-menu-fixed-offcanvas) .dd-layout-menu {
       transition-duration: $menu-animation-duration;
       transition-property: margin-inline-start, margin-inline-end, inline-size;
     }
@@ -995,14 +995,14 @@ body:not(.modal-open) {
 /* Disable transitions/animations in IE 10-11 */
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .menu,
-  .layout-menu,
-  .layout-page,
-  .layout-navbar,
-  .content-footer {
+  .dd-layout-menu,
+  .dd-layout-page,
+  .dd-layout-navbar,
+  .dd-content-footer {
     transition: none !important;
     transition-duration: 0s !important;
   }
-  .layout-overlay {
+  .dd-layout-overlay {
     animation: none !important;
   }
 }

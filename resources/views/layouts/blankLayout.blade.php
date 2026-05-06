@@ -4,9 +4,6 @@
 
 @php
   $configData = Helper::appClasses();
-
-  /* Display elements */
-  $customizerHidden = $customizerHidden ?? '';
 @endphp
 
 @extends('layouts/commonMaster')

@@ -1,15 +1,14 @@
 <!-- BEGIN: Vendor JS-->
 @vite(['resources/assets/vendor/js/dropdown-hover.js', 'resources/assets/vendor/js/mega-dropdown.js', 'resources/assets/vendor/libs/popper/popper.js', 'resources/assets/vendor/js/bootstrap.js'])
 
-@if ($configData['hasCustomizer'])
-    @vite(['resources/assets/vendor/libs/pickr/pickr.js'])
-@endif
-
 @yield('vendor-script')
 <!-- END: Page Vendor JS-->
 <!-- BEGIN: Theme JS-->
 @vite(['resources/assets/js/front-main.js'])
 <!-- END: Theme JS-->
+<!-- BEGIN: Theme Switcher (Q13) -->
+@vite(['resources/assets/js/dd-theme-switcher.js'])
+<!-- END: Theme Switcher -->
 <!-- Pricing Modal JS-->
 @stack('pricing-script')
 <!-- END: Pricing Modal JS-->

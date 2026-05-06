@@ -8,13 +8,13 @@
     box-shadow: var(--#{$prefix}menu-box-shadow);
   }
 
-  .app-brand {
+  .dd-app-brand {
     inline-size: 100%;
     padding-inline: calc(calc(#{var(--#{$prefix}menu-vertical-link-padding-x)} * 2.1333));
-    .app-brand-text {
+    .dd-app-brand-text {
       color: var(--#{$prefix}heading-color);
     }
-    .layout-menu-toggle {
+    .dd-layout-menu-toggle {
       position: absolute;
       z-index: 3;
       border: 7px solid var(--#{$prefix}body-bg);
@@ -58,7 +58,7 @@
       @include media-breakpoint-down(xl) {
         display: none;
         border: 7px solid var(--#{$prefix}paper-bg);
-        .layout-menu-expanded & {
+        .dd-layout-menu-expanded & {
           display: block;
         }
       }
@@ -66,7 +66,7 @@
   }
 
   // Sub menu item link bullet
-  .menu-sub > .menu-item > .menu-link {
+  .dd-menu-sub > .dd-menu-item > .dd-menu-link {
     &::before {
       position: absolute;
       @include border-radius(50%);
@@ -75,7 +75,7 @@
       content: "";
       inline-size: .375rem;
       inset-inline-start: 1.4375rem;
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         inset-inline-start: 1rem;
         @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
           inset-inline-start: 1.5rem;
@@ -85,13 +85,13 @@
   }
 
   // ? Hide bullet from first child only as we display icon instead (horizontal)
-  &.menu-horizontal .menu-inner > .menu-item > .menu-sub > .menu-item > .menu-link{
+  &.dd-menu-horizontal .dd-menu-inner > .dd-menu-item > .dd-menu-sub > .dd-menu-item > .dd-menu-link{
     padding-inline-start: $menu-horizontal-link-padding-x;
     &::before {
       display: none;
     }
   }
-  &.menu-horizontal .menu-sub .menu-item .menu-link {
+  &.dd-menu-horizontal .dd-menu-sub .dd-menu-item .dd-menu-link {
     padding-inline-start: $menu-horizontal-link-padding-x + $menu-horizontal-menu-level-spacer;
   }
 
@@ -125,7 +125,7 @@
 }
 
 /*  Menu link */
-.menu-link {
+.dd-menu-link {
   position: relative;
   display: flex;
   flex: 0 1 auto;
@@ -133,24 +133,24 @@
   margin: 0;
 
   /* link hover animation */
-  .menu:not(.menu-no-animation) & {
+  .menu:not(.dd-menu-no-animation) & {
     transition-duration: $menu-animation-duration;
     transition-property: color, background-color, inset-inline-start;
   }
-  .menu-item.disabled & {
+  .dd-menu-item.disabled & {
     cursor: not-allowed;
   }
 
-  > :not(.menu-icon) {
+  > :not(.dd-menu-icon) {
     flex: 0 1 auto;
     opacity: 1;
-    .menu:not(.menu-no-animation) & {
+    .menu:not(.dd-menu-no-animation) & {
       transition: opacity $menu-animation-duration ease-in-out;
     }
   }
 }
 
-.menu-inner {
+.dd-menu-inner {
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
@@ -158,14 +158,14 @@
   margin: 0;
   block-size: 100%;
 
-  > .menu-item.menu-item-closing .menu-item.open .menu-sub,
-  > .menu-item.menu-item-closing .menu-item.open .menu-toggle {
+  > .dd-menu-item.dd-menu-item-closing .dd-menu-item.open .dd-menu-sub,
+  > .dd-menu-item.dd-menu-item-closing .dd-menu-item.open .dd-menu-toggle {
     background-color: transparent;
     color: var(--#{$prefix}menu-color);
   }
 }
 
-.menu-inner-shadow {
+.dd-menu-inner-shadow {
   position: absolute;
   z-index: 2;
   display: none;
@@ -179,35 +179,35 @@
   @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
     block-size: 1.5rem;
   }
-  .layout-navbar-full & {
+  .dd-layout-navbar-full & {
     inset-block-start: 0;
   }
 }
 
 /* Menu item */
-.menu-item {
+.dd-menu-item {
   align-items: flex-start;
   justify-content: flex-start;
 
-  &.menu-item-animating {
+  &.dd-menu-item-animating {
     transition: block-size $menu-animation-duration ease-in-out;
   }
 }
 
 /* Horizontal Menu
 ****************************************************************************** */
-.menu.menu-horizontal {
+.menu.dd-menu-horizontal {
 
-  .menu-inner > .menu-item > .menu-link {
+  .dd-menu-inner > .dd-menu-item > .dd-menu-link {
     @include border-radius($border-radius);
   }
 
-  .menu-inner > .menu-item.active > .menu-link.menu-toggle{
+  .dd-menu-inner > .dd-menu-item.active > .dd-menu-link.dd-menu-toggle{
     background: var(--#{$prefix}menu-active-bg);
     color: var(--#{$prefix}menu-active-color);
   }
 
-  .menu-inner > .menu-item{
+  .dd-menu-inner > .dd-menu-item{
     margin-block: $menu-horizontal-link-padding-y;
     margin-inline: 0;
     &:not(:first-child) {
@@ -216,27 +216,27 @@
     &:not(:last-child) {
       margin-inline-end: calc($menu-item-spacer + .0625rem);
     }
-    .menu-sub {
+    .dd-menu-sub {
       z-index: 1;
       box-shadow: var(--#{$prefix}menu-horizontal-menu-box-shadow);
     }
   }
 }
 
-.menu-item,
-.menu-header,
-.menu-divider,
-.menu-block {
+.dd-menu-item,
+.dd-menu-header,
+.dd-menu-divider,
+.dd-menu-block {
   flex: 0 0 auto;
   flex-direction: column;
   padding: 0;
   margin: 0;
   list-style: none;
 }
-.menu-header {
+.dd-menu-header {
   opacity: 1;
   transition: opacity $menu-animation-duration ease-in-out;
-  .menu-header-text {
+  .dd-menu-header-text {
     color: var(--#{$prefix}gray-400);
     letter-spacing: .4px;
     text-transform: uppercase;
@@ -245,29 +245,29 @@
 }
 
 /* Menu Icon */
-.menu-icon {
+.dd-menu-icon {
   flex-grow: 0;
   flex-shrink: 0;
   block-size: $menu-icon-expanded-font-size;
   font-size: $menu-icon-expanded-font-size;
   inline-size: $menu-icon-expanded-font-size;
   margin-inline-end: $menu-icon-expanded-spacer;
-  .menu:not(.menu-no-animation) & {
+  .menu:not(.dd-menu-no-animation) & {
     transition: margin-inline-end $menu-animation-duration ease;
   }
 
-  .menu-link {
+  .dd-menu-link {
     transition-duration: $menu-animation-duration;
   }
-  .menu-toggle::after {
+  .dd-menu-toggle::after {
     transition-duration: $menu-animation-duration;
     transition-property: -webkit-transform, transform;
   }
 }
 
-.menu-link,
-.menu-horizontal-prev,
-.menu-horizontal-next {
+.dd-menu-link,
+.dd-menu-horizontal-prev,
+.dd-menu-horizontal-next {
   color: var(--#{$prefix}menu-color);
 
   &:hover,
@@ -276,31 +276,31 @@
   }
 }
 
-.menu-item.disabled .menu-link,
-.menu-horizontal-prev.disabled,
-.menu-horizontal-next.disabled {
+.dd-menu-item.disabled .dd-menu-link,
+.dd-menu-horizontal-prev.disabled,
+.dd-menu-horizontal-next.disabled {
   opacity: .6;
 }
 
 /* Sub menu */
-.menu-sub {
+.dd-menu-sub {
   display: none;
   flex-direction: column;
   padding: 0;
   margin: 0;
 
-  .menu-item.open > & {
+  .dd-menu-item.open > & {
     display: flex;
   }
-  > .menu-item {
+  > .dd-menu-item {
     &.active {
-      > .menu-link {
+      > .dd-menu-link {
         background-color: transparent;
         color: var(--#{$prefix}heading-color);
-        &:not(.menu-toggle)::before {
+        &:not(.dd-menu-toggle)::before {
           box-shadow: 0 0 0 1px var(--#{$prefix}paper-bg);
         }
-        &.menu-toggle {
+        &.dd-menu-toggle {
           background-color: var(--#{$prefix}menu-active-toggle-bg);
           color: var(--#{$prefix}menu-color);
         }
@@ -310,7 +310,7 @@
 }
 
 /* Menu toggle open/close arrow */
-.menu-toggle::after {
+.dd-menu-toggle::after {
   position: absolute;
   display: block;
   border: 2px solid;
@@ -327,7 +327,7 @@
 }
 
 /* Menu divider */
-.menu-divider {
+.dd-menu-divider {
   border: 0;
   border-block-start: 1px solid;
   border-block-start-color: var(--#{$prefix}menu-divider-color);
@@ -338,32 +338,32 @@
 // Vertical Menu
 // ******************************************************************************
 
-.menu-vertical {
+.dd-menu-vertical {
   // overflow: hidden;
   flex-direction: column;
 
   // menu expand collapse animation
-  &:not(.menu-no-animation) {
+  &:not(.dd-menu-no-animation) {
     transition: inline-size $menu-animation-duration;
   }
 
   &,
-  .menu-block,
-  .menu-inner > .menu-item,
-  .menu-inner > .menu-header {
+  .dd-menu-block,
+  .dd-menu-inner > .dd-menu-item,
+  .dd-menu-inner > .dd-menu-header {
     inline-size: var(--#{$prefix}menu-width);
   }
 
-  .menu-inner {
+  .dd-menu-inner {
     flex: 1 1 auto;
     flex-direction: column;
 
-    > .menu-item {
+    > .dd-menu-item {
       margin-block: var(--#{$prefix}menu-item-spacer);
       margin-inline: 0;
       &.active {
         &::before {
-          .layout-wrapper:not(.layout-horizontal) & {
+          .dd-layout-wrapper:not(.dd-layout-horizontal) & {
             position: absolute;
             background-color: var(--#{$prefix}primary);
             block-size: 2.6845rem;
@@ -374,14 +374,14 @@
             @include border-bottom-start-radius($border-radius);
           }
         }
-        > .menu-link:not(.menu-toggle) {
+        > .dd-menu-link:not(.dd-menu-toggle) {
           background-color: var(--#{$prefix}menu-active-bg);
           color: var(--#{$prefix}menu-active-color);
         }
       }
 
       /* menu-link spacing */
-      .menu-link {
+      .dd-menu-link {
         @include border-radius($border-radius);
         margin-block: 0;
         margin-inline: $menu-vertical-link-margin-x;
@@ -389,21 +389,21 @@
     }
   }
 
-  .menu-item .menu-link,
-  .menu-block {
+  .dd-menu-item .dd-menu-link,
+  .dd-menu-block {
     padding-block: var(--#{$prefix}menu-vertical-link-padding-y);
     padding-inline: var(--#{$prefix}menu-vertical-link-padding-x);
   }
 
-  .layout-menu-hover & {
-    .menu-inner > .menu-item > .menu-link,
-    .menu-inner > .menu-block,
-    .menu-inner > .menu-header {
+  .dd-layout-menu-hover & {
+    .dd-menu-inner > .dd-menu-item > .dd-menu-link,
+    .dd-menu-inner > .dd-menu-block,
+    .dd-menu-inner > .dd-menu-header {
       padding-inline: calc(#{var(--#{$prefix}menu-vertical-link-padding-x)} + #{$caret-width * 2}) calc(#{var(--#{$prefix}menu-vertical-link-padding-x)} + #{$caret-width * 3.2});
     }
   }
 
-  .menu-header {
+  .dd-menu-header {
     position: relative;
     margin-block: $menu-vertical-header-margin-y $menu-vertical-header-margin-y * .5;
     margin-inline: 0;
@@ -420,7 +420,7 @@
       transition: all $menu-animation-duration ease-in-out;
     }
   }
-  .menu-item .menu-link {
+  .dd-menu-item .dd-menu-link {
     font-size: $menu-font-size;
     min-block-size: 2.625rem;
     > div:not(.badge) {
@@ -431,8 +431,8 @@
     }
   }
 
-  .menu-item {
-    .menu-toggle {
+  .dd-menu-item {
+    .dd-menu-toggle {
       padding-inline-end: calc(#{var(--#{$prefix}menu-vertical-link-padding-x)} + #{$caret-width * 3.2});
 
       &::after {
@@ -440,28 +440,28 @@
         transition: transform $menu-animation-duration;
       }
     }
-    &:not(.active):not(.open) .menu-link:hover {
+    &:not(.active):not(.open) .dd-menu-link:hover {
       background-color: var(--#{$prefix}menu-hover-bg);
     }
 
-    &.active > .menu-toggle {
+    &.active > .dd-menu-toggle {
       background-color: var(--#{$prefix}menu-sub-active-bg);
       color: var(--#{$prefix}menu-sub-active-color);
     }
-    &.active:not(.open) > .menu-link:not(.menu-toggle)::before {
+    &.active:not(.open) > .dd-menu-link:not(.dd-menu-toggle)::before {
       /* border: 3px solid var(--#{$prefix}primary-bg-subtle); */
       background-color: var(--#{$prefix}primary);
       block-size: .5rem;
       box-shadow: 0 0 0 3px var(--#{$prefix}primary-bg-subtle);
       inline-size: .5rem;
       inset-inline-start: 1.4rem;
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         inset-inline-start: 1.5rem;
       }
     }
   }
 
-  .menu-item.open:not(.menu-item-closing) > .menu-link::after {
+  .dd-menu-item.open:not(.dd-menu-item-closing) > .dd-menu-link::after {
     transform: translateY(-50%) rotate(135deg);
 
     :dir(rtl) & {
@@ -469,18 +469,18 @@
     }
   }
 
-  .menu-divider {
+  .dd-menu-divider {
     padding: 0;
     margin-block: $menu-link-spacer-x;
   }
 
-  .menu-sub {
-    .menu-item {
+  .dd-menu-sub {
+    .dd-menu-item {
       margin-block: calc(var(--#{$prefix}menu-item-spacer) * 2) 0;
       margin-inline: 0;
     }
-    .menu-icon {
-      .layout-horizontal & {
+    .dd-menu-icon {
+      .dd-layout-horizontal & {
         @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
           display: none;
         }
@@ -488,22 +488,22 @@
     }
   }
 
-  .layout-horizontal & {
+  .dd-layout-horizontal & {
     @include media-breakpoint-down($menu-collapsed-layout-breakpoint) {
       box-shadow: none;
     }
-    .menu-item {
+    .dd-menu-item {
       margin-block-start: $menu-item-spacer * 2;
     }
   }
 
-  .menu-horizontal-wrapper {
+  .dd-menu-horizontal-wrapper {
     flex: none;
   }
 
-  ~ .menu-mobile-toggler{
+  ~ .dd-menu-mobile-toggler{
     display: none;
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       position: fixed;
       z-index: 1067;
       display: flex;
@@ -518,7 +518,7 @@
   // Levels
   $menu-first-level-spacer: $menu-vertical-link-padding-x + $menu-icon-expanded-width + $menu-icon-expanded-spacer;
 
-  .menu-sub .menu-link {
+  .dd-menu-sub .dd-menu-link {
     padding-inline-start: $menu-first-level-spacer;
   }
 
@@ -527,19 +527,19 @@
     $selector: "";
 
     @for $l from 1 through $i {
-      $selector: "#{$selector} .menu-sub";
+      $selector: "#{$selector} .dd-menu-sub";
     }
-    .layout-wrapper:not(.layout-horizontal) & {
-      .menu-inner > .menu-item {
+    .dd-layout-wrapper:not(.dd-layout-horizontal) & {
+      .dd-menu-inner > .dd-menu-item {
         #{$selector} {
-          .menu-link {
+          .dd-menu-link {
             padding-inline-start: $menu-first-level-spacer + ($menu-vertical-menu-level-spacer * ($i)) - .8;
             &::before {
               inset-inline-start: $menu-icon-expanded-left-spacer + ($menu-vertical-menu-level-spacer * $i) - 1;
             }
           }
-          & > .menu-item.active > {
-            .menu-link {
+          & > .dd-menu-item.active > {
+            .dd-menu-link {
               &::before {
                 inset-inline-start: $menu-icon-expanded-left-spacer + ($menu-vertical-menu-level-spacer * $i) - 1.01;
               }
@@ -557,12 +557,12 @@
 @mixin layout-menu-collapsed() {
   inline-size: var(--#{$prefix}menu-collapsed-width);
 
-  .menu-inner > .menu-item {
+  .dd-menu-inner > .dd-menu-item {
     inline-size: var(--#{$prefix}menu-collapsed-width);
   }
 
-  .menu-inner > .menu-header,
-  .menu-block {
+  .dd-menu-inner > .dd-menu-header,
+  .dd-menu-block {
     position: relative;
     inline-size: var(--#{$prefix}menu-width);
     margin-inline-start: var(--#{$prefix}menu-collapsed-width);
@@ -570,7 +570,7 @@
     text-indent: -9999px;
     text-overflow: ellipsis;
     white-space: nowrap;
-    .menu-header-text {
+    .dd-menu-header-text {
       overflow: hidden;
       opacity: 0;
     }
@@ -586,74 +586,74 @@
     }
   }
 
-  /* Custom for sneat only */
-  .menu-block {
+  /* Custom Dream Digital styles */
+  .dd-menu-block {
     &::before {
       block-size: .125rem;
     }
   }
-  .menu-inner > .menu-item div:not(.menu-block) {
+  .dd-menu-inner > .dd-menu-item div:not(.dd-menu-block) {
     overflow: hidden;
     opacity: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .menu-inner > .menu-item > .menu-sub,
-  .menu-inner > .menu-item.open > .menu-sub {
+  .dd-menu-inner > .dd-menu-item > .dd-menu-sub,
+  .dd-menu-inner > .dd-menu-item.open > .dd-menu-sub {
     display: none;
   }
-  .menu-inner > .menu-item > .menu-toggle::after {
+  .dd-menu-inner > .dd-menu-item > .dd-menu-toggle::after {
     display: none;
   }
 
-  &:not(.layout-menu-hover) {
-    .menu-inner > .menu-item > .menu-link,
-    .menu-inner > .menu-block,
-    .menu-inner > .menu-header {
+  &:not(.dd-layout-menu-hover) {
+    .dd-menu-inner > .dd-menu-item > .dd-menu-link,
+    .dd-menu-inner > .dd-menu-block,
+    .dd-menu-inner > .dd-menu-header {
       padding-inline: calc(#{$menu-vertical-link-padding-x} - 1px);
     }
   }
 
-  .menu-inner > .menu-item > .menu-link .menu-icon {
+  .dd-menu-inner > .dd-menu-item > .dd-menu-link .dd-menu-icon {
     margin-inline-end: 0;
     text-align: center;
   }
 }
 
 /* Only for menu example */
-.menu-collapsed:not(:hover) {
+.dd-menu-collapsed:not(:hover) {
   @include layout-menu-collapsed();
 }
 
 /* Horizontal
 ******************************************************************************* */
 
-.menu-horizontal {
+.dd-menu-horizontal {
   flex-direction: row;
   inline-size: 100%;
 
-  .menu-inner {
+  .dd-menu-inner {
     overflow: hidden;
     flex: 0 1 100%;
     flex-direction: row;
 
-    .menu-item {
-      &:not(.menu-item-closing) > .menu-sub {
+    .dd-menu-item {
+      &:not(.dd-menu-item-closing) > .dd-menu-sub {
         background-color: var(--#{$prefix}menu-bg);
       }
-      &:hover > .menu-link {
+      &:hover > .dd-menu-link {
         background-color: var(--#{$prefix}menu-hover-bg);
         color: var(--#{$prefix}menu-hover-color);
       }
     }
   }
 
-  .menu-item .menu-link {
+  .dd-menu-item .dd-menu-link {
     padding-block: $menu-horizontal-link-padding-y;
     padding-inline: $menu-horizontal-link-padding-x;
   }
 
-  .menu-item.active > .menu-link:not(.menu-toggle) {
+  .dd-menu-item.active > .dd-menu-link:not(.dd-menu-toggle) {
     background: var(--#{$prefix}menu-horizontal-active-bg);
     color: var(--#{$prefix}primary);
     &::before{
@@ -662,7 +662,7 @@
     }
   }
 
-  .menu-item .menu-toggle {
+  .dd-menu-item .dd-menu-toggle {
     padding-inline-end: calc(#{$menu-horizontal-link-padding-x} + #{$caret-width * 3.2});
 
     &::after {
@@ -671,7 +671,7 @@
     }
   }
 
-  .menu-inner > .menu-item > .menu-toggle {
+  .dd-menu-inner > .dd-menu-item > .dd-menu-toggle {
     &::after {
       transform: translateY(-50%) rotate(135deg);
       :dir(rtl) & {
@@ -689,28 +689,28 @@
       pointer-events: auto;
     }
   }
-  .menu-inner > .menu-item > .menu-sub {
+  .dd-menu-inner > .dd-menu-item > .dd-menu-sub {
     margin-block-start: $menu-horizontal-link-padding-y;
-    .menu-sub {
+    .dd-menu-sub {
       margin-block: 0;
       margin-inline: $menu-horizontal-spacer-x;
     }
   }
-  .menu-inner > .menu-item:not(.menu-item-closing).open .menu-item.open {
+  .dd-menu-inner > .dd-menu-item:not(.dd-menu-item-closing).open .dd-menu-item.open {
     position: relative;
   }
 
-  .menu-sub {
+  .dd-menu-sub {
     position: absolute;
     inline-size: $menu-sub-width;
     padding-block: $menu-horizontal-item-spacer;
     padding-inline: 0;
-    .menu-item {
+    .dd-menu-item {
       /* padding-inline: $menu-link-spacer-x; */
       &:not(:last-child) {
         margin-block-end: .125rem;
       }
-      &.open .menu-link > div::after {
+      &.open .dd-menu-link > div::after {
         position: absolute;
         z-index: 2;
         block-size: 100%;
@@ -721,30 +721,30 @@
       }
     }
 
-    .menu-sub {
+    .dd-menu-sub {
       position: absolute;
       inline-size: 100%;
       inset-block-start: 0;
       inset-inline-start: 100%;
     }
 
-    .menu-link {
+    .dd-menu-link {
       padding-block: $menu-horizontal-menu-link-padding-y;
     }
   }
 
-  .menu-inner > .menu-item {
-    .menu-sub {
+  .dd-menu-inner > .dd-menu-item {
+    .dd-menu-sub {
       @include border-radius($border-radius);
-      .menu-sub {
-        .menu-link {
+      .dd-menu-sub {
+        .dd-menu-link {
           padding-inline-start: $menu-horizontal-menu-level-spacer;
         }
       }
     }
   }
 
-  &:not(.menu-no-animation) .menu-inner .menu-item.open .menu-sub {
+  &:not(.dd-menu-no-animation) .dd-menu-inner .dd-menu-item.open .dd-menu-sub {
     animation: menuDropdownShow $menu-animation-duration ease-in-out;
   }
 
@@ -755,18 +755,18 @@
   }
 }
 
-.menu-horizontal-wrapper {
+.dd-menu-horizontal-wrapper {
   overflow: hidden;
   flex: 0 1 100%;
   inline-size: 0;
 
-  .menu:not(.menu-no-animation) & .menu-inner {
+  .menu:not(.dd-menu-no-animation) & .dd-menu-inner {
     transition: margin $menu-animation-duration;
   }
 }
 
-.menu-horizontal-prev,
-.menu-horizontal-next {
+.dd-menu-horizontal-prev,
+.dd-menu-horizontal-next {
   position: relative;
   display: block;
   flex: 0 0 auto;
@@ -789,7 +789,7 @@
   }
 }
 
-.menu-horizontal-prev::after {
+.dd-menu-horizontal-prev::after {
   border-inline-end: 0;
   transform: translate(0, -50%) rotate(45deg);
 
@@ -798,7 +798,7 @@
   }
 }
 
-.menu-horizontal-next::after {
+.dd-menu-horizontal-next::after {
   border-inline-start: 0;
   transform: translate(50%, -50%) rotate(315deg);
 

@@ -8,7 +8,7 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
 
 (function () {
   const menu = document.getElementById('navbarSupportedContent'),
-    nav = document.querySelector('.layout-navbar'),
+    nav = document.querySelector('.dd-layout-navbar'),
     navItemLink = document.querySelectorAll('.navbar-nav .nav-link');
 
   // Initialised custom options if checked
@@ -24,7 +24,7 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
 
   if (isRtl) {
     // If layout is RTL add .dropdown-menu-end class to .dropdown-menu
-    Helpers._addClass('dropdown-menu-end', document.querySelectorAll('#layout-navbar .dropdown-menu'));
+    Helpers._addClass('dropdown-menu-end', document.querySelectorAll('#dd-layout-navbar .dropdown-menu'));
     // If layout is RTL add .dropdown-menu-end class to .dropdown-menu
     Helpers._addClass('dropdown-menu-end', document.querySelectorAll('.dropdown-menu'));
   }
@@ -74,10 +74,8 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
     });
   }
 
-  // Get style from local storage or use 'system' as default
-  let storedStyle =
-    localStorage.getItem('templateCustomizer-' + templateName + '--Theme') || //if no template style then use Customizer style
-    (window.templateCustomizer?.settings?.defaultStyle ?? document.documentElement.getAttribute('data-bs-theme')); //!if there is no Customizer then use default style as light
+  // Get style from data-bs-theme attribute (set by anti-FOUC inline script reading dd-theme localStorage)
+  let storedStyle = document.documentElement.getAttribute('data-bs-theme') || 'light';
 
   let styleSwitcher = document.querySelector('.dropdown-style-switcher');
   const styleSwitcherIcon = styleSwitcher.querySelector('i');
@@ -113,10 +111,9 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
     document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
       toggle.addEventListener('click', () => {
         const theme = toggle.getAttribute('data-bs-theme-value');
-        window.Helpers.setStoredTheme(templateName, theme);
+        window.Helpers.setStoredTheme(theme);
         window.Helpers.setTheme(theme);
         window.Helpers.showActiveTheme(theme, true);
-        window.Helpers.syncCustomOptions(theme);
         let currTheme = theme;
         if (theme === 'system') {
           currTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

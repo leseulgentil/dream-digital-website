@@ -10,11 +10,11 @@ $activeClass = in_array($currentRouteName, $activeRoutes) ? 'active' : '';
 @endsection
 
 <!-- Navbar: Start -->
-<nav class="layout-navbar shadow-none py-0">
+<nav class="dd-layout-navbar shadow-none py-0">
   <div class="container">
     <div class="navbar navbar-expand-lg landing-navbar px-3 px-md-8">
       <!-- Menu logo wrapper: Start -->
-      <div class="navbar-brand app-brand demo d-flex py-0 me-4 me-xl-8">
+      <div class="navbar-brand dd-app-brand demo d-flex py-0 me-4 me-xl-8">
         <!-- Mobile menu toggle: Start-->
         <button class="navbar-toggler border-0 px-0 me-4" type="button" data-bs-toggle="collapse"
           data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -22,9 +22,9 @@ $activeClass = in_array($currentRouteName, $activeRoutes) ? 'active' : '';
           <i class="icon-base bx bx-menu icon-lg align-middle text-heading fw-medium"></i>
         </button>
         <!-- Mobile menu toggle: End-->
-        <a href="{{url('front-pages/landing')}}" class="app-brand-link">
-          <span class="app-brand-logo demo">@include('_partials.macros')</span>
-          <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1">{{ config('variables.templateName') }}</span>
+        <a href="{{url('front-pages/landing')}}" class="dd-app-brand-link">
+          <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
+          <span class="dd-app-brand-text demo dd-menu-text fw-bold ms-2 ps-1">{{ config('variables.templateName') }}</span>
         </a>
       </div>
       <!-- Menu logo wrapper: End -->
@@ -247,38 +247,30 @@ $activeClass = in_array($currentRouteName, $activeRoutes) ? 'active' : '';
       <!-- Menu wrapper: End -->
       <!-- Toolbar: Start -->
       <ul class="navbar-nav flex-row align-items-center ms-auto">
-        @if ($configData['hasCustomizer'] == true)
-        <!-- Style Switcher -->
-        <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
-          <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);"
-            data-bs-toggle="dropdown">
-            <i class="icon-base bx bx-sun icon-lg theme-icon-active"></i>
-            <span class="d-none ms-2" id="nav-theme-text">Toggle theme</span>
+        <!-- Theme switcher (Q13: Light/Dark/System) -->
+        <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-1">
+          <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" aria-label="Theme">
+            <i class="icon-base bx bx-sun icon-md theme-icon-active"></i>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-theme-text">
+          <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
             <li>
-              <button type="button" class="dropdown-item align-items-center active" data-bs-theme-value="light"
-                aria-pressed="false">
-                <span><i class="icon-base bx bx-sun icon-md me-3" data-icon="sun"></i>Light</span>
-              </button>
+              <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
+                <span class="align-middle"><i class="icon-base bx bx-sun icon-md me-3"></i>Light</span>
+              </a>
             </li>
             <li>
-              <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="dark"
-                aria-pressed="true">
-                <span><i class="icon-base bx bx-moon icon-md me-3" data-icon="moon"></i>Dark</span>
-              </button>
+              <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
+                <span class="align-middle"><i class="icon-base bx bx-moon icon-md me-3"></i>Dark</span>
+              </a>
             </li>
             <li>
-              <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="system"
-                aria-pressed="false">
-                <span><i class="icon-base bx bx-desktop icon-md me-3" data-icon="desktop"></i>System</span>
-              </button>
+              <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
+                <span class="align-middle"><i class="icon-base bx bx-desktop icon-md me-3"></i>System</span>
+              </a>
             </li>
           </ul>
         </li>
-        <!-- / Style Switcher-->
-        @endif
-
+        <!--/ Theme switcher -->
         <!-- navbar button: Start -->
         <li>
           <a href="{{ url('/auth/login-cover') }}" class="btn btn-primary" target="_blank">

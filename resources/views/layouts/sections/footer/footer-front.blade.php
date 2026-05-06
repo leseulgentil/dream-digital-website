@@ -6,9 +6,9 @@
     <div class="container">
       <div class="row gx-0 gy-6 g-lg-10">
         <div class="col-lg-5">
-          <a href="{{url('front-pages/landing')}}" class="app-brand-link mb-6">
-            <span class="app-brand-logo demo">@include('_partials.macros')</span>
-            <span class="app-brand-text demo text-white fw-bold ms-2 ps-1">{{ config('variables.templateName') }}</span>
+          <a href="{{url('front-pages/landing')}}" class="dd-app-brand-link mb-6">
+            <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
+            <span class="dd-app-brand-text demo text-white fw-bold ms-2 ps-1">{{ config('variables.templateName') }}</span>
           </a>
           <p class="footer-text footer-logo-description mb-6">Most developer friendly & highly customisable Admin
             Dashboard Template.</p>

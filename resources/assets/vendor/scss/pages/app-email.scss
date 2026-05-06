@@ -17,10 +17,10 @@ $email-filter-padding-x: 1.5rem;
   @include media-breakpoint-down("md") {
     block-size: calc(100vh - 11rem);
   }
-  .layout-navbar-hidden & {
+  .dd-layout-navbar-hidden & {
     block-size: $email-app-height-with-no-navbar;
   }
-  .layout-horizontal & {
+  .dd-layout-horizontal & {
     block-size: calc($email-app-height + calc($email-app-horizontal-height-diff / 1.9));
     @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
       block-size: calc($email-app-height - $email-app-horizontal-height-diff);
@@ -62,10 +62,10 @@ $email-filter-padding-x: 1.5rem;
 
     .email-filters {
       block-size: calc(100vh - 16.6rem);
-      .layout-navbar-hidden & {
+      .dd-layout-navbar-hidden & {
         block-size: calc(100vh - 12.6rem);
       }
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc(100vh - 15.6rem);
         @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
           block-size: calc(100vh - 16.6rem - $email-app-horizontal-height-diff);
@@ -169,7 +169,7 @@ $email-filter-padding-x: 1.5rem;
       @include media-breakpoint-down(md) {
         block-size: calc(100vh - 18rem);
       }
-      .layout-navbar-hidden & {
+      .dd-layout-navbar-hidden & {
         @include media-breakpoint-up(lg) {
           block-size: calc(100vh - 15.5rem);
         }
@@ -177,7 +177,7 @@ $email-filter-padding-x: 1.5rem;
           block-size: calc(100vh - 15.5rem);
         }
       }
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc(100vh - 18.2rem);
         @include media-breakpoint-up(lg) {
           block-size: calc(100vh - 17.75rem);
@@ -259,10 +259,10 @@ $email-filter-padding-x: 1.5rem;
     @include media-breakpoint-down(md) {
       block-size: calc($email-app-height + 2rem);
     }
-    .layout-navbar-hidden & {
+    .dd-layout-navbar-hidden & {
       block-size: $email-app-height-with-no-navbar;
     }
-    .layout-horizontal & {
+    .dd-layout-horizontal & {
       block-size: calc($email-app-height + 1rem);
       @include media-breakpoint-up(lg) {
         block-size: calc($email-app-height + 1rem);
@@ -303,7 +303,7 @@ $email-filter-padding-x: 1.5rem;
       @include media-breakpoint-down(md) {
         block-size: calc(100vh - 17.65rem);
       }
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc(100vh - 18rem);
         @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
           block-size: calc(100vh - 19.2rem - $email-app-horizontal-height-diff);

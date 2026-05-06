@@ -1,32 +1,49 @@
 <?php
-// Variables
+
+// Dream Digital — Brand & Site variables
+// Source of truth : BRAND_KIT_DREAM_DIGITAL.md v1.2 (project root)
+//
+// Note : keys kept exhaustively (even when empty) to preserve compatibility with
+// the Blade templates inherited from the source template that reference config('variables.*').
+
 return [
-  "creatorName" => "ThemeSelection",
-  "creatorUrl" => "https://themeselection.com",
-  "templateName" => "sneat",
-  "templateSuffix" => "Sneat Bootstrap 5 HTML + Laravel Admin Template",
-  "templateVersion" => "4.0.0",
-  "templateFree" => false,
-  "templateDescription" => "Most Powerful & Comprehensive Bootstrap 5 + Laravel HTML Admin Dashboard Template built for developers!",
-  "templateKeyword" => "dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5",
-  "licenseUrl" => "https://themeselection.com/license/",
-  "livePreview" => "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/",
-  "productPage" => "https://themeselection.com/item/sneat-dashboard-pro-laravel/",
-  "support" => "https://themeselection.com/support/",
-  "adminTemplates" => "https://themeselection.com/item/category/admin-templates/",
-  "bootstrapDashboard" => "https://themeselection.com/item/category/bootstrap-admin-templates/",
-  "ogTitle" => "Sneat Bootstrap 5 HTML + Laravel Admin Template by ThemeSelection",
-  "ogImage" => "https://ts-assets.b-cdn.net/ts-assets/sneat/sneat-bootstrap-laravel-admin-template/marketing/sneat-bootstrap-laravel-admin-template-smm.png",
-  "ogType" => "product",
-  "documentation" => "https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation",
-  "changelog" => "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/changelog.html",
-  "repository" => "https://github.com/themeselection/sneat-bootstrap-html-laravel-admin-template",
-  "gitRepo" => "sneat-bootstrap-html-laravel-admin-template",
-  "gitRepoAccess" => "https://tools.themeselection.com/github/github-access",
-  "githubFreeUrl" => "https://github.com/themeselection",
-  "facebookUrl" => "https://www.facebook.com/ThemeSelections/",
-  "twitterUrl" => "https://x.com/Theme_Selection",
-  "githubUrl" => "https://github.com/themeselection",
-  "dribbbleUrl" => "https://dribbble.com/themeselection",
-  "instagramUrl" => "https://www.instagram.com/themeselection/"
+    // Brand identity
+    "creatorName"         => "Dream Digital",
+    "creatorUrl"          => "https://dream-digital.info",
+    "templateName"        => "Dream Digital",
+    "templateSuffix"      => "Voice. SMS. eSIM. And More.",
+    "templateVersion"     => "0.1.0",
+    "templateFree"        => false,
+    "templateDescription" => "Programmable telecom platform — Voice, SMS, eSIM and more APIs for global communications.",
+    "templateKeyword"     => "cpaas, itsp, voice api, sms api, esim, programmable telecom, dream digital",
+
+    // Legal / commercial links
+    "licenseUrl"          => "",
+    "livePreview"         => "https://dream-digital.info",
+    "productPage"         => "https://dream-digital.info",
+    "support"             => "https://dream-digital.info",
+
+    // Marketing back-links (legacy template keys, kept empty for Blade compatibility)
+    "adminTemplates"      => "",
+    "bootstrapDashboard"  => "",
+
+    // Open Graph / social previews
+    "ogTitle"             => "Dream Digital — Voice. SMS. eSIM. And More.",
+    "ogImage"             => "",
+    "ogType"              => "website",
+
+    // Documentation / repository
+    "documentation"       => "",
+    "changelog"           => "",
+    "repository"          => "",
+    "gitRepo"             => "",
+    "gitRepoAccess"       => "",
+    "githubFreeUrl"       => "",
+
+    // Social media (to be filled when official channels are confirmed)
+    "facebookUrl"         => "",
+    "twitterUrl"          => "",
+    "githubUrl"           => "",
+    "dribbbleUrl"         => "",
+    "instagramUrl"        => "",
 ];

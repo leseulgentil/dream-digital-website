@@ -13,10 +13,10 @@
       $configData['layout'] === 'vertical'
           ? $configData['navbarType']
           : ($configData['layout'] === 'front'
-              ? 'layout-navbar-fixed'
+              ? 'dd-layout-navbar-fixed'
               : '');
   $isFront = ($isFront ?? '') == true ? 'Front' : '';
-  $contentLayout = isset($container) ? ($container === 'container-xxl' ? 'layout-compact' : 'layout-wide') : '';
+  $contentLayout = isset($container) ? ($container === 'container-xxl' ? 'dd-layout-compact' : 'dd-layout-wide') : '';
 
   // Get skin name from configData - only applies to admin layouts
   $isAdminLayout = !Str::contains($configData['layout'] ?? '', 'front');
@@ -34,7 +34,7 @@
 @endphp
 
 <html lang="{{ session()->get('locale') ?? app()->getLocale() }}"
-  class="{{ $navbarType ?? '' }} {{ $contentLayout ?? '' }} {{ $menuFixed ?? '' }} {{ $menuCollapsed ?? '' }} {{ $footerFixed ?? '' }} {{ $customizerHidden ?? '' }}"
+  class="{{ $navbarType ?? '' }} {{ $contentLayout ?? '' }} {{ $menuFixed ?? '' }} {{ $menuCollapsed ?? '' }} {{ $footerFixed ?? '' }}"
   dir="{{ $configData['textDirection'] }}" data-skin="{{ $skinName }}" data-assets-path="{{ asset('/assets') . '/' }}"
   data-base-url="{{ url('/') }}" data-framework="laravel" data-template="{{ $configData['layout'] }}-menu-template"
   data-bs-theme="{{ $configData['theme'] }}" @if ($isAdminLayout && $semiDarkEnabled) data-semidark-menu="true" @endif>
@@ -43,6 +43,25 @@
   <meta charset="utf-8" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+  {{-- Anti-FOUC: apply user theme preference (Q13) before any CSS loads --}}
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('dd-theme');
+        if (stored !== 'light' && stored !== 'dark' && stored !== 'system') stored = 'system';
+        var resolved = stored === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : stored;
+        document.documentElement.setAttribute('data-bs-theme', resolved);
+      } catch (e) { /* localStorage may be disabled — fall back to server-rendered data-bs-theme */ }
+    })();
+  </script>
+
+  {{-- Google Fonts (S3) — Dream Digital typography pair: Inter + JetBrains Mono --}}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <title>
     @yield('title') | {{ config('variables.templateName') ? config('variables.templateName') : 'TemplateName' }}
@@ -65,8 +84,9 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <!-- Canonical SEO -->
   <link rel="canonical" href="{{ config('variables.productPage') ? config('variables.productPage') : '' }}" />
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+  <!-- Favicon — Dream Digital (Brand Kit v1.2, S5) -->
+  <link rel="icon" type="image/svg+xml" href="{{ asset('img/brand/logo-dd-icon.svg') }}" />
+  <link rel="alternate icon" type="image/png" href="{{ asset('img/brand/logo-dd-icon.png') }}" />
 
   <!-- Include Styles -->
   <!-- $isFront is used to append the front layout styles only on the front layout otherwise the variable will be blank -->

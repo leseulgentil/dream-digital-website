@@ -1,13 +1,27 @@
 {
   "$schema": "https://getcomposer.org/schema.json",
-  "name": "laravel/laravel",
+  "name": "dream-digital/website",
   "type": "project",
-  "description": "The skeleton application for the Laravel framework.",
+  "description": "Dream Digital corporate website and client portal — programmable telecom CPaaS/ITSP.",
   "keywords": [
+    "dream-digital",
     "laravel",
-    "framework"
+    "cpaas",
+    "itsp",
+    "telecom",
+    "voice-api",
+    "sms-api",
+    "esim"
   ],
-  "license": "MIT",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Lukoo Mapendo Gentil",
+      "email": "gentil@dream-digital.info",
+      "role": "Founder & CEO"
+    }
+  ],
+  "homepage": "https://dream-digital.info",
   "require": {
     "php": "^8.2",
     "laravel/framework": "^12.0",

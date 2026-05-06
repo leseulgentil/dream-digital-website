@@ -28,7 +28,7 @@ $kanban-add-new-board-padding: 1rem;
     overflow-x: auto;
     overflow-y: auto;
     @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
-      .layout-horizontal & {
+      .dd-layout-horizontal & {
         block-size: calc($kanban-wrapper-height - $kanban-app-horizontal-height-diff);
       }
     }

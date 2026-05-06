@@ -37,26 +37,13 @@ class Helpers
       'mySkins' => 'default',
       'hasSemiDark' => false,
       'myRTLMode' => true,
-      'hasCustomizer' => true,
       'showDropdownOnHover' => true,
-      'displayCustomizer' => true,
       'contentLayout' => 'compact',
       'headerType' => 'fixed',
       'navbarType' => 'sticky',
       'menuFixed' => true,
       'menuCollapsed' => false,
       'footerFixed' => false,
-      'customizerControls' => [
-        'color',
-        'theme',
-        'skins',
-        'semiDark',
-        'layoutCollapsed',
-        'layoutNavbarOptions',
-        'headerType',
-        'contentLayout',
-        'rtl'
-      ],
       //   'defaultLanguage'=>'en',
     ];
 
@@ -67,9 +54,7 @@ class Helpers
     $allOptions = [
       'myLayout' => ['vertical', 'horizontal', 'blank', 'front'],
       'menuCollapsed' => [true, false],
-      'hasCustomizer' => [true, false],
       'showDropdownOnHover' => [true, false],
-      'displayCustomizer' => [true, false],
       'contentLayout' => ['compact', 'wide'],
       'headerType' => ['fixed', 'static'],
       'navbarType' => ['sticky', 'static', 'hidden'],
@@ -79,7 +64,6 @@ class Helpers
       'myRTLMode' => [true, false],
       'menuFixed' => [true, false],
       'footerFixed' => [true, false],
-      'customizerControls' => [],
       // 'defaultLanguage'=>array('en'=>'en','fr'=>'fr','de'=>'de','ar'=>'ar'),
     ];
 
@@ -192,47 +176,44 @@ class Helpers
       'rtlMode' => $data['myRTLMode'],
       'textDirection' => $directionVal,
       'menuCollapsed' => $menuCollapsedFromCookie,
-      'hasCustomizer' => $data['hasCustomizer'],
       'showDropdownOnHover' => $data['showDropdownOnHover'],
-      'displayCustomizer' => $data['displayCustomizer'],
       'contentLayout' => $contentLayoutFromCookie,
       'headerType' => $headerTypeFromCookie,
       'navbarType' => $navbarTypeFromCookie,
       'menuFixed' => $data['menuFixed'],
       'footerFixed' => $data['footerFixed'],
-      'customizerControls' => $data['customizerControls'],
       'menuAttributes' => self::getMenuAttributes($semiDarkEnabled),
     ];
 
     // sidebar Collapsed
     if ($layoutClasses['menuCollapsed'] === 'true' || $layoutClasses['menuCollapsed'] === true) {
-      $layoutClasses['menuCollapsed'] = 'layout-menu-collapsed';
+      $layoutClasses['menuCollapsed'] = 'dd-layout-menu-collapsed';
     } else {
       $layoutClasses['menuCollapsed'] = '';
     }
 
     // Header Type
     if ($layoutClasses['headerType'] == 'fixed') {
-      $layoutClasses['headerType'] = 'layout-menu-fixed';
+      $layoutClasses['headerType'] = 'dd-layout-menu-fixed';
     }
     // Navbar Type
     if ($layoutClasses['navbarType'] == 'sticky') {
-      $layoutClasses['navbarType'] = 'layout-navbar-fixed';
+      $layoutClasses['navbarType'] = 'dd-layout-navbar-fixed';
     } elseif ($layoutClasses['navbarType'] == 'static') {
       $layoutClasses['navbarType'] = '';
     } else {
-      $layoutClasses['navbarType'] = 'layout-navbar-hidden';
+      $layoutClasses['navbarType'] = 'dd-layout-navbar-hidden';
     }
 
     // Menu Fixed
     if ($layoutClasses['menuFixed'] == true) {
-      $layoutClasses['menuFixed'] = 'layout-menu-fixed';
+      $layoutClasses['menuFixed'] = 'dd-layout-menu-fixed';
     }
 
 
     // Footer Fixed
     if ($layoutClasses['footerFixed'] == true) {
-      $layoutClasses['footerFixed'] = 'layout-footer-fixed';
+      $layoutClasses['footerFixed'] = 'dd-layout-footer-fixed';
     }
 
     // RTL Layout/Mode
@@ -249,13 +230,6 @@ class Helpers
       $layoutClasses['showDropdownOnHover'] = true;
     } else {
       $layoutClasses['showDropdownOnHover'] = false;
-    }
-
-    // To hide/show display customizer UI, not js
-    if ($layoutClasses['displayCustomizer'] == true) {
-      $layoutClasses['displayCustomizer'] = true;
-    } else {
-      $layoutClasses['displayCustomizer'] = false;
     }
 
     return $layoutClasses;

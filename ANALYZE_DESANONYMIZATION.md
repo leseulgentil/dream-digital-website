@@ -515,3 +515,105 @@ git grep -nE 'TARGET-PATTERN' -- '*.js' ':(exclude)vendor/**' ':(exclude)*.min.j
 ```
 
 Et croiser avec les patterns d'interpolation Blade : `git grep '@include' '*.blade.php'`, `git grep '{{ \$' '*.blade.php'`, `git grep '@component' '*.blade.php'`.
+
+---
+
+## C-decies. Q20 — Règle de déclaration et validation runtime des modules JS
+
+**Validé 2026-05-06** : suite au bug détecté lors de la validation visuelle PO de S9-C3 (dark mode switcher non fonctionnel malgré les vérifications auto annoncées vertes), la règle d'intégration de tout nouveau module JavaScript est codifiée.
+
+### Le gap exposé
+
+Le module `dd-theme-switcher.js` créé en S9-C3 a été silencieusement compilé par Vite via le glob `pageJsFiles = GetFilesArray('resources/assets/js/*.js')` de `vite.config.js:18`, mais aucune directive `@vite([...])` ne le référençait dans les Blade. Conséquence : Vite **exposait** le bundle sur son dev server, mais le navigateur ne **demandait** jamais le fichier (aucune balise `<script>` émise dans le HTML rendu). Le switcher s'affichait correctement (HTML/CSS purs), mais aucun handler de clic n'était attaché, aucune purge `localStorage` n'avait lieu, et la clé `dd-theme` n'était jamais créée. Le seul comportement "thème" actif venait du script anti-FOUC inline dans `commonMaster.blade.php:48-59`, qui résolvait la valeur par défaut `'system'`.
+
+Les vérifications annoncées vertes lors du report C3 étaient toutes techniquement justes mais collectivement insuffisantes :
+
+- `node --check pass sur dd-theme-switcher.js` → valide la syntaxe, pas l'inclusion
+- *"Vite sert le nouveau JS (30 KB)"* → Vite expose le bundle (car globbé), ce qui ne signifie pas que le navigateur le demande
+- `php artisan view:cache succeed` → valide la syntaxe Blade, pas le runtime navigateur
+
+### Règle Q20 codifiée
+
+Tout nouveau module JavaScript ajouté à `resources/assets/js/` doit satisfaire **deux conditions cumulatives** avant d'être considéré comme intégré :
+
+#### 1. Déclaration explicite via @vite()
+
+Une directive `@vite([...])` référençant le fichier doit être présente dans le ou les fichiers Blade appropriés :
+
+- `resources/views/layouts/sections/scripts.blade.php` pour le back-office
+- `resources/views/layouts/sections/scriptsFront.blade.php` pour le front public
+- Ou un `@push('page-script')` / `@section('page-script')` ciblé pour un module page-spécifique
+
+⚠️ **La présence du module dans le glob `resources/assets/js/*.js` de `vite.config.js` NE SUFFIT PAS.** Vite compile le fichier mais ne l'inclut pas automatiquement dans les pages. Sans `@vite()` dans un Blade, le navigateur ne demande jamais le fichier.
+
+#### 2. Validation runtime navigateur
+
+Avant de claim la complétion d'une tâche impliquant un module JS, le module doit être vérifié runtime via DevTools :
+
+- **Network panel** : le fichier `dd-XXX-*.js` apparaît avec **Status 200**
+- **Application/Storage panel** : les effets attendus (clés `localStorage` créées, anciennes clés purgées, cookies posés, etc.) sont visibles
+- **Console panel** : aucune erreur JS rouge au chargement
+- **Comportement utilisateur** : les interactions prévues (clic, hover, submit, etc.) déclenchent les effets attendus
+
+Les vérifications suivantes sont **nécessaires mais NON suffisantes** :
+
+- `node --check` (syntaxe seulement)
+- *"Vite sert le module"* (exposition ≠ chargement)
+- `php artisan view:cache` (syntaxe Blade seulement)
+- Compilation Vite sans warning (n'implique pas inclusion HTML)
+
+### Justification
+
+Le drift entre "compilé" et "chargé" peut passer **toutes** les vérifications automatisables si la validation runtime navigateur est omise. Le glob `pageJsFiles` du `vite.config.js` actuel produit un faux signal de sécurité : ajouter un fichier dans `resources/assets/js/` semble suffisant car Vite ne se plaint de rien et le bundle apparaît bien dans `public/build/`. Mais sans déclaration `@vite()` explicite côté Blade, aucune balise `<script src="...">` n'est émise dans le HTML rendu. Le bug est silencieux côté outillage et ne se révèle qu'à l'inspection navigateur.
+
+### Application rétroactive
+
+- **S9-C3 corrigé** par le commit `fix(theme): wire dd-theme-switcher.js via @vite() in scripts/scriptsFront layouts`
+- **S0-S8** : aucun nouveau module JS ajouté hors templates Sneat existants — pas de régression à corriger
+- **S9-C1, S9-C2** : opérations de cleanup/refactoring sur fichiers déjà déclarés — pas concernés
+
+### Sprints concernés
+
+- **S3, S5, S10** restant du sprint actuel — pas concernés sauf si ajout de modules JS ad hoc
+- **Sprint 1.5 redesign** (à venir) — concerné si nouveaux modules d'animation, scroll-reveal, etc.
+- **Sprint 1 fondations multi-pays + i18n** — concerné si module de language switcher, geolocation, etc.
+- **Sprints d'implémentation des fonctionnalités validées** :
+  - #6 self-service onboarding
+  - #7 trust badges
+  - #9 doc interactive
+  - #11 AI assistant
+  - #13 eSIM preview
+
+  Tous ces sprints introduiront des modules JS — Q20 leur est applicable.
+
+### Procédure de validation Q20-conforme
+
+Pour tout commit ajoutant ou modifiant un module dans `resources/assets/js/` :
+
+```powershell
+# 1. Vérifier la déclaration @vite() dans au moins un Blade
+git grep -nE "MODULE-NAME\.js" -- '*.blade.php'
+
+# 2. Vider les caches
+php artisan view:clear
+php artisan cache:clear
+
+# 3. Lancer le dev server (si pas déjà actif)
+php artisan serve --port=8888
+
+# 4. Validation runtime navigateur sur http://127.0.0.1:8888
+#    - Ctrl+Shift+R pour bypass cache
+#    - F12 → Network → filtrer "MODULE-NAME" → Status 200 attendu
+#    - F12 → Application → Local Storage / Cookies → effets visibles
+#    - F12 → Console → 0 erreur rouge
+#    - Tester les interactions utilisateur prévues
+```
+
+### Lien méthodologique
+
+Q19 (audit étendu HTML pour renames de classes) et Q20 (validation runtime JS pour nouveaux modules) sont les **deux règles de robustesse** complémentaires pour les sprints de refactoring/feature large-échelle :
+
+- Q19 protège contre les **classes orphelines** (CSS sans HTML rendant la classe)
+- Q20 protège contre les **modules orphelins** (JS compilé sans HTML chargeant le module)
+
+Dans les deux cas, le pattern d'erreur est identique : **un drift silencieux entre la source et le runtime**, invisible aux vérifications statiques, qui ne se révèle qu'à l'inspection navigateur.

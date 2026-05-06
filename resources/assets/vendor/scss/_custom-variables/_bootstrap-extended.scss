@@ -3,5 +3,11 @@
 // Copy and paste variables as needed, modify their values, and remove the !default flag.
 // ===================================================================================================================
 
+// Dream Digital design tokens (Brand Kit v1.2) — Sneat-prescribed override hook.
+// Loaded by _bootstrap-extended/_include.scss before bootstrap/scss/variables,
+// so $primary, $font-family-base, $border-radius, etc. take precedence over the
+// Sneat/Bootstrap !default chain. See ANALYZE Q21 for the override-point rationale.
+@import "dream-digital";
+
 // $font-size-root: 14px !default;
 // $success: #00ff00 !default;

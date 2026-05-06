@@ -1,0 +1,281 @@
+// ============================================================================
+// Dream Digital — Design Tokens v1.2 FINAL
+// ============================================================================
+// Système 4 couleurs hiérarchisé : Primary teal + Secondary noir + Tertiary
+// cyan spot + Foundation neutres
+//
+// À placer dans : resources/assets/vendor/scss/_custom-variables/_dream-digital.scss
+// À importer en TÊTE de _bootstrap-extended.scss : @import "./dream-digital";
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// 1. PRIMARY — Petrol Teal (#335F5F) — usage ~30%
+// ----------------------------------------------------------------------------
+// Marque, branding, identité, sidebar admin, headings de marque, icônes
+// primaires, backgrounds tints subtils, bordures focus, tags catégoriels
+
+$dd-primary-50:  #F0F4F4;
+$dd-primary-100: #DCE6E6;
+$dd-primary-200: #BCD0D0;
+$dd-primary-300: #9CBABA;
+$dd-primary-400: #6E9999;
+$dd-primary-500: #335F5F;  // Couleur signature Dream Digital
+$dd-primary-600: #2A4F4F;
+$dd-primary-700: #224242;
+$dd-primary-800: #1A3535;
+$dd-primary-900: #0F2222;
+
+$dd-primary: $dd-primary-500;
+
+// ----------------------------------------------------------------------------
+// 2. SECONDARY — Action Black (#0E121C) — usage ~15%
+// ----------------------------------------------------------------------------
+// CTAs critiques, boutons "Get started", "Sign in", headings principaux,
+// texte body fort, terminal de code (background), cards premium
+
+$dd-secondary: #0E121C;
+$dd-action-black: $dd-secondary;
+
+// Note : pas de noir pur #000000 pour adoucir sur écrans modernes
+// Légèrement teinté bleu (#0E121C) pour fondre avec la palette teal
+
+// ----------------------------------------------------------------------------
+// 3. TERTIARY — Teal-Cyan Spot (#14B8A6) — usage ~5% MAXIMUM
+// ----------------------------------------------------------------------------
+// SPOT ACCENT uniquement. Usages autorisés :
+// - Liens textuels actifs (contenu éditorial)
+// - Soulignement actif item de menu courant
+// - Badges "NEW" sur sections nouvellement lancées
+// - Live indicators (pulse API status)
+// - Mots-clés highlightés dans le code
+// - Focus rings sur inputs (accessibilité)
+// - Coches "step completed" wizards
+//
+// INTERDIT pour :
+// - Boutons CTA primaires (utiliser teal ou noir)
+// - Backgrounds de cards courantes
+// - Headings ou titres
+// - Texte body courant
+// - Bordures containers (sauf focus state)
+
+$dd-tertiary-50:  #ECFDF7;
+$dd-tertiary-100: #CCF8EE;
+$dd-tertiary-200: #99F1DD;
+$dd-tertiary-300: #5EE3C6;
+$dd-tertiary-400: #2DC9AB;
+$dd-tertiary-500: #14B8A6;  // Spot accent — usage maximum 5% par vue
+$dd-tertiary-600: #0F9988;
+$dd-tertiary-700: #0F766E;
+$dd-tertiary-800: #115E56;
+$dd-tertiary-900: #134E48;
+
+$dd-tertiary: $dd-tertiary-500;
+
+// ----------------------------------------------------------------------------
+// 4. FOUNDATION — Neutres et surfaces — usage ~50%
+// ----------------------------------------------------------------------------
+
+// Surfaces
+$dd-surface:           #FFFFFF;
+$dd-surface-secondary: #F7F8FA;
+$dd-surface-tertiary:  #EFF1F5;
+
+// Échelle Ink (gris chauds, légèrement teintés vers le teal)
+$dd-ink-50:   #F7F8FA;
+$dd-ink-100:  #E4E7EE;
+$dd-ink-200:  #C9CFD9;
+$dd-ink-300:  #A5ADBC;
+$dd-ink-400:  #7B8395;
+$dd-ink-500:  #5A6275;
+$dd-ink-600:  #424A5C;
+$dd-ink-700:  #2D3340;
+$dd-ink-800:  #1A1F2A;
+$dd-ink-900:  #0E121C;  // Identique au $dd-secondary (Action Black)
+
+// ----------------------------------------------------------------------------
+// 5. COULEURS SÉMANTIQUES (status uniquement)
+// ----------------------------------------------------------------------------
+// RÉSERVÉES strictement aux indicateurs de statut, jamais comme couleurs
+// de marque ou décoration
+
+$dd-success: #0EBE82;
+$dd-warning: #F2A93B;
+$dd-danger:  #EF4361;
+$dd-info:    #3A86FF;
+
+// Variantes light pour backgrounds badges/alerts
+$dd-success-bg: #E5F8F1;
+$dd-warning-bg: #FCF1DE;
+$dd-danger-bg:  #FCE4E8;
+$dd-info-bg:    #E0EBFF;
+
+// Variantes dark pour text sur backgrounds light
+$dd-success-text: #066643;
+$dd-warning-text: #B57A1F;
+$dd-danger-text:  #C42E48;
+$dd-info-text:    #1E55B3;
+
+// ----------------------------------------------------------------------------
+// 6. OVERRIDE BOOTSTRAP DEFAULTS
+// ----------------------------------------------------------------------------
+
+$primary:   $dd-primary;
+$secondary: $dd-ink-500;
+$success:   $dd-success;
+$info:      $dd-info;
+$warning:   $dd-warning;
+$danger:    $dd-danger;
+$light:     $dd-ink-50;
+$dark:      $dd-ink-900;
+
+// ----------------------------------------------------------------------------
+// 7. TYPOGRAPHIE — Paire A : Inter + JetBrains Mono
+// ----------------------------------------------------------------------------
+// Import Google Fonts à ajouter dans <head> du commonMaster.blade.php :
+// <link rel="preconnect" href="https://fonts.googleapis.com">
+// <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+// <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+$dd-font-family-base:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$dd-font-family-display: 'Inter', system-ui, -apple-system, sans-serif;
+$dd-font-family-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+// Override Bootstrap
+$font-family-base:        $dd-font-family-base;
+$font-family-monospace:   $dd-font-family-mono;
+
+// Échelle typographique (responsive via clamp)
+$dd-display-1: clamp(2.5rem, 6vw, 5rem);      // 40px → 80px
+$dd-display-2: clamp(2rem, 4.5vw, 3.5rem);    // 32px → 56px
+$dd-h1:        clamp(1.75rem, 3.5vw, 2.5rem); // 28px → 40px
+$dd-h2:        clamp(1.5rem, 2.5vw, 2rem);    // 24px → 32px
+$dd-h3:        1.25rem;                        // 20px
+$dd-body-lg:   1.125rem;                       // 18px
+$dd-body:      1rem;                           // 16px
+$dd-body-sm:   0.875rem;                       // 14px
+$dd-caption:   0.75rem;                        // 12px
+
+// Letter-spacing
+$dd-tracking-tight:  -0.02em;
+$dd-tracking-normal:  0;
+$dd-tracking-wide:    0.04em;
+$dd-tracking-wider:   0.08em;
+
+// Line-heights
+$dd-leading-tight:    1.1;
+$dd-leading-snug:     1.25;
+$dd-leading-normal:   1.5;
+$dd-leading-relaxed:  1.65;
+
+// Font weights
+$dd-weight-light:     300;
+$dd-weight-regular:   400;
+$dd-weight-medium:    500;
+$dd-weight-semibold:  600;
+$dd-weight-bold:      700;
+$dd-weight-extrabold: 800;
+
+// ----------------------------------------------------------------------------
+// 8. ESPACEMENTS (multiples de 4px)
+// ----------------------------------------------------------------------------
+
+$dd-space-xs:    0.25rem;   // 4px
+$dd-space-sm:    0.5rem;    // 8px
+$dd-space-md:    0.75rem;   // 12px
+$dd-space-base:  1rem;      // 16px
+$dd-space-lg:    1.5rem;    // 24px
+$dd-space-xl:    2rem;      // 32px
+$dd-space-2xl:   3rem;      // 48px
+$dd-space-3xl:   4rem;      // 64px
+$dd-space-4xl:   6rem;      // 96px
+$dd-space-5xl:   8rem;      // 128px
+
+// Section padding vertical (responsive)
+$dd-section-py-sm: clamp(3rem, 6vw, 5rem);
+$dd-section-py-md: clamp(5rem, 10vw, 8rem);
+$dd-section-py-lg: clamp(6rem, 14vw, 12rem);
+
+// Container
+$dd-container-max:    1280px;
+$dd-container-narrow: 960px;
+
+// ----------------------------------------------------------------------------
+// 9. BORDER RADIUS — Style carrier-grade industrial
+// ----------------------------------------------------------------------------
+
+$dd-radius-none: 0;
+$dd-radius-xs:   0.25rem;     // 4px (badges, tags petits, inputs)
+$dd-radius-sm:   0.375rem;    // 6px (boutons small)
+$dd-radius-md:   0.5rem;      // 8px (signature - boutons default, cards)
+$dd-radius-lg:   0.75rem;     // 12px (cards mises en avant, modals)
+$dd-radius-xl:   1rem;        // 16px (sections premium)
+$dd-radius-2xl:  1.5rem;      // 24px (hero blocks rares)
+$dd-radius-full: 9999px;      // avatars, pills
+
+// Override Bootstrap
+$border-radius:    $dd-radius-md;
+$border-radius-sm: $dd-radius-sm;
+$border-radius-lg: $dd-radius-lg;
+
+// ----------------------------------------------------------------------------
+// 10. OMBRES — Philosophie "Tonal Layers"
+// ----------------------------------------------------------------------------
+// Privilégier les bordures fines plutôt que les ombres lourdes
+// Ombres uniquement pour hover states ou éléments flottants
+
+$dd-shadow-none: none;
+$dd-shadow-sm:   0 1px 2px rgba(14, 18, 28, 0.04), 0 1px 3px rgba(14, 18, 28, 0.06);
+$dd-shadow-md:   0 4px 12px rgba(14, 18, 28, 0.06), 0 2px 4px rgba(14, 18, 28, 0.04);
+$dd-shadow-lg:   0 12px 32px rgba(14, 18, 28, 0.08), 0 4px 8px rgba(14, 18, 28, 0.04);
+$dd-shadow-xl:   0 24px 48px rgba(14, 18, 28, 0.10), 0 8px 16px rgba(14, 18, 28, 0.06);
+
+// Focus ring tertiary cyan pour accessibilité
+$dd-shadow-focus: 0 0 0 3px rgba(20, 184, 166, 0.25);
+
+// ----------------------------------------------------------------------------
+// 11. TRANSITIONS
+// ----------------------------------------------------------------------------
+
+$dd-ease-out:     cubic-bezier(0.2, 0.8, 0.2, 1);
+$dd-ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+$dd-ease-bounce:  cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+$dd-duration-fast:   140ms;
+$dd-duration-normal: 240ms;
+$dd-duration-slow:   480ms;
+$dd-duration-slower: 800ms;
+
+$dd-transition-base:  all $dd-duration-normal $dd-ease-out;
+$dd-transition-fast:  all $dd-duration-fast $dd-ease-out;
+$dd-transition-color: color $dd-duration-fast $dd-ease-out, background-color $dd-duration-fast $dd-ease-out, border-color $dd-duration-fast $dd-ease-out;
+
+// ----------------------------------------------------------------------------
+// 12. Z-INDEX SYSTEM
+// ----------------------------------------------------------------------------
+
+$dd-z-dropdown:  1000;
+$dd-z-sticky:    1020;
+$dd-z-fixed:     1030;
+$dd-z-modal:     1040;
+$dd-z-popover:   1050;
+$dd-z-tooltip:   1060;
+$dd-z-toast:     1070;
+
+// ============================================================================
+// FIN — Dream Digital Design Tokens v1.2 FINAL
+// ============================================================================
+//
+// VARIABLES UTILES POUR CLAUDE CODE :
+//
+// CTA primaire teal :     background: $dd-primary-500;        // #335F5F
+// CTA noir critique :     background: $dd-secondary;          // #0E121C
+// Lien éditorial :        color: $dd-tertiary-500;            // #14B8A6
+// Body text :             color: $dd-ink-600;                 // #424A5C
+// Heading :               color: $dd-ink-900;                 // #0E121C
+// Card border :           border: 1px solid $dd-ink-100;      // #E4E7EE
+// Card background :       background: $dd-surface;            // #FFFFFF
+// Section alterné :       background: $dd-surface-secondary;  // #F7F8FA
+// Code block bg :         background: $dd-secondary;          // #0E121C
+// Focus ring :            box-shadow: $dd-shadow-focus;
+//
+// ============================================================================

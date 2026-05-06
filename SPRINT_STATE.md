@@ -16,7 +16,7 @@
 | **S2** | ✅ Done | Désactivation Customizer via flags `hasCustomizer=false`, `displayCustomizer=false` dans `config/custom.php` | `32ddf6c` |
 | **S6** | ✅ Done | Suppression physique complète du Customizer (54 fichiers : 4 paths supprimés + 50 fichiers édités) | `4480851` |
 | **S7** | ✅ **Done** | Renommage classes Sneat génériques (`app-*`, `layout-*`, `menu-*`, `bg-*-theme`) avec préfixe `dd-` — **1068 occurrences sur 62 fichiers, 66 classes uniques, 6 lots atomiques** | L1=`a5fbdd0` L2=`021f8cf` L3=`277dcff` L4=`591e02b` L5=`452bf8e` L6=`b7bd972` |
-| **S8** | ⚪ Todo | Configuration Vite production (`build.minify`, `sourcemap: false`, hashes explicites) | — |
+| **S8** | ✅ **Done** | Vite production config : `target: 'es2020'`, `minify: 'esbuild'`, `sourcemap: false`, `chunkSizeWarningLimit: 1500`, `rollupOptions.output` hashes explicites. Bonus : `npm run preview` script + iconify gitignore. Build verified : 872 assets, 17.1 MB total, 873 manifest entries, 0 sourcemap. | `ecc1482` |
 | **S9** | ⚪ Todo | Audit final + nettoyage 4 fichiers JS dead-code (`helpers.js`, `main.js`, `front-main.js`, `menu.js`) + 5 résidus textuels "sneat" + **réinjection dark mode switcher** | — |
 | **S3** | ⚪ Todo | Variables design Dream Digital (intégration `_dream-digital-tokens.scss`) + Google Fonts Inter/JetBrains Mono | — |
 | **S5** | ⚪ Todo | Logos PNG officiels (copie depuis `LOGO DREAM DIGITAL OR/` vers `public/img/brand/`) + favicon | — |

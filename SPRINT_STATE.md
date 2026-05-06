@@ -1,6 +1,6 @@
 # SPRINT_STATE — Sprint 0 (Désanonymisation Sneat → Dream Digital)
 
-> **Checkpoint avant reboot machine PO** — 2026-05-05
+> **Checkpoint S9 closed** — 2026-05-06
 > Branche active : `feature/desanonymization`
 > Ce fichier est la **source de vérité** pour reprendre le sprint après reboot. Lire en premier.
 
@@ -17,7 +17,7 @@
 | **S6** | ✅ Done | Suppression physique complète du Customizer (54 fichiers : 4 paths supprimés + 50 fichiers édités) | `4480851` |
 | **S7** | ✅ **Done** | Renommage classes Sneat génériques (`app-*`, `layout-*`, `menu-*`, `bg-*-theme`) avec préfixe `dd-` — **1068 occurrences sur 62 fichiers, 66 classes uniques, 6 lots atomiques** | L1=`a5fbdd0` L2=`021f8cf` L3=`277dcff` L4=`591e02b` L5=`452bf8e` L6=`b7bd972` |
 | **S8** | ✅ **Done** | Vite production config : `target: 'es2020'`, `minify: 'esbuild'`, `sourcemap: false`, `chunkSizeWarningLimit: 1500`, `rollupOptions.output` hashes explicites. Bonus : `npm run preview` script + iconify gitignore. Build verified : 872 assets, 17.1 MB total, 873 manifest entries, 0 sourcemap. | `ecc1482` |
-| **S9** | ⚪ Todo | Audit final + nettoyage 4 fichiers JS dead-code (`helpers.js`, `main.js`, `front-main.js`, `menu.js`) + 5 résidus textuels "sneat" + **réinjection dark mode switcher** | — |
+| **S9** | ✅ **Done** | Cleanup résidus textuels Sneat/ThemeSelection + suppression dead code `templateCustomizer` (38 refs / 4 JS) + réinjection dark mode switcher Q13 (Light/Dark/System, localStorage `dd-theme`, anti-FOUC inline, purge legacy keys) + fix wiring `@vite()` post-validation PO + Q20 documenté | C1=`ee173a3` C2=`9c67dd0` C3=`e26ddbb` fix=`921e249` docs=`05f0138` |
 | **S3** | ⚪ Todo | Variables design Dream Digital (intégration `_dream-digital-tokens.scss`) + Google Fonts Inter/JetBrains Mono | — |
 | **S5** | ⚪ Todo | Logos PNG officiels (copie depuis `LOGO DREAM DIGITAL OR/` vers `public/img/brand/`) + favicon | — |
 | **S10** | ⚪ Todo | Validation finale (build + parcours navigateur) | — |

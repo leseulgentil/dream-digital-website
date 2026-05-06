@@ -773,12 +773,11 @@ const Helpers = {
     --bs-primary-contrast: ${contrastColor}
   }`
 
-    // Store in cookie for persistence (handled by template-customizer now)
+    // Persist primary color in cookie for server-side detection
     const layoutTemplate = document.documentElement.getAttribute('data-template') || ''
     const isAdmin = !layoutTemplate.includes('front')
     const cookieName = isAdmin ? 'admin-primaryColor' : 'front-primaryColor'
 
-    // Only set cookie here if not called from template-customizer
     if (typeof this._setCookie === 'function' && defaultColor) {
       this._setCookie(cookieName, color, 365)
     }
@@ -787,29 +786,7 @@ const Helpers = {
   applySkin(skin) {
     if (!skin) return
 
-    let skinName = skin
-
-    // If template customizer is available, process skin name/id
-    if (window.TemplateCustomizer && window.TemplateCustomizer.SKINS) {
-      const availableSkins = window.TemplateCustomizer.SKINS
-
-      // If skin is numeric, find the corresponding skin object
-      if (!isNaN(parseInt(skin))) {
-        const skinId = parseInt(skin)
-        const skinObj = availableSkins.find(s => s.id === skinId)
-        if (skinObj) {
-          skinName = skinObj.name
-        }
-      }
-      // If not numeric, check if it's a valid skin name
-      else if (typeof skin === 'string') {
-        const skinObj = availableSkins.find(s => s.name === skin)
-        if (!skinObj) {
-          // If not a valid skin name, try to use default
-          skinName = 'default'
-        }
-      }
-    }
+    const skinName = typeof skin === 'string' ? skin : 'default'
 
     // Set data attribute for easier targeting in CSS - this is all we need now
     document.documentElement.setAttribute('data-skin', skinName || 'default')
@@ -1002,27 +979,20 @@ const Helpers = {
   // *******************************************************************************
   // * Dark / Light / Auto Mode
 
-  getStoredTheme: themeName => {
-    if (window.templateCustomizer) {
-      themeName = window.templateCustomizer._getSetting('Theme')
-    } else {
-      themeName = document.getElementsByTagName('HTML')[0].getAttribute('data-bs-theme')
-    }
-    return (
-      themeName ||
-      (window.templateCustomizer.settings.defaultTheme ? window.templateCustomizer.settings.defaultTheme : 'light')
-    )
+  getStoredTheme: () => {
+    return localStorage.getItem('dd-theme') || 'system'
   },
 
-  setStoredTheme: (templateName, theme) => {
-    localStorage.setItem(`templateCustomizer-${templateName}--Theme`, theme)
+  setStoredTheme: theme => {
+    localStorage.setItem('dd-theme', theme)
   },
 
-  getPreferredTheme: themeName => {
-    const storedTheme = Helpers.getStoredTheme(themeName)
-    if (storedTheme) {
+  getPreferredTheme: () => {
+    const storedTheme = Helpers.getStoredTheme()
+    if (storedTheme === 'light' || storedTheme === 'dark') {
       return storedTheme
     }
+    // 'system' or unknown -> resolve to OS preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   },
 
@@ -1058,10 +1028,6 @@ const Helpers = {
       const colorPref = prefersDark ? 'dark' : 'light'
       setCookie(colorPrefCookieName, colorPref)
     }
-
-    // if (window.templateCustomizer && theme !== 'light') {
-    //   window.templateCustomizer._showResetBtnNotification(true)
-    // }
   },
 
   showActiveTheme: (theme, focus = false) => {
@@ -1099,25 +1065,6 @@ const Helpers = {
         toggle.click()
       }
     })
-  },
-
-  syncCustomOptions: e => {
-    const currEl = document.querySelector(`.template-customizer-themes-options input[value="${e}"]`)
-    if (currEl) {
-      currEl.checked = true
-      window.Helpers.updateCustomOptionCheck(currEl)
-    }
-  },
-
-  // *******************************************************************************
-  // * LTR / RTL
-
-  syncCustomOptionsRtl: e => {
-    const currRtlEl = document.querySelector(`.template-customizer-directions-options input[value="${e}"]`)
-    if (currRtlEl) {
-      currRtlEl.checked = true
-      window.Helpers.updateCustomOptionCheck(currRtlEl)
-    }
   },
 
   // *******************************************************************************

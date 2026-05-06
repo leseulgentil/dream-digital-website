@@ -73,12 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
     menu = new Menu(element, {
       orientation: isHorizontalLayout ? 'horizontal' : 'vertical',
       closeChildren: isHorizontalLayout ? true : false,
-      // ? This option only works with Horizontal menu
-      showDropdownOnHover: localStorage.getItem('templateCustomizer-' + templateName + '--ShowDropdownOnHover') // If value(showDropdownOnHover) is set in local storage
-        ? localStorage.getItem('templateCustomizer-' + templateName + '--ShowDropdownOnHover') === 'true' // Use the local storage value
-        : window.templateCustomizer !== undefined // If value is set in config.js
-          ? window.templateCustomizer.settings.defaultShowDropdownOnHover // Use the config.js value
-          : true // Use this if you are not using the config.js and want to set value directly from here
+      // ? This option only works with Horizontal menu — Dream Digital default: click-only (B2B UX)
+      showDropdownOnHover: false
     });
     // Change parameter to true if you want scroll animation
     window.Helpers.scrollToActive((animate = false));
@@ -91,21 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
     item.addEventListener('click', event => {
       event.preventDefault();
       window.Helpers.toggleCollapsed();
-      // Enable menu state with local storage support if enableMenuLocalStorage = true from config.js
-      if (config.enableMenuLocalStorage && !window.Helpers.isSmallScreen()) {
-        try {
-          localStorage.setItem(
-            'templateCustomizer-' + templateName + '--LayoutCollapsed',
-            String(window.Helpers.isCollapsed())
-          );
-          // Update customizer checkbox state on click of menu toggler
-          let layoutCollapsedCustomizerOptions = document.querySelector('.template-customizer-layouts-options');
-          if (layoutCollapsedCustomizerOptions) {
-            let layoutCollapsedVal = window.Helpers.isCollapsed() ? 'collapsed' : 'expanded';
-            layoutCollapsedCustomizerOptions.querySelector(`input[value="${layoutCollapsedVal}"]`).click();
-          }
-        } catch (e) {}
-      }
+      // Menu collapsed state persistence is handled server-side via the
+      // LayoutCollapsed cookie (see app/Helpers/Helpers.php).
     });
   });
 
@@ -161,12 +144,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Get style from local storage or use 'system' as default
-  let storedStyle =
-    localStorage.getItem('templateCustomizer-' + templateName + '--Theme') || // if no template style then use Customizer style
-    (window.templateCustomizer && window.templateCustomizer.settings && window.templateCustomizer.settings.defaultStyle
-      ? window.templateCustomizer.settings.defaultStyle
-      : document.documentElement.getAttribute('data-bs-theme')); //!if there is no Customizer then use default style as light
+  // Get style from data-bs-theme attribute (set by anti-FOUC inline script reading dd-theme localStorage)
+  let storedStyle = document.documentElement.getAttribute('data-bs-theme') || 'light';
 
   // Run switchImage function based on the stored style
   window.Helpers.switchImage(storedStyle);
@@ -194,21 +173,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
       toggle.addEventListener('click', () => {
         const theme = toggle.getAttribute('data-bs-theme-value');
-        window.Helpers.setStoredTheme(templateName, theme);
+        window.Helpers.setStoredTheme(theme);
         window.Helpers.setTheme(theme);
         window.Helpers.showActiveTheme(theme, true);
-        window.Helpers.syncCustomOptions(theme);
         let currTheme = theme;
         if (theme === 'system') {
           currTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        const semiDarkL = document.querySelector('.template-customizer-semiDark');
-        if (semiDarkL) {
-          if (theme === 'dark') {
-            semiDarkL.classList.add('d-none');
-          } else {
-            semiDarkL.classList.remove('d-none');
-          }
         }
         window.Helpers.switchImage(currTheme);
       });
@@ -226,33 +196,14 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < dropdownItems.length; i++) {
       dropdownItems[i].addEventListener('click', function () {
         let textDirection = this.getAttribute('data-text-direction');
-        window.templateCustomizer.setLang(this.getAttribute('data-language'));
         directionChange(textDirection);
       });
     }
 
     function directionChange(textDirection) {
       document.documentElement.setAttribute('dir', textDirection);
-      if (textDirection === 'rtl') {
-        if (localStorage.getItem('templateCustomizer-' + templateName + '--Rtl') !== 'true')
-          if (window.templateCustomizer) window.templateCustomizer.setRtl(true);
-      } else {
-        if (localStorage.getItem('templateCustomizer-' + templateName + '--Rtl') === 'true')
-          if (window.templateCustomizer) window.templateCustomizer.setRtl(false);
-      }
     }
   }
-
-  // add on click javascript for template customizer reset button id template-customizer-reset-btn
-
-  setTimeout(function () {
-    let templateCustomizerResetBtn = document.querySelector('.template-customizer-reset-btn');
-    if (templateCustomizerResetBtn) {
-      templateCustomizerResetBtn.onclick = function () {
-        window.location.href = baseUrl + 'lang/en';
-      };
-    }
-  }, 1500);
 
   // Notification
   // ------------
@@ -363,35 +314,9 @@ document.addEventListener('DOMContentLoaded', function () {
     true
   );
 
-  // Manage menu expanded/collapsed with templateCustomizer & local storage
-  //------------------------------------------------------------------
-
-  // If current layout is horizontal OR current window screen is small (overlay menu) than return from here
-  if (isHorizontalLayout || window.Helpers.isSmallScreen()) {
-    return;
-  }
-
-  // Auto update menu collapsed/expanded based on the themeConfig
-  if (typeof window.templateCustomizer !== 'undefined') {
-    if (window.templateCustomizer.settings.defaultMenuCollapsed) {
-      window.Helpers.setCollapsed(true, false);
-    } else {
-      window.Helpers.setCollapsed(false, false);
-    }
-  }
-
-  // Manage menu expanded/collapsed state with local storage support If enableMenuLocalStorage = true in config.js
-  if (typeof config !== 'undefined') {
-    if (config.enableMenuLocalStorage) {
-      try {
-        if (localStorage.getItem('templateCustomizer-' + templateName + '--LayoutCollapsed') !== null)
-          window.Helpers.setCollapsed(
-            localStorage.getItem('templateCustomizer-' + templateName + '--LayoutCollapsed') === 'true',
-            false
-          );
-      } catch (e) {}
-    }
-  }
+  // Menu expanded/collapsed state is now managed entirely server-side via the
+  // LayoutCollapsed cookie (see app/Helpers/Helpers.php). Client-side localStorage
+  // duplication was removed with the Template Customizer (S6).
 })();
 
 // Search Configuration

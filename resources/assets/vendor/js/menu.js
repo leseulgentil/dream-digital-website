@@ -83,10 +83,6 @@ class Menu {
 
     // Link menu instance to element
     el.menuInstance = this
-    const semiDarkEl = localStorage.getItem(`templateCustomizer-${templateName}--SemiDark`)
-    if (semiDarkEl === 'true') {
-      document.querySelector('#dd-layout-menu').setAttribute('data-bs-theme', 'dark')
-    }
   }
 
   _bindEvents() {
@@ -905,11 +901,6 @@ class Menu {
       for (let i = 0; i < activeMenuItems.length; ++i) {
         activeMenuItems[i].classList.remove('open')
       }
-    }
-
-    const semiDarkEl = localStorage.getItem(`templateCustomizer-${templateName}--SemiDark`)
-    if (semiDarkEl) {
-      asideMenu.setAttribute('data-bs-theme', 'dark')
     }
 
     this._bindEvents()

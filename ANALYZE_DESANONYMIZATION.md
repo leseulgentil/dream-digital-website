@@ -617,3 +617,106 @@ Q19 (audit étendu HTML pour renames de classes) et Q20 (validation runtime JS p
 - Q20 protège contre les **modules orphelins** (JS compilé sans HTML chargeant le module)
 
 Dans les deux cas, le pattern d'erreur est identique : **un drift silencieux entre la source et le runtime**, invisible aux vérifications statiques, qui ne se révèle qu'à l'inspection navigateur.
+
+---
+
+## C-undecies. Q21 — Architecture des overrides SCSS dans la chaîne Sneat
+
+**Validé 2026-05-06** : suite au drift détecté lors de la vérification preuve runtime de S3 (compilation Vite réussie en 44s, 0 erreur Sass, mais `--bs-primary` toujours `#696cff` violet Sneat dans le CSS compilé, 0 occurrence de `#335F5F` malgré l'import du fichier de tokens), la cartographie des points d'injection SCSS Sneat est codifiée.
+
+### Le gap exposé
+
+La chaîne SCSS Sneat contient **trois fichiers presque homonymes** qui peuvent prêter à confusion :
+
+| # | Fichier | Rôle | Convient pour overrides ? |
+|---|---|---|---|
+| 1 | `resources/assets/vendor/scss/_bootstrap-extended.scss` | Index des composants Bootstrap étendus de Sneat. Importé en milieu de chaîne par `core.scss` (après `_bootstrap.scss` qui résout déjà toutes les variables Bootstrap). | ❌ Trop tard dans la chaîne |
+| 2 | `resources/assets/vendor/scss/_bootstrap-extended/_include.scss` | Fichier structurel interne de la chaîne Sneat. Charge les fonctions Bootstrap puis les variables. | ⚠️ Évitable (modifier expose à des conflits lors de futures mises à jour Sneat) |
+| 3 | `resources/assets/vendor/scss/_custom-variables/_bootstrap-extended.scss` | ★ **Point d'override officiel de Sneat**. Son commentaire d'en-tête le précise littéralement (*"It is recommended to use this file for overriding bootstrap extended variables"*). Chargé en TÊTE de `_include.scss` ligne 7, donc dans la fenêtre correcte (entre fonctions Bootstrap et variables Bootstrap). | ✅ **Le bon point d'injection** |
+
+### Chaîne de chargement complète (référence)
+
+```
+core.scss
+ ├─ @import "bootstrap"           → _bootstrap.scss
+ │   └─ @import "_bootstrap-extended/include"      ← point central des variables
+ │       ├─ bootstrap/scss/functions
+ │       ├─ functions (Sneat)
+ │       ├─ _custom-variables/bootstrap-extended-dark   ← override hook dark
+ │       ├─ _custom-variables/bootstrap-extended        ← override hook (★ ICI)
+ │       ├─ variables-dark (Sneat)
+ │       ├─ variables (Sneat) → $primary: $purple !default;
+ │       ├─ bootstrap/scss/variables → $primary: ... !default;
+ │       └─ ...
+ ├─ @import "colors"
+ ├─ @import "bootstrap-extended"  → _bootstrap-extended.scss (index #1, trop tard)
+ ├─ @import "components"
+ └─ @import "custom-styles"
+```
+
+### Le piège typique
+
+Un brief simplifié qui dit *"ajouter en tête de `_bootstrap-extended.scss`"* est ambigu et conduit naturellement à modifier le fichier #1 (index racine) au lieu du fichier #3 (point d'override prévu). C'est exactement ce qui s'est passé en S3 — l'imprécision du brief PO sur la chaîne Sneat n'a été détectée qu'à la vérification preuve runtime.
+
+### Règle Q21 codifiée
+
+#### Règle d'or
+
+Tout override de variable Bootstrap (couleurs `$primary/$secondary/$success/...`, espacements `$spacer`, border-radius `$border-radius/-sm/-lg`, polices `$font-family-base/-monospace`, etc.) **doit être ajouté dans `_custom-variables/_bootstrap-extended.scss`**.
+
+Tout override de variable spécifique à un composant Bootstrap étendu Sneat (sidebar, navbar, footer, menu) idem.
+
+#### Vérification runtime obligatoire
+
+Après tout override de variable Bootstrap/Sneat, **la compilation Sass réussie ne suffit PAS** — l'override peut être silencieusement ignoré (cf. drift S3). La vérification suivante est obligatoire :
+
+```powershell
+# Option A — DevTools navigateur
+# 1. Recharger la page (Ctrl+Shift+R)
+# 2. F12 → Inspector → sélectionner <html>
+# 3. Onglet Computed Styles → chercher --bs-primary, --bs-secondary, etc.
+# 4. La valeur doit être celle attendue (ex: rgb(51, 95, 95) ou #335F5F)
+
+# Option B — grep sur le CSS compilé
+npm run build  # produit public/build/assets/core-*.css
+Select-String -Path "public/build/assets/core-*.css" -Pattern "VALEUR-ATTENDUE"
+# Vérifier au minimum la définition :root et au moins 1 occurrence
+```
+
+### Justification
+
+La compilation Sass d'un override mal placé réussit silencieusement (0 erreur, 0 warning) parce que Sass ne peut pas savoir si une assignation `$primary: #335F5F;` arrive trop tard dans la chaîne. Le mécanisme `!default` joue contre nous : si Bootstrap a déjà été chargé avec sa propre valeur `!default`, notre override (sans `!default`) est techniquement appliqué — mais à des variables qui ne sont plus utilisées par les composants déjà compilés. Le CSS final reflète le premier choix gagnant, pas le dernier.
+
+C'est exactement le pattern Q20 ("compilé ≠ appliqué") transposé au monde SCSS : le drift entre source et runtime est invisible aux vérifications statiques.
+
+### Application rétroactive
+
+- **S3 corrigé** par le commit `fix(design): correct Dream Digital tokens injection point in Sass chain` — l'import est désormais dans `_custom-variables/_bootstrap-extended.scss`
+- **S0-S2, S6-S9** : aucun override de variable Bootstrap effectué — pas de régression à corriger
+- **Brief PO source** (BRIEF_DD_DESANONYMIZATION.md) : à corriger dans le futur si une nouvelle version est éditée, pour pointer vers le bon fichier
+
+### Sprints concernés
+
+Q21 s'applique à **tout sprint impliquant des modifications de variables Bootstrap ou Sneat** :
+
+- **Sprint 1.5 redesign** — composants custom Dream Digital, override massive de variables sidebar/navbar/cards
+- **Sprint 1 fondations multi-pays + i18n** — éventuel theming bilingue (RTL adjustments, etc.)
+- **Sprint 2** — fondations futures, scope à définir
+- **Sprints d'implémentation des fonctionnalités validées** :
+  - #6 self-service onboarding (formulaires custom, badges)
+  - #7 trust badges (composants spécifiques)
+  - #9 doc interactive (theming code blocks, callouts)
+  - #11 AI assistant (chat UI overrides)
+  - #13 eSIM preview (composants visuels custom)
+
+### Lien méthodologique
+
+Q19 (audit étendu HTML pour renames de classes), Q20 (validation runtime JS pour modules), et Q21 (architecture overrides SCSS) sont les **trois règles de robustesse** complémentaires pour les sprints de refactoring/feature large-échelle :
+
+| Règle | Protège contre | Détection |
+|---|---|---|
+| Q19 | Classes orphelines (CSS sans HTML rendant la classe) | Audit étendu sources interpolées |
+| Q20 | Modules orphelins (JS compilé sans HTML chargeant le module) | Network panel runtime navigateur |
+| Q21 | Variables orphelines (override SCSS sans effet sur Bootstrap) | Computed Styles ou grep CSS compilé |
+
+Pattern d'erreur commun : **drift silencieux entre la source et le runtime**, invisible aux vérifications automatisables (compilation, syntaxe, view:cache), qui ne se révèle qu'à l'inspection runtime côté navigateur ou artefact compilé. Toutes formalisées comme jurisprudence du sprint S0 et applicables aux sprints futurs.

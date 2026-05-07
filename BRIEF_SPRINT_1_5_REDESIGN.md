@@ -63,68 +63,52 @@ Pour chaque site, observer spécifiquement :
 Dream Digital doit communiquer visuellement :
 
 - **Confiance carrier-grade** : on est un vrai opérateur, pas une app qui fait du SMS
-- **Africain et fier de l'être** : positionnement panafricain assumé (drapeaux, références CD/CG/CI dans le contenu, pas dans les couleurs criardes)
+- **Global avec ancrage local** : opérateur CPaaS/ITSP global (200+ pays, 60%+ clients hors Afrique) avec présence opérationnelle Kinshasa + Abidjan + Brazzaville. Ancrage assumé dans le contenu (drapeaux corridors RDC/Congo/Côte d'Ivoire), jamais comme limitation géographique du positionnement
 - **Developer-friendly** : le code est partout sur le site
 - **Premium mais accessible** : pas le côté "luxueux et inaccessible" d'un Sinch enterprise, mais pas le côté "agence digitale" du Sneat default non plus
 
 ### 2.2 Système de couleurs
 
-**Décision** : pour ce sprint, Claude Code utilise la palette de référence ci-dessous **sauf si le PO fournit une charte officielle**.
+**Décision** : Brand Kit v1.2 validé, palette **déjà active depuis S3** (override Bootstrap via `_custom-variables/_bootstrap-extended.scss` chargeant `_dream-digital.scss`). Pour Sprint 1.5, utiliser exclusivement les tokens existants — aucun ajout palette.
 
 ```scss
-// Palette principale Dream Digital (à valider PO)
+// Palette Dream Digital — sourced from Brand Kit v1.2 tokens already active
+// post-S3 in resources/assets/vendor/scss/_custom-variables/_dream-digital.scss
+//
+// Primary    — Petrol Teal      $dd-primary-500: #335F5F   (~30% usage)
+//              Branding, sidebar admin, brand titles, focus rings
+// Secondary  — Action Black     $dd-secondary:   #0E121C   (~15% usage)
+//              CTAs critiques, headings principaux, code block bg
+// Tertiary   — Cyan spot        $dd-tertiary-500: #14B8A6  (max 5%, 3-4 occ/page)
+//              Liens éditoriaux actifs, badges NEW, live indicators, focus rings
+//              ⚠️ INTERDIT sur primary CTAs, card bg, headings, body, container borders
+// Foundation — $dd-surface (#FFFFFF) + $dd-ink-* warm grays  (~50%)
+// Status     — $dd-success #0EBE82 / $dd-warning #F2A93B /
+//              $dd-danger  #EF4361 / $dd-info    #3A86FF    (semantic only)
 
-// Bleu profond (couleur primaire, sérieux télécom)
-$dd-primary-900: #07111F;     // backgrounds dark héro
-$dd-primary-800: #0A1F44;     // backgrounds dark sections
-$dd-primary-700: #112858;     // borders dark
-$dd-primary-600: #1A3870;     // hover states dark
-$dd-primary-500: #2A4F9E;     // primary buttons / links
-$dd-primary-400: #4670C2;     // hover primary
-$dd-primary-100: #DCE6F8;     // backgrounds light tint
-$dd-primary-50:  #F2F6FD;     // backgrounds très subtil
+// Code blocks dark (pour les sections developer-first sur fond clair) :
+$dd-code-bg:      #0F1428;             // dark canvas
+$dd-code-text:    #E1E4F0;             // foreground
+$dd-code-keyword: #F472B6;             // pink (clés JSON, mots-clés langage)
+$dd-code-string:  #86EFAC;             // vert (strings)
+$dd-code-num:     #FBBF24;             // jaune (nombres)
+$dd-code-fn:      $dd-tertiary-500;    // teal cyan #14B8A6 (fonctions, signature DD)
+$dd-code-comment: #8A8FA3;             // gray (commentaires)
 
-// Cyan signal (couleur accent — signature visuelle)
-$dd-accent-500:  #00D9FF;     // accent principal (CTAs accent, highlights)
-$dd-accent-400:  #4FE3FF;     // hover accent
-$dd-accent-100:  #CCF7FF;     // backgrounds très tint
-$dd-accent-glow: rgba(0, 217, 255, 0.35);  // halos lumineux
-
-// Neutres warm (pas du gray pur, légèrement chaud)
-$dd-ink-900:     #0A0E1A;     // texte principal sur clair
-$dd-ink-700:     #2B3040;     // texte secondaire
-$dd-ink-500:     #5A6079;     // texte tertiaire (captions)
-$dd-ink-300:     #B7BDD0;     // dividers light
-$dd-ink-100:     #E4E7EF;     // borders light
-$dd-ink-50:      #F7F8FB;     // backgrounds alternés
-
-// Surfaces blanches
-$dd-surface:     #FFFFFF;
-$dd-surface-alt: #F7F8FB;
-
-// Status (pour badges, alertes, indicateurs DLR)
-$dd-success:     #0EBE82;     // delivered
-$dd-warning:     #F2A93B;     // pending
-$dd-danger:      #EF4361;     // failed
-$dd-info:        #3A86FF;     // info
-
-// Code blocks dark (sur fond clair)
-$dd-code-bg:     #0F1428;
-$dd-code-text:   #E1E4F0;
-$dd-code-keyword:#F472B6;     // pink (clés JSON, mots-clés langage)
-$dd-code-string: #86EFAC;     // vert (strings)
-$dd-code-num:    #FBBF24;     // jaune (nombres)
-$dd-code-fn:     #00D9FF;     // cyan (fonctions, signature DD)
-$dd-code-comment:#8A8FA3;     // gray (commentaires)
+// See BRAND_KIT_DREAM_DIGITAL.md sections 3-4 for usage rules + forbidden combinations.
 ```
 
 ### 2.3 Typographie
 
 ```scss
-// Fonts
-$dd-font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
-$dd-font-body:    'Outfit', system-ui, -apple-system, sans-serif;
-$dd-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+// Fonts — Brand Kit v1.2 Pair A (Inter unique family)
+// Already imported via Google Fonts in commonMaster.blade.php (S3, lines 60-64)
+$dd-font-display: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$dd-font-body:    'Inter', system-ui, -apple-system, sans-serif;
+$dd-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+// Weights canonical (Inter 300/400/500/600/700/800 chargés via Google Fonts)
+// Headings : 600/700/800  ·  Body : 400/500/600  ·  Captions : 400
 
 // Scale (mobile first, responsive via clamp)
 $dd-display-1: clamp(2.5rem, 6vw, 5rem);     // 40px → 80px (hero h1)
@@ -149,7 +133,7 @@ $dd-leading-normal: 1.55;      // body
 $dd-leading-relaxed: 1.7;      // long form
 ```
 
-**Important** : Bricolage Grotesque pour les titres apporte le côté "éditorial moderne" qui distingue de Sneat default (Public Sans). Outfit pour le body est plus moderne que Sneat default.
+**Important** : Inter en weight 600/700/800 pour les titres apporte un côté éditorial moderne qui distingue de Sneat default (Public Sans). Inter 400/500/600 pour le body est plus moderne et lisible. Brand Kit v1.2 unifie display + body sur Inter pour cohérence.
 
 ### 2.4 Espacements et radius
 
@@ -177,7 +161,7 @@ $dd-radius-2xl: 2rem;           // 32px (hero blocks)
 $dd-shadow-sm: 0 1px 2px rgba(10, 14, 26, 0.04), 0 1px 3px rgba(10, 14, 26, 0.06);
 $dd-shadow-md: 0 4px 12px rgba(10, 14, 26, 0.06), 0 2px 4px rgba(10, 14, 26, 0.04);
 $dd-shadow-lg: 0 12px 32px rgba(10, 14, 26, 0.08), 0 4px 8px rgba(10, 14, 26, 0.04);
-$dd-shadow-glow: 0 0 0 1px rgba(0, 217, 255, 0.4), 0 0 24px rgba(0, 217, 255, 0.25);
+$dd-shadow-glow: 0 0 0 1px rgba(20, 184, 166, 0.4), 0 0 24px rgba(20, 184, 166, 0.25);  // focus ring DD tertiary teal
 ```
 
 ### 2.5 Animations et micro-interactions
@@ -232,7 +216,7 @@ Le PO a confirmé un **slider sur la home**. Voici comment l'adapter au ton CPaa
 |                          NAV                            |
 +---------------------------------------------------------+
 |                                                         |
-|  [eyebrow: "Phoenix-powered SMS, désormais self-service"]
+|  [eyebrow: "Voice. SMS. eSIM. And More."]                     
 |                                                         |
 |  L'infrastructure                  [Slide 1 visual]    |
 |  télécom pour                      → Carte mondiale    |
@@ -284,7 +268,7 @@ SMS                                     moyenne            locale
 ```
 
 - 4 colonnes égales, séparées par des dividers fins verticaux
-- Chiffres en **Bricolage Grotesque très gros** (clamp(2rem, 4vw, 3rem))
+- Chiffres en **Inter weight 800 très gros** (clamp(2rem, 4vw, 3rem))
 - Labels en uppercase tracking large gris
 - **Animation au scroll** : counter qui s'incrémente de 0 → valeur cible (utiliser CountUp.js ou custom)
 
@@ -315,13 +299,13 @@ Grille 3×2 sur desktop, 2×3 sur tablet, 1×6 sur mobile. **Pas de cards "en l�
 - **Hover** : la cell devient légèrement teintée cyan (`background: $dd-accent-100`), l'icône change de couleur, la flèche du lien glisse vers la droite
 - Icône en **carré 44x44** avec léger gradient cyan, pas en cercle
 
-Icônes à utiliser (Tabler Icons, déjà inclus dans Sneat) :
-- SMS : `ti-message-2`
-- Voice : `ti-phone`
-- DID : `ti-hash` ou `ti-numbers`
-- SIP : `ti-network` ou `ti-router`
-- Dialo : `ti-headset`
-- eSIM : `ti-device-sim` ou `ti-device-mobile`
+Icônes à utiliser (Boxicons, déjà chargés via `vite.icons.plugin.js` — voir Q13 S9-C3 pour la justification iconset). Tabler Icons NON disponible sans extension du plugin Vite.
+- SMS    : `bx-message-square-detail` ou `bx-chat`
+- Voice  : `bx-phone`
+- DID    : `bx-hash` ou `bx-grid-alt`
+- SIP    : `bx-network-chart` ou `bx-server`
+- Dialo  : `bx-headphone`
+- eSIM   : `bx-mobile-alt` ou `bx-sim`
 
 #### Section "Developer-First"
 
@@ -361,7 +345,7 @@ Carte du monde stylisée façon "constellation" :
 
 - SVG du monde en **outline subtle** (`stroke: $dd-ink-300`)
 - Sur les pays couverts SMS : **cercles cyan animés** qui pulsent
-- 5 cercles plus gros pour les pays de présence (CD, CG, CI, KE, RW) avec label
+- 3 cercles plus gros pour les pays de présence opérationnelle (CD Kinshasa HQ, CI Abidjan, CG Brazzaville) avec label
 - **Stats à droite** : "Afrique · 54 pays · 47 corridors premium" / "Europe · 44 pays" / "Amérique · 35 pays" / "Asie · 41 pays"
 
 Pour la carte SVG, recommandation à Claude Code : utiliser https://www.amcharts.com/svg-maps/ qui propose des SVG world maps en domaine public, ou simple-maps (https://github.com/zcreativelabs/react-simple-maps) si une approche JS est préférée. Le SVG doit être inline pour permettre le styling CSS.
@@ -402,7 +386,7 @@ Crédit de test offert      Tarif unitaire indicatif     Volumes >1M/mois
 Sous-footer (copyright + versions + bureaux) :
 
 ```
-© 2026 Dream Digital SARL. Kinshasa · Abidjan · Brazzaville · Kigali.
+© 2026 Dream Digital SARL. Kinshasa · Abidjan · Brazzaville.
 Build 4af2c19 · v2.0
 ```
 
@@ -517,7 +501,7 @@ Donne un côté "plateforme vivante 24/7" très ITSP.
 
 Une fois la direction validée, implémenter le système de design :
 1. Modifier `_variables.scss` avec les tokens de la section 2.2-2.5
-2. Importer les fonts (Bricolage Grotesque, Outfit, JetBrains Mono)
+2. Vérifier que Inter (300-800) + JetBrains Mono (400-600) sont bien chargés via les Google Fonts ajoutés en `commonMaster.blade.php` (S3). Pas de réimport nécessaire — les fonts sont déjà actives. Si manquantes, vérifier `commonMaster.blade.php:60-64`.
 3. Créer `_typography.scss`, `_spacing.scss`, `_animations.scss`
 4. Tester avec une page de demo qui affiche tous les tokens (couleurs, typo, shadows, spacings)
 5. **VALIDATION PO** : screenshot de la page demo
@@ -582,7 +566,7 @@ Créer **tous** les components Blade réutilisables listés en section 4.1. Pour
 
 - [ ] La home `/fr` (mode global) ressemble à un site CPaaS sérieux comparable à Plivo/Telnyx/Bandwidth (validation PO subjective mais ferme)
 - [ ] Le hero a un slider Swiper fonctionnel avec 4 slides distincts
-- [ ] La typography utilise bien Bricolage Grotesque + Outfit + JetBrains Mono
+- [ ] La typography utilise bien Inter (300-800) + JetBrains Mono (400-600), héritées du Brand Kit v1.2 via S3
 - [ ] La palette est appliquée cohéremment (cyan accent visible aux endroits clés)
 - [ ] Le code preview a une animation typing au scroll-into-view
 - [ ] La carte de couverture a des points cyan qui pulsent
@@ -639,6 +623,29 @@ Pas avant.
 À la fin de ce sprint, le **Sprint 1 fondations** (multi-pays + i18n) reprend la main et utilise tous les components créés ici pour construire les ~35 pages MVP. La cohérence visuelle est assurée parce qu'on aura tous les blocs de construction prêts.
 
 Le brief `BRIEF_SPRINT_1.md` (fondations) ne change pas en termes d'objectifs techniques — il s'appuiera juste sur les nouveaux components au lieu de partir des composants Sneat default.
+
+---
+
+## 9. Adaptation Scénario B (mise en ligne progressive)
+
+Le PO a opté pour une mise en ligne progressive : **page d'attente Dream Digital cette semaine** sur dream-digital.info (substituant WordPress legacy), puis **bascule vers le site complet Sprint 1.5** la semaine suivante.
+
+### Implication pour Claude Code
+
+Le travail Sprint 1.5 commence directement par la **home complète** du site corporate (homepage avec les 12 sections décrites en Section 3.1). La page d'attente intermédiaire n'est PAS dans le scope Sprint 1.5 — elle sera traitée en **pré-S1.5 dans un mini-sprint dédié** de 4-6h (branche distincte `feature/landing-attente`).
+
+### Conséquence sur la timeline
+
+- **Semaine en cours** : pré-S1.5 (page d'attente, 4-6h, branche `feature/landing-attente`) → déploiement immédiat sur dream-digital.info, élimination WordPress.
+- **Semaine suivante** : Sprint 1.5 démarre directement à l'Étape 1 (étude des 6 sites de référence) sans détour par une page d'attente. Branche `feature/sprint-1-5-redesign`.
+- **Bascule** : à la fin de Sprint 1.5, déploiement remplace la page d'attente par le site complet (1 commit + push deploy.sh).
+
+### Engagement PO
+
+Le PO s'engage à :
+- Valider visuellement la page d'attente avant déploiement (1 itération max avant production)
+- Garder dream-digital.info accessible en mode "page d'attente" pendant 4-6 jours de Sprint 1.5
+- Ne pas perturber le sprint 1.5 par des demandes de modification de la page d'attente (qui est temporaire par définition)
 
 ---
 

@@ -81,4 +81,67 @@ Validation PO obligatoire entre chaque étape (commit + push + screenshot/previe
 
 ---
 
+## 5. Arbitrage PO — 2026-05-08 (avant Phase 3)
+
+> Les 5 questions de la Section 2 ont été arbitrées par le PO. Les hypothèses Claude Code étaient partiellement validées, **2 questions corrigées pour raisons juridiques**. Les sections **Trust strip**, **Témoignages** et **Bureaux** changent de nature vs brief Sprint 1.5 original — à reporter en Étape 4-5.
+
+### Q1 — Photos d'équipe pays — ✅ VALIDÉ avec restriction
+- Hypothèse Claude Code (logos pays SVG fallback) : validée
+- ⚠️ **Restriction PO** : NE PAS utiliser de **skylines réelles** (Kinshasa CBD, Treichville, Brazzaville Bourg) → risque visuel kitsch + photos potentiellement non libres de droits
+- **Direction validée** : illustration vectorielle abstraite OU carte stylisée pour la section "Bureaux opérationnels". **Aucune photo réelle**.
+
+### Q2 — Logos clients trust strip — ❌ HYPOTHÈSE REJETÉE pour risque juridique
+- **Refus catégorique** d'afficher *"Rawbank, Equity Bank, Vodacom, Carrefour CI, Pullman, DHL Africa"* en placeholders textuels même indicatifs
+- **Raison** : usurpation d'identité commerciale potentielle, concurrence déloyale, risque réputationnel si découvert
+- **À la place — `Trust signals impersonnels`** (chiffres + certifications, pas de logos) :
+  - "200+ pays couverts"
+  - "Infrastructure carrier-grade"
+  - "SLA 99.9% disponibilité"
+  - "Conformité GDPR"
+  - "Architecture redondée multi-datacenters"
+  - Certifications visées si en cours (ISO 27001, SOC 2)
+- **Cohérent avec Twilio/Plivo** : trust = chiffres + certifs, pas logos faux
+- **Impact Étape 4** : le component `trust-strip.blade.php` change de nature — plus un marquee de logos mais une bande de **stats/certifs** stylées. Le component `service-grid` reste identique.
+
+### Q3 — Témoignages clients réels — ❌ SECTION SUPPRIMÉE pour V1
+- Refus même de témoignages neutralisés ("Banque partenaire RDC", "Retailer panafricain") : risque même interprétation
+- **À la place — section `Cas d'usage par industrie`** (4 cards génériques) :
+  - **Banking & Fintech** : OTP transactionnel, alertes solde, KYC
+  - **Retail** : marketing campaigns, recovery panier, loyalty
+  - **Logistics** : tracking livraisons, ETA mis à jour, alertes douanes
+  - **Hospitality** : confirmation résa, check-in/out, post-séjour CSAT
+- **Aucun client réel ou fictif nommé**
+- Section témoignages réintroduite **uniquement quand vrais clients accepteront de témoigner avec autorisation écrite** (pas dans Sprint 1.5)
+- **Impact Étape 5** : remplacer le component prévu `testimonials.blade.php` par `industry-grid.blade.php` (déjà listé brief Section 4.1) — ce dernier joue le rôle de "preuve sectorielle" sans nommer personne.
+
+### Q4 — Coverage map — ✅ VALIDÉ
+- "200+ pays" + 5 corridors africains premium sans liste détaillée
+- Carte du monde stylisée façon "constellation" (cf. brief Section 3.3)
+- Liste précise par opérateur reportée à Sprint 1 (page produit SMS dédiée)
+
+### Q5 — Code preview API — ✅ VALIDÉ avec ajustement
+- Endpoint simulé crédible : `curl POST https://api.dream-digital.info/v1/sms/send` + response JSON
+- ⚠️ **Ajustement PO** : retirer la mention *"(API en preview, doc publique disponible Sprint 2)"* du code/section principale (fait amateur)
+- **À la place** : mention discrète en **bas de section** Developer-First → *"Documentation API détaillée publiée à mesure du déploiement de chaque produit"*
+- Le code preview reste l'élément hero de la section, **sans caveat visible**
+
+---
+
+### Récap des décisions impact Étapes 4-5
+
+Sections home à AJUSTER vs brief Sprint 1.5 original :
+
+| Section | Brief original | Décision arbitrage 2026-05-08 |
+|---|---|---|
+| Trust strip | Marquee logos clients (Rawbank, Vodacom…) | **Trust signals impersonnels** (chiffres + certifs) |
+| Témoignages | 3 cards client (photo + quote) | **SUPPRIMÉE V1** → remplacée par "Cas d'usage par industrie" (4 cards génériques) |
+| Coverage | Carte constellation + stats régionales | conforme brief |
+| Pricing teaser | 3 cards | conforme brief |
+| Bureaux | Mosaïque pays / photos d'équipe | **Illustration vectorielle ou carte stylisée**, pas photos réelles |
+| Hero slide 4 | Mosaïque drapeaux + photos d'équipe | **Logos pays SVG (drapeaux)** uniquement |
+
+Ces ajustements doivent être respectés en Étape 4 (sections principales) et Étape 5 (sections complémentaires). À répercuter aussi dans `DESIGN_REFERENCES.md` Section 2 (synthèse comparative avec focus *"comment les 6 sites gèrent les trust signals SANS logos clients faux"*).
+
+---
+
 *Document créé en début de Sprint 1.5. À mettre à jour si situation imprévue ou décision PO changeante (jurisprudence Q14-Q21 du Sprint 0).*

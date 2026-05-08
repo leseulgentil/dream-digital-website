@@ -14,6 +14,320 @@
 <!-- Page Styles -->
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])
+
+  {{-- Sprint 1.5 Étape 3 Phase 3 — Hero Direction A inline styles
+       (left column fixed). Refactor to SCSS file in Étape 4-5 if needed. --}}
+  <style>
+    /* === HERO CONTAINER === */
+    .dd-hero {
+      background: #0F1428;                       /* $dd-code-bg dark navy */
+      padding: clamp(5rem, 10vw, 8rem) 0 clamp(4rem, 10vw, 7rem) 0; /* top: navbar clearance */
+      position: relative;
+      overflow: hidden;
+      z-index: 1;                                /* below Sneat navbar (which is z-index ~1075) */
+    }
+
+    .dd-hero__container {
+      max-width: 1280px;                         /* $dd-container-max */
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .dd-hero__content { color: #fff; }
+
+    /* === EYEBROW (mono cyan caps) === */
+    .dd-hero__eyebrow {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #14B8A6;                            /* $dd-tertiary-500 */
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 0 0 1.5rem 0;
+    }
+
+    /* === HEADLINE Inter 800 display === */
+    .dd-hero__headline {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.25rem, 5vw, 4rem);     /* near $dd-display-1 but capped */
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: #fff;
+      margin: 0 0 1.5rem 0;
+      max-width: 600px;
+    }
+
+    /* === SUB-HEADLINE === */
+    .dd-hero__sub {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: 1.125rem;                      /* $dd-body-lg */
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.78);
+      margin: 0 0 2rem 0;
+      max-width: 540px;
+    }
+
+    /* === CTAs === */
+    .dd-hero__ctas {
+      display: flex;
+      gap: 1rem;
+      margin: 0 0 2.5rem 0;
+      flex-wrap: wrap;
+    }
+
+    .dd-btn {
+      padding: 0.875rem 1.75rem;
+      border-radius: 0.5rem;                     /* $dd-radius-md */
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 240ms cubic-bezier(0.2, 0.8, 0.2, 1); /* $dd-duration-normal $dd-ease-out */
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      line-height: 1.2;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .dd-btn--primary {
+      background: #14B8A6;                       /* $dd-tertiary-500 */
+      color: #0E121C;                            /* $dd-secondary on cyan for AAA contrast */
+      box-shadow: 0 0 0 1px rgba(20, 184, 166, 0.4), 0 0 24px rgba(20, 184, 166, 0.25); /* $dd-shadow-glow */
+    }
+    .dd-btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 1px rgba(20, 184, 166, 0.6), 0 0 32px rgba(20, 184, 166, 0.4);
+      color: #0E121C;                            /* override Sneat's a:hover global */
+    }
+    .dd-btn--primary:focus-visible {
+      outline: 3px solid rgba(20, 184, 166, 0.55);
+      outline-offset: 2px;
+    }
+
+    .dd-btn--ghost {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .dd-btn--ghost:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+    .dd-btn--ghost:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.5);
+      outline-offset: 2px;
+    }
+
+    .dd-btn__badge {
+      background: rgba(20, 184, 166, 0.18);
+      color: #14B8A6;
+      padding: 0.18rem 0.5rem;
+      border-radius: 0.25rem;                    /* $dd-radius-xs */
+      font-size: 0.7rem;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    /* === MINI BULLETS === */
+    .dd-hero__bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .dd-hero__bullets li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dd-hero__bullets i {
+      color: #14B8A6;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+
+    /* === RIGHT COLUMN — slider container === */
+    .dd-hero__visual {
+      min-height: 420px;
+    }
+    .dd-hero__visual .swiper {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      border-radius: 1rem;                       /* $dd-radius-lg */
+    }
+    .dd-hero__visual .swiper-slide {
+      min-height: 420px;
+    }
+
+    /* === SLIDE 1 — World Map constellation (Phase 5) === */
+    .dd-slide-map {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      background:
+        radial-gradient(ellipse 70% 50% at 55% 50%, rgba(20, 184, 166, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at center, #1a2347 0%, #0F1428 75%);
+      border-radius: 1rem;                       /* $dd-radius-lg */
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .dd-slide-map__canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* === Map points (cyan pulsing dots) === */
+    .dd-map-point {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #14B8A6;                       /* $dd-tertiary-500 */
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      box-shadow: 0 0 8px rgba(20, 184, 166, 0.6);
+    }
+    /* Pulse halo ring (uses dd-pulse keyframe from Brand Kit Sprint 1.5) */
+    .dd-map-point::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: #14B8A6;
+      animation: dd-pulse 2.5s ease-out infinite;
+      z-index: -1;
+    }
+    /* Office cities — larger, white center with cyan glow ring */
+    .dd-map-point--office {
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      box-shadow:
+        0 0 0 2px rgba(20, 184, 166, 0.5),
+        0 0 16px rgba(20, 184, 166, 0.8);
+    }
+    .dd-map-point--office::after {
+      background: rgba(20, 184, 166, 0.8);
+    }
+
+    /* Stagger pulse delays for organic constellation feel — every dot offset
+       by ~0.3s, creates a wave effect across the map */
+    .dd-map-point:nth-child(1)::after { animation-delay: 0s;    }
+    .dd-map-point:nth-child(2)::after { animation-delay: 0.3s;  }
+    .dd-map-point:nth-child(3)::after { animation-delay: 0.6s;  }
+    .dd-map-point:nth-child(4)::after { animation-delay: 0.9s;  }
+    .dd-map-point:nth-child(5)::after { animation-delay: 1.2s;  }
+    .dd-map-point:nth-child(6)::after { animation-delay: 1.5s;  }
+    .dd-map-point:nth-child(7)::after { animation-delay: 1.8s;  }
+    .dd-map-point:nth-child(8)::after { animation-delay: 2.1s;  }
+
+    /* === Overlay text (bottom-left) === */
+    .dd-slide-map__overlay {
+      position: absolute;
+      bottom: 2rem;
+      left: 2rem;
+      z-index: 3;
+      color: #fff;
+      pointer-events: none;
+    }
+    .dd-slide-map__stat {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 6vw, 5rem);
+      color: #14B8A6;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+    .dd-slide-map__label {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: #fff;
+      margin-top: 0.5rem;
+      line-height: 1.2;
+    }
+    .dd-slide-map__sub {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 0.4rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* Mobile: smaller overlay padding + hide sub if too tight */
+    @media (max-width: 575.98px) {
+      .dd-slide-map__overlay {
+        bottom: 1.25rem;
+        left: 1.25rem;
+      }
+      .dd-slide-map__sub {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Reduced motion: stop pulse animation but keep dots visible */
+    @media (prefers-reduced-motion: reduce) {
+      .dd-map-point::after {
+        animation: none;
+        opacity: 0.3;
+        transform: scale(1.5);
+      }
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 991.98px) {
+      .dd-hero__container {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .dd-hero__content { text-align: center; }
+      .dd-hero__headline,
+      .dd-hero__sub {
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .dd-hero__ctas      { justify-content: center; }
+      .dd-hero__bullets   { align-items: center; }
+      .dd-hero__visual,
+      .dd-hero__visual .swiper { min-height: 320px; }
+    }
+
+    @media (max-width: 575.98px) {
+      .dd-hero { padding-top: clamp(5rem, 18vw, 7rem); }
+      .dd-btn  { font-size: 0.95rem; padding: 0.8rem 1.5rem; }
+      .dd-btn__badge { font-size: 0.65rem; }
+    }
+
+    /* === Respect prefers-reduced-motion === */
+    @media (prefers-reduced-motion: reduce) {
+      .dd-btn,
+      .dd-btn--primary:hover,
+      .dd-btn--ghost:hover {
+        transition: none;
+        transform: none;
+      }
+    }
+  </style>
 @endsection
 
 <!-- Vendor Scripts -->
@@ -29,46 +343,102 @@
 
 @section('content')
   <div data-bs-spy="scroll" class="scrollspy-example">
-    <!-- Hero: Start -->
-    <section id="hero-animation">
-      <div id="landingHero" class="section-py landing-hero position-relative">
-        <img src="{{ asset('assets/img/front-pages/backgrounds/hero-bg.png') }}" alt="hero background"
-          class="position-absolute top-0 start-50 translate-middle-x object-fit-cover w-100 h-100" data-speed="1" />
-        <div class="container">
-          <div class="hero-text-box text-center position-relative">
-            <h1 class="text-primary hero-title display-6 fw-extrabold">One dashboard to manage all your businesses</h1>
-            <h2 class="hero-sub-title h6 mb-6">
-              Production-ready & easy to use Admin Template<br class="d-none d-lg-block" />
-              for Reliability and Customizability.
-            </h2>
-            <div class="landing-hero-btn d-inline-block position-relative">
-              <span class="hero-btn-item position-absolute d-none d-md-flex fw-medium">Join community <img
-                  src="{{ asset('assets/img/front-pages/icons/Join-community-arrow.png') }}" alt="Join community arrow"
-                  class="scaleX-n1-rtl" /></span>
-              <a href="#landingPricing" class="btn btn-primary btn-lg">Get early access</a>
-            </div>
-          </div>
-          <div id="heroDashboardAnimation" class="hero-animation-img">
-            <a href="{{ url('/app/ecommerce/dashboard') }}" target="_blank">
-              <div id="heroAnimationImg" class="position-relative hero-dashboard-img">
-                <img
-                  src="{{ asset('assets/img/front-pages/landing-page/hero-dashboard-' . $configData['theme'] . '.png') }}"
-                  alt="hero dashboard" class="animation-img"
-                  data-app-light-img="front-pages/landing-page/hero-dashboard-light.png"
-                  data-app-dark-img="front-pages/landing-page/hero-dashboard-dark.png" />
-                <img
-                  src="{{ asset('assets/img/front-pages/landing-page/hero-elements-' . $configData['theme'] . '.png') }}"
-                  alt="hero elements" class="position-absolute hero-elements-img animation-img top-0 start-0"
-                  data-app-light-img="front-pages/landing-page/hero-elements-light.png"
-                  data-app-dark-img="front-pages/landing-page/hero-elements-dark.png" />
-              </div>
+    {{-- ═════════════════════════════════════════════════════════════════════
+         Hero: Start — Sprint 1.5 Étape 3 — Direction A (carrier-grade épuré)
+         Replaces Sneat default hero. Content via config('dream-digital.*')
+         per CMS-ready architecture. 1 slide tonight (Phase 5), Swiper init
+         + slides 2/3/4 = lundi (Phases 4 + 6-7-8).
+         ═════════════════════════════════════════════════════════════════════ --}}
+    @php
+      // Source: config CMS-ready (config/dream-digital/site.php, validé draft 2 PO 2026-05-08)
+      $heroTagline     = config('dream-digital.site.tagline.fr');
+      $heroSubHeadline = config('dream-digital.site.sub_headline.fr');
+      $heroCtaPrimary  = config('dream-digital.site.transition_cta.cta_primary.fr');
+      // TODO Étape 4-5: promote hero_headline + hero_bullets + cta secondary 'Voir la doc API'
+      // to config('dream-digital.site.hero_*') for full CMS-ready compliance.
+    @endphp
+
+    <section class="dd-hero" aria-label="Dream Digital" id="dd-hero">
+      <div class="dd-hero__container">
+
+        {{-- LEFT COLUMN — fixed content (always visible, no slide rotation) --}}
+        <div class="dd-hero__content">
+
+          <div class="dd-hero__eyebrow">{{ $heroTagline }}</div>
+
+          <h1 class="dd-hero__headline">
+            L'infrastructure télécom qui connecte les entreprises modernes à 200+ pays
+          </h1>
+
+          <p class="dd-hero__sub">{{ $heroSubHeadline }}</p>
+
+          <div class="dd-hero__ctas">
+            <a href="#contact" class="dd-btn dd-btn--primary">
+              {{ $heroCtaPrimary }}
+            </a>
+            <a href="#docs" class="dd-btn dd-btn--ghost">
+              Voir la doc API <span class="dd-btn__badge">bientôt</span>
             </a>
           </div>
+
+          <ul class="dd-hero__bullets">
+            <li><i class="bx bx-check"></i> Couverture 200+ pays</li>
+            <li><i class="bx bx-check"></i> Bureaux RDC · CI · CG</li>
+          </ul>
+
         </div>
+
+        {{-- RIGHT COLUMN — Swiper container (1 slide tonight, Phase 5 fills it,
+             slides 2-4 added Monday in Phases 6-7-8, Swiper JS init Phase 4 Monday) --}}
+        <div class="dd-hero__visual">
+          <div class="swiper dd-hero-slider">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide" data-slide="map">
+                {{-- Slide 1 — World Map constellation (Phase 5) :
+                     Approche fallback constellation minimaliste — dégradé dark navy +
+                     8 dots cyan animés positionnés en équirectangulaire lat/lng → %.
+                     Pas de SVG continents (volontaire : plus épuré, plus carrier-grade,
+                     plus performant). Les dots eux-mêmes suggèrent la couverture mondiale.
+                     Animation : @keyframes dd-pulse Brand Kit Sprint 1.5 token. --}}
+                <div class="dd-slide-map">
+                  <div class="dd-slide-map__canvas" aria-hidden="true">
+                    {{-- Context cities (cyan dots, suggesting global coverage) --}}
+                    {{-- New York (40.71°N, 74.0°W) → x=29.4%, y=27.4% --}}
+                    <span class="dd-map-point" style="top: 27.4%; left: 29.4%;" data-city="New York"></span>
+                    {{-- Paris (48.86°N, 2.35°E) → x=50.65%, y=22.86% --}}
+                    <span class="dd-map-point" style="top: 22.9%; left: 50.6%;" data-city="Paris"></span>
+                    {{-- Le Caire (30.04°N, 31.24°E) → x=58.68%, y=33.31% --}}
+                    <span class="dd-map-point" style="top: 33.3%; left: 58.7%;" data-city="Le Caire"></span>
+                    {{-- Lagos (6.45°N, 3.39°E) → x=50.94%, y=46.4% --}}
+                    <span class="dd-map-point" style="top: 46.4%; left: 50.9%;" data-city="Lagos"></span>
+                    {{-- Singapore (1.35°N, 103.82°E) → x=78.84%, y=49.25% --}}
+                    <span class="dd-map-point" style="top: 49.2%; left: 78.9%;" data-city="Singapore"></span>
+
+                    {{-- Office cities (Kinshasa / Abidjan / Brazzaville) — renforcés --}}
+                    {{-- Abidjan (5.36°N, 4.01°W) → x=48.89%, y=47.02% --}}
+                    <span class="dd-map-point dd-map-point--office" style="top: 47.0%; left: 48.9%;" data-city="Abidjan" data-office></span>
+                    {{-- Kinshasa (4.44°S, 15.27°E) → x=54.24%, y=52.47% --}}
+                    <span class="dd-map-point dd-map-point--office" style="top: 52.5%; left: 54.2%;" data-city="Kinshasa" data-office></span>
+                    {{-- Brazzaville (4.26°S, 15.24°E) — légèrement offset visuel --}}
+                    <span class="dd-map-point dd-map-point--office" style="top: 53.0%; left: 53.5%;" data-city="Brazzaville" data-office></span>
+                  </div>
+
+                  <div class="dd-slide-map__overlay">
+                    <div class="dd-slide-map__stat" aria-label="200 plus pays couverts">200+</div>
+                    <div class="dd-slide-map__label">pays couverts</div>
+                    <div class="dd-slide-map__sub">5 corridors africains premium</div>
+                  </div>
+                </div>
+              </div>
+              {{-- Slides 2/3/4 ajoutés lundi en Phases 6-7-8 --}}
+            </div>
+            <div class="swiper-pagination dd-hero-pagination"></div>
+          </div>
+        </div>
+
       </div>
-      <div class="landing-hero-blank"></div>
     </section>
-    <!-- Hero: End -->
+    {{-- Hero: End --}}
 
     <!-- Useful features: Start -->
     <section id="landingFeatures" class="section-py landing-features">

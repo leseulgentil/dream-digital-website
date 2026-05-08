@@ -245,10 +245,58 @@
   .dtp-codetoken-card .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #7B8395; display: block; margin-top: 6px; }
   .dtp-codetoken-card .usage { font-size: 0.78rem; color: #7B8395; display: block; margin-top: 4px; }
 
+  /* === Section 7: Icons Boxicons === */
+  .dtp-icon-subtitle { font-size: 1.1rem; margin-top: 32px; margin-bottom: 16px; color: #424A5C; font-weight: 600; }
+  .dtp-icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .dtp-icon-card {
+    background: white;
+    border: 1px solid #E4E7EE;
+    border-radius: 8px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .dtp-icon-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14, 18, 28, 0.06), 0 2px 4px rgba(14, 18, 28, 0.04); }
+  .dtp-icon-tile {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 12px;
+    background: rgba(51, 95, 95, 0.1);  /* Petrol Teal 10% */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dtp-icon-tile i { font-size: 32px; color: #335F5F; }
+  .dtp-icon-card .label { font-size: 0.9rem; font-weight: 600; color: #0E121C; margin-bottom: 4px; }
+  .dtp-icon-card .bx-class { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #7B8395; }
+
   /* Footer info */
   .dtp-footer { padding: 32px 0; border-top: 1px solid #E4E7EE; color: #7B8395; font-size: 0.85rem; text-align: center; font-family: 'JetBrains Mono', monospace; }
 </style>
 @endsection
+
+@php
+  // Resolve current commit SHA without depending on shell_exec.
+  // Reads .git/HEAD then resolves the ref file. Silent fallback to 'unknown'.
+  $gitSha = 'unknown';
+  try {
+      $headFile = base_path('.git/HEAD');
+      if (is_readable($headFile)) {
+          $head = trim(file_get_contents($headFile));
+          if (str_starts_with($head, 'ref: ')) {
+              $refFile = base_path('.git/' . trim(substr($head, 5)));
+              if (is_readable($refFile)) {
+                  $gitSha = substr(trim(file_get_contents($refFile)), 0, 7);
+              }
+          } else {
+              $gitSha = substr($head, 0, 7);
+          }
+      }
+  } catch (\Throwable $e) {
+      // silent
+  }
+@endphp
 
 @section('content')
 <div class="dtp-page">
@@ -258,7 +306,7 @@
     <header class="dtp-header">
       <h1>Design System Preview <span class="badge-dir-a">Direction A</span></h1>
       <p class="subtitle">Sprint 1.5 — Brand Kit v1.2 + extensions Étape 2 (carrier-grade épuré, style Telnyx + Twilio)</p>
-      <p class="meta">Generated: {{ now()->format('Y-m-d H:i') }} · branch: feature/sprint-1-5-redesign · internal dev page (not for production)</p>
+      <p class="meta">Build: <strong>{{ $gitSha }}</strong> · {{ now()->format('Y-m-d H:i') }} · branch: feature/sprint-1-5-redesign · internal dev page (noindex via commonMaster)</p>
     </header>
 
     {{-- ═══════════════════════════════ 1. COULEURS ═══════════════════════════════ --}}
@@ -595,9 +643,37 @@
       </div>
     </section>
 
+    {{-- ═══════════════════════════════ 7. ICONS BOXICONS ═══════════════════════════════ --}}
+    <section class="dtp-section" id="icons">
+      <h2>7. Iconographie (Boxicons)</h2>
+      <p class="section-intro">Iconset Boxicons (chargé via <code>vite.icons.plugin.js</code> post-S9, décision Q13). Icônes ci-dessous lues directement depuis les configs CMS-ready <code>config/dream-digital/services.php</code> + <code>industries.php</code> — démonstration de l'architecture content-via-config en action.</p>
+
+      <h3 class="dtp-icon-subtitle">Services (6 — depuis services.php)</h3>
+      <div class="dtp-icon-grid">
+        @foreach(config('dream-digital.services.items', []) as $service)
+          <div class="dtp-icon-card">
+            <div class="dtp-icon-tile"><i class="bx {{ $service['icon'] }}"></i></div>
+            <div class="label">{{ $service['name']['fr'] }}</div>
+            <div class="bx-class">{{ $service['icon'] }}</div>
+          </div>
+        @endforeach
+      </div>
+
+      <h3 class="dtp-icon-subtitle">Industries / Cas d'usage (4 — depuis industries.php)</h3>
+      <div class="dtp-icon-grid">
+        @foreach(config('dream-digital.industries.items', []) as $industry)
+          <div class="dtp-icon-card">
+            <div class="dtp-icon-tile"><i class="bx {{ $industry['icon'] }}"></i></div>
+            <div class="label">{{ $industry['name']['fr'] }}</div>
+            <div class="bx-class">{{ $industry['icon'] }}</div>
+          </div>
+        @endforeach
+      </div>
+    </section>
+
     {{-- ═══════════════════════════════ FOOTER ═══════════════════════════════ --}}
     <div class="dtp-footer">
-      End of preview · Source : <code>resources/assets/vendor/scss/_custom-variables/_dream-digital.scss</code> + <code>dream-digital/_dd-code-blocks.scss</code> · Q21 jurisprudence respectée (single override hook Sneat)
+      End of preview · Build <strong>{{ $gitSha }}</strong> · Source : <code>resources/assets/vendor/scss/_custom-variables/_dream-digital.scss</code> + <code>dream-digital/_dd-code-blocks.scss</code> · Q21 jurisprudence respectée (single override hook Sneat)
     </div>
 
   </div>

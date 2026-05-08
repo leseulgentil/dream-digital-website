@@ -11,7 +11,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Auto-load CMS-ready content configs from config/dream-digital/ into
+        // the 'dream-digital.*' namespace so Blade can use
+        // config('dream-digital.services.items') etc. without registering each
+        // file manually. Sprint 1.5 — Étape 2 architecture decision.
+        $configDir = config_path('dream-digital');
+        if (is_dir($configDir)) {
+            foreach (glob($configDir . '/*.php') as $file) {
+                $name = basename($file, '.php');
+                $this->mergeConfigFrom($file, "dream-digital.{$name}");
+            }
+        }
     }
 
     /**

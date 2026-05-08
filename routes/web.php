@@ -160,8 +160,9 @@ use App\Http\Controllers\charts\ApexCharts;
 use App\Http\Controllers\charts\ChartJs;
 use App\Http\Controllers\maps\Leaflet;
 
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+// Main Page Route — / renders the corporate landing (front-pages/landing view)
+// Dashboard remains accessible at /dashboard/analytics (and is the post-login destination)
+Route::get('/', [Landing::class, 'index'])->name('home');
 Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
 Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
 // locale

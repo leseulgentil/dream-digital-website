@@ -329,4 +329,72 @@ Si l'un de ces 5 checks échoue, **STOP immédiat** et alerter le PO.
 
 ---
 
+## Pré-S1.5 — Mise en ligne dream-digital.info (CLÔT 2026-05-08)
+
+**Branche** : master (commits directs, sprint d'infrastructure)
+**Durée réelle** : ~3h30 (jeudi 7 mai 2026 après-midi)
+**PO** : MAPENDO Gentil
+
+### Contexte
+Avant Sprint 1.5 (redesign vitrine ITSP/CPaaS), le PO a décidé de
+mettre en ligne le code Dream Digital actuel sur un VPS dédié
+fraîchement provisionné chez OVH. Décision assumée par le PO :
+déployer le dashboard Sneat rebrandé tel quel ("pour mettre la
+machine en route"), avec protection Basic Auth pour limiter
+l'exposition publique pendant que Sprint 1.5 prépare le contenu
+final.
+
+### Livrables techniques
+- VPS dédié OVH 79.137.64.128 (Ubuntu 24.04 LTS, 16 GB RAM,
+  8 cores Xeon E3-1230 v6, 3.6 TB SSD)
+- Stack Laravel : Nginx 1.24 + PHP 8.4 FPM + PostgreSQL 16 +
+  Composer 2.9.7 + Node 22.22.2 + Certbot 2.9.0 + Git 2.43.0
+- Hardening : UFW (deny incoming, allow 22/80/443) + fail2ban
+  (sshd jail, bantime 1h)
+- Pool PHP-FPM dédié : `dreamdigital` (user/group), socket
+  `/run/php/php8.4-fpm-dreamdigital.sock`
+- Base PostgreSQL : `dreamdigital_db` / `dreamdigital_user`
+- Repo GitHub privé : `github.com/leseulgentil/dream-digital-website`
+- Deploy key SSH ed25519 (read-only) configurée
+- Cert SSL OVH Sectigo wildcard `*.dream-digital.info` + apex
+  (validité 2026-01-09 → 2026-10-15)
+- HTTPS opérationnel : TLS 1.2+1.3 only, HSTS 1 an, OCSP stapling,
+  ciphers modernes
+- Basic Auth : user `dreamdigital`, password noté côté PO
+- robots.txt : Disallow / (pas d'indexation Google)
+- Routing fix (commit db632ac) : `/` pointe sur
+  `/front-pages/landing` (vue Sneat marketing temporaire)
+
+### Décisions stratégiques actées
+- Scénario B initial (page d'attente séparée pré-S1.5) abandonné
+  en cours de session — PO a opté pour déploiement direct du code
+  master tel quel
+- Adaptation landing en page d'attente Dream Digital différée à
+  Sprint 1.5
+- WordPress legacy sur mutualisé OVH déconnecté du domaine
+  (DNS basculé vers VPS dédié)
+
+### Dette technique reportée (voir TECH_DEBT.md)
+- TD-001 : Doublons name `dashboard-analytics` (4 routes)
+- TD-002 : Résidus marketing Sneat dans pages front
+- TD-003 : Renouvellement cert SSL au 2026-09-15
+- TD-004 : Configuration backups VPS
+
+### Calendrier critique
+- ⚠️ **2026-09-15** : alerte renouvellement SSL (30j avant
+  expiration)
+- **2026-10-15** : expiration cert OVH (deadline absolue)
+
+### Prochaines étapes
+- **Sprint 1.5** (redesign vitrine ITSP/CPaaS) sur branche
+  `feature/sprint-1-5-redesign` — durée estimée 4-6 jours
+- Démarrage : vendredi 8 mai 2026 (mode marathon)
+- Brief de référence : `BRIEF_SPRINT_1_5_REDESIGN.md` (commit
+  73d076f, amendements A-I appliqués)
+
+### Statut
+✅ **Pré-S1.5 OFFICIELLEMENT CLÔTURÉ** au 2026-05-08
+
+---
+
 *Checkpoint généré automatiquement avant reboot machine PO. Mise à jour à chaque transition de sous-tâche dans la session post-reboot.*

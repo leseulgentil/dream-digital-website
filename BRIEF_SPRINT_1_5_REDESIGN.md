@@ -63,7 +63,7 @@ Pour chaque site, observer spécifiquement :
 Dream Digital doit communiquer visuellement :
 
 - **Confiance carrier-grade** : on est un vrai opérateur, pas une app qui fait du SMS
-- **Global avec ancrage local** : opérateur CPaaS/ITSP global (200+ pays, 60%+ clients hors Afrique) avec présence opérationnelle Kinshasa + Abidjan + Brazzaville. Ancrage assumé dans le contenu (drapeaux corridors RDC/Congo/Côte d'Ivoire), jamais comme limitation géographique du positionnement
+- **Global CPaaS/ITSP avec ancrage local** : 60%+ de clientèle hors Afrique, 80%+ partenaires hors Afrique. Notre positionnement est celui d'un opérateur télécom global avec des équipes basées en Afrique francophone — pas d'un acteur panafricain. L'identité visuelle doit refléter cette ambition globale (sobriété carrier-grade) tout en gardant une mention naturelle des bureaux de Kinshasa, Abidjan et Brazzaville comme preuve d'opérations réelles.
 - **Developer-friendly** : le code est partout sur le site
 - **Premium mais accessible** : pas le côté "luxueux et inaccessible" d'un Sinch enterprise, mais pas le côté "agence digitale" du Sneat default non plus
 
@@ -72,45 +72,49 @@ Dream Digital doit communiquer visuellement :
 **Décision** : Brand Kit v1.2 validé, palette **déjà active depuis S3** (override Bootstrap via `_custom-variables/_bootstrap-extended.scss` chargeant `_dream-digital.scss`). Pour Sprint 1.5, utiliser exclusivement les tokens existants — aucun ajout palette.
 
 ```scss
-// Palette Dream Digital — sourced from Brand Kit v1.2 tokens already active
-// post-S3 in resources/assets/vendor/scss/_custom-variables/_dream-digital.scss
-//
-// Primary    — Petrol Teal      $dd-primary-500: #335F5F   (~30% usage)
-//              Branding, sidebar admin, brand titles, focus rings
-// Secondary  — Action Black     $dd-secondary:   #0E121C   (~15% usage)
-//              CTAs critiques, headings principaux, code block bg
-// Tertiary   — Cyan spot        $dd-tertiary-500: #14B8A6  (max 5%, 3-4 occ/page)
-//              Liens éditoriaux actifs, badges NEW, live indicators, focus rings
-//              ⚠️ INTERDIT sur primary CTAs, card bg, headings, body, container borders
-// Foundation — $dd-surface (#FFFFFF) + $dd-ink-* warm grays  (~50%)
-// Status     — $dd-success #0EBE82 / $dd-warning #F2A93B /
-//              $dd-danger  #EF4361 / $dd-info    #3A86FF    (semantic only)
+// === Palette Dream Digital v1.2 ===
+// Source unique : _custom-variables/_dream-digital.scss (déjà actif post-S3)
+// Ne PAS dupliquer ici — tous les tokens sont disponibles via les variables 
+// déjà importées en _custom-variables/_bootstrap-extended.scss.
 
-// Code blocks dark (pour les sections developer-first sur fond clair) :
-$dd-code-bg:      #0F1428;             // dark canvas
-$dd-code-text:    #E1E4F0;             // foreground
-$dd-code-keyword: #F472B6;             // pink (clés JSON, mots-clés langage)
-$dd-code-string:  #86EFAC;             // vert (strings)
-$dd-code-num:     #FBBF24;             // jaune (nombres)
-$dd-code-fn:      $dd-tertiary-500;    // teal cyan #14B8A6 (fonctions, signature DD)
-$dd-code-comment: #8A8FA3;             // gray (commentaires)
+// Rappel des couleurs principales (pour référence design uniquement) :
+// --bs-primary       : #335F5F  Petrol Teal       ~30% usage (branding)
+// --bs-secondary     : #0E121C  Action Black      ~15% usage (CTAs critiques)
+// --bs-info          : #14B8A6  Tertiary Cyan     ~5% MAX (spot accent)
+// --bs-success       : #0EBE82  Delivered indicator
+// --bs-warning       : #F2A93B  Pending indicator
+// --bs-danger        : #EF4361  Failed indicator
 
-// See BRAND_KIT_DREAM_DIGITAL.md sections 3-4 for usage rules + forbidden combinations.
+// === Code blocks (pour terminal animation Section 3.3 Developer-First) ===
+$dd-code-bg:      #0F1428;        // dark navy (cohérent avec Action Black)
+$dd-code-text:    #E1E4F0;
+$dd-code-keyword: #F472B6;        // pink (clés JSON, mots-clés langage)
+$dd-code-string:  #86EFAC;        // vert (strings)
+$dd-code-num:     #FBBF24;        // jaune (nombres)
+$dd-code-fn:      #14B8A6;        // ⚠️ Tertiary Cyan v1.2 (PAS le #00D9FF obsolète)
+$dd-code-comment: #8A8FA3;        // gray
 ```
 
 ### 2.3 Typographie
 
 ```scss
-// Fonts — Brand Kit v1.2 Pair A (Inter unique family)
-// Already imported via Google Fonts in commonMaster.blade.php (S3, lines 60-64)
-$dd-font-display: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+// === Typographie Dream Digital v1.2 ===
+// Stack déjà chargée via Google Fonts en commonMaster.blade.php (S3)
+// Inter remplace Bricolage Grotesque + Outfit (un seul fichier au lieu de deux)
+
+$dd-font-display: 'Inter', system-ui, -apple-system, sans-serif;
 $dd-font-body:    'Inter', system-ui, -apple-system, sans-serif;
-$dd-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+$dd-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
-// Weights canonical (Inter 300/400/500/600/700/800 chargés via Google Fonts)
-// Headings : 600/700/800  ·  Body : 400/500/600  ·  Captions : 400
+// Les weights utilisés :
+// 300 (light)     : très rare, body de témoignages
+// 400 (regular)   : body par défaut
+// 500 (medium)    : navigation, labels
+// 600 (semibold)  : H3, H4, CTAs
+// 700 (bold)      : H1, H2 (sections)
+// 800 (extrabold) : Hero display, stats énormes
 
-// Scale (mobile first, responsive via clamp)
+// Scale (mobile first, responsive via clamp) — INCHANGÉ vs brief original
 $dd-display-1: clamp(2.5rem, 6vw, 5rem);     // 40px → 80px (hero h1)
 $dd-display-2: clamp(2rem, 4.5vw, 3.5rem);   // 32px → 56px (section titles)
 $dd-h1: clamp(1.75rem, 3.5vw, 2.5rem);       // page h1
@@ -133,7 +137,7 @@ $dd-leading-normal: 1.55;      // body
 $dd-leading-relaxed: 1.7;      // long form
 ```
 
-**Important** : Inter en weight 600/700/800 pour les titres apporte un côté éditorial moderne qui distingue de Sneat default (Public Sans). Inter 400/500/600 pour le body est plus moderne et lisible. Brand Kit v1.2 unifie display + body sur Inter pour cohérence.
+**Important** : Inter weight 700-800 sur les hero/sections apporte le côté contemporain B2B carrier-grade, cohérent avec Stripe, Linear, Vercel. Inter en family unique simplifie la stack typographique et réduit le payload Google Fonts.
 
 ### 2.4 Espacements et radius
 
@@ -216,21 +220,24 @@ Le PO a confirmé un **slider sur la home**. Voici comment l'adapter au ton CPaa
 |                          NAV                            |
 +---------------------------------------------------------+
 |                                                         |
-|  [eyebrow: "Voice. SMS. eSIM. And More."]                     
+|  [eyebrow: "Voice. SMS. eSIM. And More."]              |
 |                                                         |
 |  L'infrastructure                  [Slide 1 visual]    |
-|  télécom pour                      → Carte mondiale    |
-|  l'Afrique qui                       avec points       |
-|  parle.                              animés            |
+|  télécom qui                       → Carte mondiale    |
+|  connecte les                        avec points       |
+|  entreprises                         animés            |
+|  modernes à                                            |
+|  200+ pays.                                            |
 |                                                         |
-|  [Sous-titre : SMS, Voice, DID, SIP, eSIM. Une          |
-|   plateforme. 200+ pays. Construit à Kinshasa,          |
-|   déployé partout.]                                     |
+|  [Sous-titre : SMS A2P, Voice Wholesale, DID, SIP       |
+|   Trunking, Dialo Contact Center, eSIM Zone — sous     |
+|   une seule plateforme. Une exigence carrier-grade.]    |
 |                                                         |
-|  [CTA accent: Démarrer gratuitement]                    |
-|  [CTA ghost: Voir la doc API]                           |
+|  [CTA accent: Échanger avec notre équipe]              |
+|  [CTA ghost: Voir la doc API (bientôt)]                |
 |                                                         |
-|  [Mini-bullets : ✓ Crédit de test  ✓ API en 5 min]     |
+|  [Mini-bullets : ✓ Couverture 200+ pays               |
+|                  ✓ Bureaux RDC · CI · CG]              |
 +---------------------------------------------------------+
 |                    TRUST STRIP                          |
 +---------------------------------------------------------+
@@ -299,13 +306,14 @@ Grille 3×2 sur desktop, 2×3 sur tablet, 1×6 sur mobile. **Pas de cards "en l�
 - **Hover** : la cell devient légèrement teintée cyan (`background: $dd-accent-100`), l'icône change de couleur, la flèche du lien glisse vers la droite
 - Icône en **carré 44x44** avec léger gradient cyan, pas en cercle
 
-Icônes à utiliser (Boxicons, déjà chargés via `vite.icons.plugin.js` — voir Q13 S9-C3 pour la justification iconset). Tabler Icons NON disponible sans extension du plugin Vite.
-- SMS    : `bx-message-square-detail` ou `bx-chat`
-- Voice  : `bx-phone`
-- DID    : `bx-hash` ou `bx-grid-alt`
-- SIP    : `bx-network-chart` ou `bx-server`
-- Dialo  : `bx-headphone`
-- eSIM   : `bx-mobile-alt` ou `bx-sim`
+Icônes à utiliser (Boxicons, déjà chargés via `vite.icons.plugin.js` post-S9 — cohérent avec le reste du site Dream Digital. Tabler Icons NON disponible sans extension du plugin Vite, décision Q13 S9-C3 confirmée pour S1.5) :
+
+- SMS A2P         : `bx-message-rounded` ou `bx-message-detail`
+- Voice Wholesale : `bx-phone` ou `bx-phone-call`
+- DID Numbers     : `bx-hash` ou `bx-numbers`
+- SIP Trunking    : `bx-network-chart` ou `bx-server`
+- Dialo CC        : `bx-headphone` ou `bx-support`
+- eSIM Zone       : `bx-mobile-alt` ou `bx-microchip`
 
 #### Section "Developer-First"
 
@@ -345,7 +353,7 @@ Carte du monde stylisée façon "constellation" :
 
 - SVG du monde en **outline subtle** (`stroke: $dd-ink-300`)
 - Sur les pays couverts SMS : **cercles cyan animés** qui pulsent
-- 3 cercles plus gros pour les pays de présence opérationnelle (CD Kinshasa HQ, CI Abidjan, CG Brazzaville) avec label
+- 3 cercles plus gros pour les pays de présence (CD Kinshasa, CI Abidjan, CG Brazzaville) avec label des bureaux
 - **Stats à droite** : "Afrique · 54 pays · 47 corridors premium" / "Europe · 44 pays" / "Amérique · 35 pays" / "Asie · 41 pays"
 
 Pour la carte SVG, recommandation à Claude Code : utiliser https://www.amcharts.com/svg-maps/ qui propose des SVG world maps en domaine public, ou simple-maps (https://github.com/zcreativelabs/react-simple-maps) si une approche JS est préférée. Le SVG doit être inline pour permettre le styling CSS.
@@ -386,7 +394,7 @@ Crédit de test offert      Tarif unitaire indicatif     Volumes >1M/mois
 Sous-footer (copyright + versions + bureaux) :
 
 ```
-© 2026 Dream Digital SARL. Kinshasa · Abidjan · Brazzaville.
+© 2026 Dream Digital. Kinshasa · Abidjan · Brazzaville.
 Build 4af2c19 · v2.0
 ```
 

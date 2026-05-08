@@ -182,6 +182,11 @@ Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
 Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-container');
 Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 
+// Sprint 1.5 — Design System Preview (internal dev page, remove before prod)
+Route::get('/preview/design-tokens', function () {
+    return view('preview.design-tokens');
+})->name('preview.design-tokens');
+
 // Front Pages
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
 Route::get('/front-pages/pricing', [Pricing::class, 'index'])->name('front-pages-pricing');

@@ -9,6 +9,11 @@
 // ============================================================================
 
 // ----------------------------------------------------------------------------
+// Imports modulaires (Sprint 1.5 — Option B incrémentale, jurisprudence Q21)
+// ----------------------------------------------------------------------------
+@import "../dream-digital/dd-code-blocks";
+
+// ----------------------------------------------------------------------------
 // 1. PRIMARY — Petrol Teal (#335F5F) — usage ~30%
 // ----------------------------------------------------------------------------
 // Marque, branding, identité, sidebar admin, headings de marque, icônes
@@ -232,6 +237,11 @@ $dd-shadow-xl:   0 24px 48px rgba(14, 18, 28, 0.10), 0 8px 16px rgba(14, 18, 28,
 // Focus ring tertiary cyan pour accessibilité
 $dd-shadow-focus: 0 0 0 3px rgba(20, 184, 166, 0.25);
 
+// Glow effect tertiary cyan pour cards/CTAs featured (hover spotlight)
+// Composé : ring 1px solid + diffuse 24px (signature Direction A carrier-grade)
+// Utilise rgba du Tertiary Cyan #14B8A6, PAS le #00D9FF obsolète.
+$dd-shadow-glow: 0 0 0 1px rgba(20, 184, 166, 0.4), 0 0 24px rgba(20, 184, 166, 0.25);
+
 // ----------------------------------------------------------------------------
 // 11. TRANSITIONS
 // ----------------------------------------------------------------------------
@@ -260,6 +270,51 @@ $dd-z-modal:     1040;
 $dd-z-popover:   1050;
 $dd-z-tooltip:   1060;
 $dd-z-toast:     1070;
+
+// ----------------------------------------------------------------------------
+// 13. KEYFRAMES NOMMÉS (Sprint 1.5 — composants signature)
+// ----------------------------------------------------------------------------
+// Animations réutilisables nommées avec préfixe dd- pour éviter collisions
+// avec keyframes Sneat/Bootstrap natifs. Disponibles globalement après import.
+
+// dd-pulse — pour signal-indicator (live status dots, brief Section 4.2.a)
+// Cercle qui pulse en s'agrandissant et en s'estompant simultanément
+@keyframes dd-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+// dd-fade-up — pour stagger animations au scroll (Intersection Observer)
+// Translation verticale subtile + fade-in, signature Direction A
+@keyframes dd-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// dd-hover-lift — pour cards / CTAs en hover (alternative à transition pure)
+// Lift vertical + élévation shadow, applicable via animation-fill-mode: forwards
+@keyframes dd-hover-lift {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(14, 18, 28, 0.04), 0 1px 3px rgba(14, 18, 28, 0.06);
+  }
+  100% {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(14, 18, 28, 0.08), 0 4px 8px rgba(14, 18, 28, 0.04);
+  }
+}
 
 // ============================================================================
 // FIN — Dream Digital Design Tokens v1.2 FINAL

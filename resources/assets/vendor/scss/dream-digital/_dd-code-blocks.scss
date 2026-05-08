@@ -1,0 +1,30 @@
+// ============================================================================
+// Dream Digital — Code Block Tokens (Sprint 1.5 Étape 2)
+// ============================================================================
+// Variables pour les terminaux et code snippets de la section Developer-First
+// (cf. brief Sprint 1.5 Section 2.2 amendée — amendement B au commit 73d076f).
+//
+// ⚠️ $dd-code-fn = #14B8A6 (Tertiary Cyan v1.2 — Brand Kit actif post-S3)
+//    PAS le #00D9FF obsolète du brief original.
+//
+// Importé par _custom-variables/_dream-digital.scss en début de cascade,
+// donc disponible globalement avant les imports Bootstrap.
+// ============================================================================
+
+// Background dark cohérent avec Action Black ($dd-secondary #0E121C)
+// teinte légèrement bluée pour fondre avec la palette teal
+$dd-code-bg:      #0F1428;
+
+// Texte par défaut dans le terminal (clair, lisibilité haute sur fond dark)
+$dd-code-text:    #E1E4F0;
+
+// Syntax highlighting tokens
+$dd-code-keyword: #F472B6;  // pink — clés JSON, mots-clés langage (def, if, return)
+$dd-code-string:  #86EFAC;  // vert — strings entre guillemets
+$dd-code-num:     #FBBF24;  // jaune — nombres littéraux
+$dd-code-fn:      #14B8A6;  // ⚠️ Tertiary Cyan v1.2 — fonctions, signature DD
+                            //    (PAS le #00D9FF obsolète)
+$dd-code-comment: #8A8FA3;  // gray — commentaires inline et blocs
+
+// Accent cursor / curseur de saisie animé dans terminaux
+$dd-code-cursor:  $dd-code-fn;  // alignement Tertiary Cyan

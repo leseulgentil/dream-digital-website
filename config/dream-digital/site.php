@@ -13,6 +13,28 @@
 |   {{ config('dream-digital.site.tagline.fr') }}
 |   {{ config('dream-digital.site.contact.email_sales') }}
 |
+|--------------------------------------------------------------------------
+| NULL VALUE CONVENTION (per paulrberg review MED-5, 2026-05-11)
+|--------------------------------------------------------------------------
+|
+| Certaines clés ci-dessous sont volontairement à `null` (ex.
+| `contact.email_support`, `contact.phone`, `social.*`,
+| `company.legal_name`, `meta.og_image`). Elles attendent un input PO.
+|
+| RÈGLE BLADE — TOUJOURS utiliser le null-coalescing (`??`) ou un `@if`
+| en garde lors du rendu, pour éviter du markup cassé silencieux.
+|
+| Exemples :
+|   ✅ {{ config('dream-digital.site.contact.email_support') ?? '' }}
+|   ✅ @if($url = config('dream-digital.site.social.linkedin'))
+|        <a href="{{ $url }}">LinkedIn</a>
+|      @endif
+|   ❌ <a href="tel:{{ config('dream-digital.site.contact.phone') }}">
+|        // produit <a href="tel:"> qui casse le protocole tel:
+|
+| À retirer cette convention quand toutes les clés `null` auront été
+| renseignées et qu'il n'en restera plus dans le fichier.
+|
 */
 
 return [

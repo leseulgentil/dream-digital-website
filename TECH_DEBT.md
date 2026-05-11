@@ -123,6 +123,103 @@ Sprint 1.5 ou Sprint 1) :
 
 ═══════════════════════════════════════════════════════════════
 
+## TD-005 — Configs CMS i18n EN identique au FR
+
+**Origine** : Sprint 1.5 Étape 2 (configs CMS-ready, commit `a8b2589`)
+**Plan de résolution** : Sprint 1 (fondations multi-pays + i18n FR/EN)
+**Sévérité** : Moyenne (impact : visiteurs EN reçoivent du texte FR)
+
+### Description
+Dans les configs `config/dream-digital/*.php` créées en Étape 2
+Sprint 1.5, plusieurs clés `'en'` contiennent du texte français
+identique à la clé `'fr'` :
+
+- `site.php` — `sub_headline.en`, `pitch.title.en`,
+  `pitch.paragraphs[0-1].en`, `transition_cta.text.en`,
+  `transition_cta.title.en`, `transition_cta.cta_*.en`
+- `coverage.php` — `global.description.en`
+- `services.php` — champs `'en'` aussi en français
+- `industries.php` — idem
+
+C'est une décision consciente PO pour livrer Sprint 1.5 vite. Les
+vrais textes EN seront fournis et intégrés en Sprint 1 lors de
+l'implémentation i18n.
+
+Cas particulier : `site.tagline.fr` = `site.tagline.en` =
+`"Voice. SMS. eSIM. And More."` est **intentionnel** (tagline EN
+validé comme marque, ANALYZE Q11 Brand Kit v1.2).
+
+### Impact si non-traité
+Quand un Blade lit `config('dream-digital.site.sub_headline.en')`
+côté visiteur EN, il sert du français. Acceptable temporairement
+parce que :
+1. Site sous Basic Auth (pas d'utilisateurs publics)
+2. Sprint 1.5 n'expose pas encore de language switcher
+
+Devient bloquant dès l'ouverture publique du site.
+
+### Plan de résolution
+Sprint 1 — Fondations multi-pays + i18n FR/EN :
+- Traductions EN professionnelles fournies par PO
+- Mise à jour des configs avec vrais textes EN
+- Implémentation language switcher
+- Tests de bascule FR ↔ EN
+- Suppression de la convention NULL VALUE (cf. site.php
+  docblock MED-5) une fois toutes les clés peuplées
+
+Per paulrberg review finding MED-2
+(`docs/REVIEW_sprint-1-5_2026-05-08.md`).
+
+═══════════════════════════════════════════════════════════════
+
+## TD-006 — Cookie admin-primaryColor injection CSS via Helpers
+
+**Origine** : Sneat default (héritage template, identifié en
+review paulrberg 2026-05-08)
+**Plan de résolution** : avant retrait Basic Auth (pré-production
+publique)
+**Sévérité** : Faible (self-XSS, exploitabilité limitée) mais
+mauvaise pratique exposée
+
+### Description
+Dans `resources/views/layouts/commonMaster.blade.php:102`, le
+helper `Helpers::generatePrimaryColorCSS()` injecte du CSS basé
+sur le cookie `admin-primaryColor` via la syntaxe Blade `{!! !!}`
+(sans échappement).
+
+Si un attaquant set le cookie via JS console ou via une
+vulnérabilité XSS ailleurs, il peut injecter du CSS arbitraire
+(et potentiellement du JS via `expression()` IE-legacy, `:hover`,
+`::before content`, etc.).
+
+### Impact si non-traité
+Faible parce que c'est self-XSS (utilisateur attaque son propre
+cookie). Pas d'amplification multi-utilisateurs.
+
+Mais : pattern dangereux qui peut empirer si une autre faille XSS
+(par exemple via un input mal sanitisé) permet de set le cookie
+côté victime — alors l'amplification devient réelle.
+
+### Plan de résolution
+Avant retrait Basic Auth en production publique :
+
+1. **Validation côté Helper** : vérifier que le cookie
+   `admin-primaryColor` matche `/^#[0-9a-fA-F]{6}$/` avant de
+   l'utiliser. Rejeter sinon (fallback sur valeur par défaut).
+2. **Alternative plus robuste** : remplacer la génération CSS
+   dynamique par un set de classes CSS prédéfinies sélectionnées
+   via un attribut `data-*` (whitelist au lieu d'interpolation
+   string).
+3. **Si possible** : retirer complètement la feature
+   "primary color custom" héritée du Customizer Sneat (déjà
+   désactivé en S2/S6) — elle n'est plus exposée à l'utilisateur
+   final.
+
+Per paulrberg review open question 1
+(`docs/REVIEW_sprint-1-5_2026-05-08.md`).
+
+═══════════════════════════════════════════════════════════════
+
 ## Résolutions historiques
 
 (à remplir au fur et à mesure que des dettes sont réglées)

@@ -184,6 +184,10 @@ Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 
 // Sprint 1.5 — Design System Preview (internal dev page, remove before prod)
 Route::get('/preview/design-tokens', function () {
+    abort_unless(
+        app()->environment('local', 'staging') || config('app.debug'),
+        404
+    );
     return view('preview.design-tokens');
 })->name('preview.design-tokens');
 

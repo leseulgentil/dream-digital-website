@@ -686,6 +686,146 @@
       .dd-dash-card__spark { height: 28px; }
       .dd-dash-card--featured .dd-dash-card__spark { height: 36px; }
     }
+
+    /* === SLIDE 4 — BUREAUX PAYS (Étape 3 Phase 8) === */
+    .dd-slide-offices {
+      width: 100%;
+      height: 100%;
+      min-height: inherit;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      background:
+        radial-gradient(ellipse at bottom left, rgba(20, 184, 166, 0.06) 0%, transparent 55%),
+        linear-gradient(135deg, #0F1428 0%, #1a2138 100%);
+      border-radius: 1rem;
+      box-sizing: border-box;
+    }
+
+    .dd-office-card {
+      position: relative;
+      padding: 18px 18px 14px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;                              /* grid item escape hatch */
+      overflow: hidden;
+      /* stagger fade-up — set by JS via .is-visible on parent */
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                  transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .dd-slide-offices.is-visible .dd-office-card           { opacity: 1; transform: translateY(0); }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(1) { transition-delay: 0ms; }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(2) { transition-delay: 100ms; }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(3) { transition-delay: 200ms; }
+
+    /* HQ accent — cyan top-edge bar on Kinshasa */
+    .dd-office-card--hq::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #14B8A6 0%, rgba(20, 184, 166, 0.2) 100%);
+    }
+
+    .dd-office-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 14px;
+      min-height: 22px;                          /* keep alignment on cards with no badge */
+    }
+    .dd-office-card__icon {
+      font-size: 22px;
+      color: #14B8A6;                            /* $dd-tertiary-500 */
+      line-height: 1;
+    }
+    .dd-office-card__badge {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 9.5px;
+      font-weight: 600;
+      color: #14B8A6;
+      background: rgba(20, 184, 166, 0.12);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      padding: 3px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      line-height: 1;
+    }
+    .dd-office-card__city {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+      color: #FFFFFF;
+      letter-spacing: -0.015em;
+      line-height: 1.1;
+      margin: 0 0 6px 0;
+    }
+    .dd-office-card__country {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .dd-office-card__iso {
+      color: #14B8A6;
+      font-weight: 600;
+    }
+    .dd-office-card__desc {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 12.5px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.45;
+      margin: 0 0 16px 0;
+      flex: 1;                                   /* pushes coords footer to bottom */
+    }
+    .dd-office-card__coords {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.42);
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .dd-office-card__coords i {
+      font-size: 12px;
+      color: rgba(20, 184, 166, 0.7);
+    }
+
+    /* === RESPONSIVE Slide 4 === */
+    @media (max-width: 991.98px) {
+      .dd-slide-offices { padding: 14px; gap: 10px; }
+      .dd-office-card   { padding: 14px 14px 12px; }
+      .dd-office-card__desc { font-size: 11.5px; }
+    }
+    @media (max-width: 768px) {
+      .dd-slide-offices { grid-template-columns: 1fr 1fr; }
+      .dd-office-card:nth-child(3) { grid-column: span 2; }
+    }
+    @media (max-width: 575.98px) {
+      .dd-slide-offices { grid-template-columns: 1fr; }
+      .dd-office-card:nth-child(3) { grid-column: span 1; }
+    }
   </style>
 @endsection
 
@@ -882,9 +1022,59 @@
                   </div>
                 </div>
               </div>
-              <div class="swiper-slide" data-slide="placeholder-offices">
-                <div class="dd-slide-stub">
-                  <span class="dd-slide-stub__label">Slide 4 — Bureaux pays (Phase 8)</span>
+              {{-- Slide 4 — Bureaux pays (Étape 3 Phase 8) :
+                   3 cards Kinshasa/Abidjan/Brazzaville · typographique + GPS coords ·
+                   marker Boxicons bx-buildings · accent HQ sur Kinshasa ·
+                   données issues de config('dream-digital.coverage.offices')
+                   (même source que les office dots du Slide 1 World Map) ·
+                   stagger fade-up déclenché sur slideChange Swiper (realIndex === 3) ·
+                   pas de drapeaux nationaux (ANALYZE Q1 PO 2026-05-08 restriction). --}}
+              @php
+                $ddOffices  = config('dream-digital.coverage.offices', []);
+                $ddIsoCodes = [
+                  'kinshasa'    => 'COD',
+                  'abidjan'     => 'CIV',
+                  'brazzaville' => 'COG',
+                ];
+              @endphp
+              <div class="swiper-slide" data-slide="offices">
+                <div class="dd-slide-offices" data-offices-target>
+                  @foreach ($ddOffices as $office)
+                    @php
+                      $isHq      = ($office['id'] ?? '') === 'kinshasa';
+                      $iso       = $ddIsoCodes[$office['id'] ?? ''] ?? '';
+                      $countryFr = is_array($office['country'] ?? null)
+                          ? ($office['country']['fr'] ?? '')
+                          : ($office['country'] ?? '');
+                      $descFr    = is_array($office['description'] ?? null)
+                          ? ($office['description']['fr'] ?? '')
+                          : ($office['description'] ?? '');
+                      $lat       = (float) ($office['lat'] ?? 0);
+                      $lng       = (float) ($office['lng'] ?? 0);
+                      $latText   = number_format(abs($lat), 2, ',', '') . '° ' . ($lat >= 0 ? 'N' : 'S');
+                      $lngText   = number_format(abs($lng), 2, ',', '') . '° ' . ($lng >= 0 ? 'E' : 'W');
+                    @endphp
+                    <article class="dd-office-card{{ $isHq ? ' dd-office-card--hq' : '' }}">
+                      <header class="dd-office-card__header">
+                        <i class="bx bx-buildings dd-office-card__icon" aria-hidden="true"></i>
+                        @if ($isHq)
+                          <span class="dd-office-card__badge">Siège</span>
+                        @endif
+                      </header>
+                      <h3 class="dd-office-card__city">{{ $office['city'] ?? '' }}</h3>
+                      <div class="dd-office-card__country">
+                        <span>{{ $countryFr }}</span>
+                        @if ($iso)
+                          <span class="dd-office-card__iso">· {{ $iso }}</span>
+                        @endif
+                      </div>
+                      <p class="dd-office-card__desc">{{ $descFr }}</p>
+                      <footer class="dd-office-card__coords">
+                        <i class="bx bx-current-location" aria-hidden="true"></i>
+                        <span>{{ $latText }} · {{ $lngText }}</span>
+                      </footer>
+                    </article>
+                  @endforeach
                 </div>
               </div>
             </div>

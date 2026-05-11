@@ -253,41 +253,45 @@
     }
   }
 
-  // Sprint 1.5 Phase 7 — Slide 3 Dashboard preview stagger animation
+  // Sprint 1.5 Phase 7+8 — Slides 3 & 4 stagger animations
   // -----------------------------------
-  // Toggle .is-visible on the dashboard root when Slide 3 becomes active. The
-  // CSS transitions per card (delays 0/100/200ms) produce the stagger fade-up.
-  // Class is removed on leaving so the animation replays on each return.
-  const dashboardTarget = document.querySelector('[data-dashboard-target]');
-  if (dashboardTarget && heroSlider) {
-    const prmDashboard = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prmDashboard) {
-      // Show cards immediately — CSS transitions are neutralised by the SCSS
-      // reduced-motion guard, so no fade-up animation will play regardless.
-      dashboardTarget.classList.add('is-visible');
-    } else {
-      const attachDash = function () {
-        const swiperInstance = heroSlider.swiper;
-        if (!swiperInstance) return;
-        swiperInstance.on('slideChange', function () {
-          if (swiperInstance.realIndex === 2) {
-            dashboardTarget.classList.add('is-visible');
-          } else {
-            dashboardTarget.classList.remove('is-visible');
-          }
-        });
-        // Edge case: Slide 3 happens to be the initial active slide.
-        if (swiperInstance.realIndex === 2) {
-          dashboardTarget.classList.add('is-visible');
-        }
-      };
-      if (heroSlider.swiper) {
-        attachDash();
-      } else {
-        setTimeout(attachDash, 0);
-      }
+  // Generic stagger fade-up trigger : when slide with given realIndex becomes
+  // active, toggle .is-visible on the target. CSS transitions per child
+  // (delays 0/100/200ms) produce the stagger. Class is removed on leaving so
+  // animation replays on each return. prefers-reduced-motion short-circuits
+  // to permanent .is-visible (transitions already neutralised by SCSS guard).
+  const staggerSlides = [
+    { selector: '[data-dashboard-target]', realIndex: 2 }, // Phase 7 dashboard
+    { selector: '[data-offices-target]',   realIndex: 3 }  // Phase 8 offices
+  ];
+  const prmStagger = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  staggerSlides.forEach(function (cfg) {
+    const target = document.querySelector(cfg.selector);
+    if (!target || !heroSlider) return;
+    if (prmStagger) {
+      target.classList.add('is-visible');
+      return;
     }
-  }
+    const attachStagger = function () {
+      const swiperInstance = heroSlider.swiper;
+      if (!swiperInstance) return;
+      swiperInstance.on('slideChange', function () {
+        if (swiperInstance.realIndex === cfg.realIndex) {
+          target.classList.add('is-visible');
+        } else {
+          target.classList.remove('is-visible');
+        }
+      });
+      if (swiperInstance.realIndex === cfg.realIndex) {
+        target.classList.add('is-visible');
+      }
+    };
+    if (heroSlider.swiper) {
+      attachStagger();
+    } else {
+      setTimeout(attachStagger, 0);
+    }
+  });
 
   // Reviews slider next and previous
   // -----------------------------------

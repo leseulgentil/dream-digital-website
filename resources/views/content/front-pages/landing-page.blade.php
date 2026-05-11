@@ -37,6 +37,15 @@
       align-items: center;
     }
 
+    /* CSS Grid escape hatch — prevent grid items from being sized by their
+       content's min-content, which would let a wide child (e.g. Swiper
+       wrapper measuring its slides) blow the column wider than its cell.
+       Mandatory when grid items wrap Swiper, code blocks, or any element
+       whose intrinsic min-content can exceed the cell width.
+       Fixes the layout regression observed after Phase 6 (Slide 2 terminal). */
+    .dd-hero__content,
+    .dd-hero__visual { min-width: 0; }
+
     .dd-hero__content { color: #fff; }
 
     /* === EYEBROW (mono cyan caps) === */
@@ -388,6 +397,112 @@
       outline: 2px solid #14B8A6;
       outline-offset: 3px;
     }
+
+    /* === SLIDE 2 — CODE TERMINAL (Étape 3 Phase 6) === */
+    /* Hex values align with $dd-code-* tokens from
+       _dream-digital/_dd-code-blocks.scss (Étape 2 canonical). */
+    .dd-slide-terminal {
+      background: #0F1428;                         /* $dd-code-bg */
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .dd-terminal__header {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+    .dd-terminal__dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dd-terminal__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: block;
+    }
+    .dd-terminal__dot--red    { background: #FF5F57; }
+    .dd-terminal__dot--yellow { background: #FEBC2E; }
+    .dd-terminal__dot--green  { background: #28C840; }
+    .dd-terminal__title {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.02em;
+    }
+    .dd-terminal__title i {
+      color: #14B8A6;                              /* $dd-tertiary-500 */
+      font-size: 14px;
+    }
+    .dd-terminal__body {
+      padding: 20px 18px;
+      flex: 1;
+      overflow: auto;
+      min-height: 300px;
+    }
+    .dd-terminal__code {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #E1E4F0;                              /* $dd-code-text */
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* === SYNTAX HIGHLIGHTING TOKENS (Brand Kit Étape 2 canonical) === */
+    .dd-terminal__code .dd-syn-keyword { color: #F472B6; }  /* $dd-code-keyword pink */
+    .dd-terminal__code .dd-syn-string  { color: #86EFAC; }  /* $dd-code-string  vert */
+    .dd-terminal__code .dd-syn-num     { color: #FBBF24; }  /* $dd-code-num     jaune */
+    .dd-terminal__code .dd-syn-fn      { color: #14B8A6; }  /* $dd-code-fn      cyan v1.2 */
+    .dd-terminal__code .dd-syn-key     { color: #14B8A6; }  /* JSON keys = cyan signature */
+    .dd-terminal__code .dd-syn-comment { color: #8A8FA3; }  /* $dd-code-comment gray */
+    .dd-terminal__code .dd-syn-status  { color: #86EFAC; }  /* status HTTP 200 = vert */
+    .dd-terminal__code .dd-syn-prompt  { color: #14B8A6; font-weight: 600; }  /* $ prompt = cyan */
+
+    /* === CURSOR (blinking during typing, controlled by JS) === */
+    .dd-terminal__code .dd-terminal__cursor {
+      display: inline-block;
+      width: 0.5ch;
+      color: #14B8A6;                              /* $dd-code-cursor */
+      font-weight: 600;
+      animation: dd-cursor-blink 1.05s steps(1, end) infinite;
+      margin-left: 1px;
+    }
+    @keyframes dd-cursor-blink {
+      0%, 50%   { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    /* reduced-motion : cursor is hidden entirely when typing is skipped — */
+    /* the SCSS @media guard in _dream-digital.scss already neutralises the */
+    /* keyframe via the [class*="dd-"] selector, but we hide the element JS-side */
+    /* so it doesn't sit as a static cyan block in the static fallback. */
+
+    /* === RESPONSIVE === */
+    @media (max-width: 991.98px) {
+      .dd-terminal__body { min-height: 260px; }
+      .dd-terminal__code { font-size: 12px; }
+    }
+    @media (max-width: 768px) {
+      .dd-terminal__body { min-height: 220px; padding: 14px 12px; }
+      .dd-terminal__code { font-size: 11px; line-height: 1.55; }
+      .dd-terminal__title { font-size: 11px; }
+    }
+    @media (max-width: 575.98px) {
+      .dd-terminal__code { font-size: 10.5px; }
+    }
   </style>
 @endsection
 
@@ -493,9 +608,31 @@
               </div>
               {{-- Slides 2/3/4 — placeholders Phase 4 (stubs minimaux,
                    remplacés intégralement en Phases 6/7/8) --}}
-              <div class="swiper-slide" data-slide="placeholder-terminal">
-                <div class="dd-slide-stub">
-                  <span class="dd-slide-stub__label">Slide 2 — Terminal code (Phase 6)</span>
+              {{-- Slide 2 — Code Terminal (Étape 3 Phase 6) :
+                   curl POST /v1/sms/send + HTTP response, syntax-highlighted,
+                   animation typing custom JS déclenchée sur slideChange Swiper. --}}
+              <div class="swiper-slide" data-slide="code">
+                <div class="dd-slide-terminal">
+                  <div class="dd-terminal__header">
+                    <div class="dd-terminal__dots" aria-hidden="true">
+                      <span class="dd-terminal__dot dd-terminal__dot--red"></span>
+                      <span class="dd-terminal__dot dd-terminal__dot--yellow"></span>
+                      <span class="dd-terminal__dot dd-terminal__dot--green"></span>
+                    </div>
+                    <div class="dd-terminal__title">
+                      <i class="bx bx-terminal" aria-hidden="true"></i>
+                      <span>curl · POST /v1/sms/send</span>
+                    </div>
+                  </div>
+                  <div class="dd-terminal__body">
+                    {{-- Container où le typing JS injecte le code progressivement.
+                         Le HTML pré-rendu (statique) ci-dessous est le fallback pour
+                         prefers-reduced-motion + no-JS — masqué par le JS au start
+                         de l'animation et restauré en cas de reduced-motion. --}}
+                    <pre class="dd-terminal__code" id="dd-terminal-code"
+                         data-typing-target
+                         aria-label="Exemple curl d'envoi SMS via l'API Dream Digital"></pre>
+                  </div>
                 </div>
               </div>
               <div class="swiper-slide" data-slide="placeholder-dashboard">

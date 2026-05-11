@@ -110,6 +110,149 @@
     });
   }
 
+  // Sprint 1.5 Phase 6 — Slide 2 Code Terminal typing animation
+  // -----------------------------------
+  // Custom JS typing (no TypeIt dependency, ~1KB gzipped). Triggered on
+  // Swiper slideChange when realIndex === 1. Pauses autoplay during typing
+  // to let the user see the completed code for the full 6s autoplay delay.
+  // Second visit (loop) types 2x faster. prefers-reduced-motion -> static.
+  const terminalCode = document.getElementById('dd-terminal-code');
+  if (terminalCode && heroSlider) {
+    // Tokens : {cls, text}. cls null = default text color.
+    const codeTokens = [
+      { cls: 'dd-syn-prompt', text: '$' },
+      { text: ' ' },
+      { cls: 'dd-syn-keyword', text: 'curl' },
+      { text: ' -X ' },
+      { cls: 'dd-syn-keyword', text: 'POST' },
+      { text: ' \\\n    ' },
+      { cls: 'dd-syn-string', text: 'https://api.dream-digital.info/v1/sms/send' },
+      { text: ' \\\n    -H ' },
+      { cls: 'dd-syn-string', text: '"Authorization: Bearer dd_..."' },
+      { text: ' \\\n    -d \'{\n      ' },
+      { cls: 'dd-syn-key', text: '"to"' },
+      { text: ': ' },
+      { cls: 'dd-syn-string', text: '"+243990000000"' },
+      { text: ',\n      ' },
+      { cls: 'dd-syn-key', text: '"from"' },
+      { text: ': ' },
+      { cls: 'dd-syn-string', text: '"DreamDigital"' },
+      { text: ',\n      ' },
+      { cls: 'dd-syn-key', text: '"text"' },
+      { text: ': ' },
+      { cls: 'dd-syn-string', text: '"Bienvenue !"' },
+      { text: '\n    }\'\n\n' },
+      { cls: 'dd-syn-status', text: 'HTTP/1.1 200 OK' },
+      { text: '\n{\n  ' },
+      { cls: 'dd-syn-key', text: '"id"' },
+      { text: ': ' },
+      { cls: 'dd-syn-fn', text: '"sms_a2b3c4d5"' },
+      { text: ',\n  ' },
+      { cls: 'dd-syn-key', text: '"status"' },
+      { text: ': ' },
+      { cls: 'dd-syn-string', text: '"delivered"' },
+      { text: ',\n  ' },
+      { cls: 'dd-syn-key', text: '"cost"' },
+      { text: ': ' },
+      { cls: 'dd-syn-num', text: '0.0089' },
+      { text: ',\n  ' },
+      { cls: 'dd-syn-key', text: '"to"' },
+      { text: ': ' },
+      { cls: 'dd-syn-string', text: '"+243990000000"' },
+      { text: '\n}' }
+    ];
+    const totalChars = codeTokens.reduce(function (sum, t) {
+      return sum + t.text.length;
+    }, 0);
+    const escapeHtml = function (s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    };
+    const renderTyped = function (charCount) {
+      let html = '';
+      let remaining = charCount;
+      for (let i = 0; i < codeTokens.length; i++) {
+        if (remaining <= 0) break;
+        const tok = codeTokens[i];
+        const slice = tok.text.slice(0, remaining);
+        const safe = escapeHtml(slice);
+        html += tok.cls ? '<span class="' + tok.cls + '">' + safe + '</span>' : safe;
+        remaining -= slice.length;
+      }
+      return html;
+    };
+    const cursorHtml = '<span class="dd-terminal__cursor" aria-hidden="true">▮</span>';
+    const fullHtml = renderTyped(totalChars);
+    const prmTerminal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let typingTimer = null;
+    let seenCount = 0;
+
+    const cancelTyping = function () {
+      if (typingTimer !== null) {
+        clearTimeout(typingTimer);
+        typingTimer = null;
+      }
+    };
+    const startTyping = function (swiperInstance) {
+      cancelTyping();
+      // ~28ms first visit, ~14ms on replay (2x faster — brief Phase 4 spec).
+      const speed = seenCount === 0 ? 28 : 14;
+      let charCount = 0;
+      const terminalBody = terminalCode.parentElement;
+      const tick = function () {
+        charCount++;
+        terminalCode.innerHTML = renderTyped(charCount) + cursorHtml;
+        // Auto-scroll body so cursor stays in view if content overflows.
+        if (terminalBody) terminalBody.scrollTop = terminalBody.scrollHeight;
+        if (charCount >= totalChars) {
+          seenCount++;
+          // Resume autoplay 800ms after typing completes — gives the user a
+          // beat to see the finished code before the 6s autoplay starts.
+          typingTimer = setTimeout(function () {
+            if (swiperInstance && swiperInstance.autoplay && swiperInstance.autoplay.start) {
+              swiperInstance.autoplay.start();
+            }
+          }, 800);
+          return;
+        }
+        typingTimer = setTimeout(tick, speed);
+      };
+      tick();
+    };
+
+    if (prmTerminal) {
+      // Reduced motion : show the full code statically, no cursor, no typing.
+      terminalCode.innerHTML = fullHtml;
+    } else {
+      // Defer until Swiper has attached itself to the heroSlider element.
+      const attach = function () {
+        const swiperInstance = heroSlider.swiper;
+        if (!swiperInstance) {
+          return;
+        }
+        swiperInstance.on('slideChange', function () {
+          if (swiperInstance.realIndex === 1) {
+            // Slide 2 active : pause autoplay then type.
+            if (swiperInstance.autoplay && swiperInstance.autoplay.stop) {
+              swiperInstance.autoplay.stop();
+            }
+            startTyping(swiperInstance);
+          } else {
+            // Left Slide 2 : abort any in-flight typing.
+            cancelTyping();
+          }
+        });
+      };
+      // Swiper is instantiated synchronously above (Phase 4 block), so it
+      // should already be attached. The microtask defer is purely defensive.
+      if (heroSlider.swiper) {
+        attach();
+      } else {
+        setTimeout(attach, 0);
+      }
+    }
+  }
+
   // Reviews slider next and previous
   // -----------------------------------
   // Add click event listener to next button

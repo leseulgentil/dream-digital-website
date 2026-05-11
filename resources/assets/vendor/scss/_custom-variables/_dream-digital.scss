@@ -303,19 +303,6 @@ $dd-z-toast:     1070;
   }
 }
 
-// dd-hover-lift — pour cards / CTAs en hover (alternative à transition pure)
-// Lift vertical + élévation shadow, applicable via animation-fill-mode: forwards
-@keyframes dd-hover-lift {
-  0% {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(14, 18, 28, 0.04), 0 1px 3px rgba(14, 18, 28, 0.06);
-  }
-  100% {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(14, 18, 28, 0.08), 0 4px 8px rgba(14, 18, 28, 0.04);
-  }
-}
-
 // ----------------------------------------------------------------------------
 // 14. PREFERS-REDUCED-MOTION GUARD (WCAG 2.1 SC 2.2.2)
 // ----------------------------------------------------------------------------

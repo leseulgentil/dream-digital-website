@@ -333,12 +333,11 @@ slower:          800ms
 
 ## 13. Implementation technique
 
-**Fichier source** : `_dream-digital-tokens.scss`
+**Fichier source actif** : `resources/assets/vendor/scss/_custom-variables/_dream-digital.scss`
 
-À placer dans le projet Sneat :
-```
-resources/assets/vendor/scss/_custom-variables/_dream-digital.scss
-```
+Intégré en S3 dans la chaîne SCSS Sneat (importé au top de `_bootstrap-extended.scss`),
+étendu en Sprint 1.5 avec keyframes nommés (`dd-pulse`, `dd-fade-up`) + guard
+`prefers-reduced-motion` (WCAG 2.2.2).
 
 À importer en TÊTE de `_bootstrap-extended.scss` :
 ```scss

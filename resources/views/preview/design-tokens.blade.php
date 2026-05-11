@@ -188,7 +188,7 @@
   .dtp-fade-up-target.play { animation: dd-fade-up 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
   @keyframes dd-fade-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
 
-  /* dd-hover-lift demo: card */
+  /* hover-lift demo: card (transition-based, no keyframe — see MED-1 cleanup 2026-05-11) */
   .dtp-hover-lift {
     padding: 16px 20px;
     background: white;
@@ -592,8 +592,8 @@
         </div>
 
         <div class="dtp-anim-card">
-          <div class="anim-name">@keyframes dd-hover-lift</div>
-          <div class="anim-desc">Lift vertical + élévation shadow. Hover la card ci-dessous.</div>
+          <div class="anim-name">transition hover-lift (240ms)</div>
+          <div class="anim-desc">Lift vertical + élévation shadow via CSS transition (pas un keyframe — propriétés séparées plus GPU-friendly que box-shadow animé). Hover la card ci-dessous.</div>
           <div class="anim-stage">
             <div class="dtp-hover-lift">↑ Hover-me to lift</div>
           </div>

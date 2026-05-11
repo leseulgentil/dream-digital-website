@@ -503,6 +503,189 @@
     @media (max-width: 575.98px) {
       .dd-terminal__code { font-size: 10.5px; }
     }
+
+    /* === SLIDE 3 — DASHBOARD PREVIEW (Étape 3 Phase 7) === */
+    .dd-slide-dashboard {
+      width: 100%;
+      height: 100%;
+      min-height: inherit;
+      padding: 18px;
+      display: grid;
+      grid-template-rows: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 14px;
+      background:
+        radial-gradient(ellipse at top right, rgba(20, 184, 166, 0.06) 0%, transparent 55%),
+        linear-gradient(135deg, #0F1428 0%, #1a2138 100%);
+      border-radius: 1rem;
+      box-sizing: border-box;
+    }
+    .dd-dash-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    /* === CARD base === */
+    .dd-dash-card {
+      position: relative;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 4px;
+      overflow: hidden;
+      min-width: 0;                              /* grid item escape hatch */
+      /* stagger fade-up — set by JS via .is-visible on parent */
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                  transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .dd-slide-dashboard.is-visible .dd-dash-card { opacity: 1; transform: translateY(0); }
+    .dd-slide-dashboard.is-visible .dd-dash-card--featured  { transition-delay: 0ms; }
+    .dd-slide-dashboard.is-visible .dd-dash-row .dd-dash-card:nth-child(1) { transition-delay: 100ms; }
+    .dd-slide-dashboard.is-visible .dd-dash-row .dd-dash-card:nth-child(2) { transition-delay: 200ms; }
+
+    .dd-dash-card--featured {
+      padding: 18px 20px;
+    }
+    .dd-dash-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .dd-dash-card__label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 1.4;
+    }
+    .dd-dash-card__value {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-top: 6px;
+    }
+    .dd-dash-card--featured .dd-dash-card__value { font-size: clamp(2.4rem, 4.4vw, 3.2rem); }
+    .dd-dash-card--small    .dd-dash-card__value { font-size: clamp(1.6rem, 2.8vw, 2.1rem); }
+    .dd-dash-card__unit {
+      font-weight: 600;
+      font-size: 0.6em;
+      color: rgba(255, 255, 255, 0.75);
+      margin-left: 2px;
+    }
+    .dd-dash-card__sublabel {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.55);
+      margin-top: 2px;
+    }
+    .dd-dash-card__spark {
+      width: 100%;
+      height: 36px;
+      align-self: end;
+      margin-top: 8px;
+      display: block;
+    }
+    .dd-dash-card--featured .dd-dash-card__spark { height: 48px; }
+    .dd-dash-card__spark-line {
+      fill: none;
+      stroke: #14B8A6;                           /* $dd-tertiary-500 */
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .dd-dash-card__spark-fill {
+      fill: url(#dd-spark-gradient);
+      stroke: none;
+    }
+    /* fallback when no svg gradient defined : flat semi-transparent cyan */
+    .dd-dash-card__spark-fill { fill: rgba(20, 184, 166, 0.12); }
+    .dd-dash-card__trend {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 4px;
+    }
+    .dd-dash-card__trend i { font-size: 13px; }
+    .dd-dash-card__trend--positive    { color: #86EFAC; }   /* $dd-code-string vert */
+    .dd-dash-card__trend--positive i  { color: #86EFAC; }
+    .dd-dash-card__trend--negative    { color: #FBBF24; }   /* $dd-code-num jaune (caution) */
+    .dd-dash-card__trend--negative i  { color: #FBBF24; }
+
+    /* === SIGNAL INDICATOR (brief 4.2.a — pulse cyan live dot) === */
+    .dd-signal-indicator {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding-left: 14px;                        /* room for the ring */
+    }
+    .dd-signal-indicator__dot {
+      position: absolute;
+      left: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #14B8A6;                       /* $dd-tertiary-500 */
+      box-shadow: 0 0 6px rgba(20, 184, 166, 0.7);
+      z-index: 2;
+    }
+    .dd-signal-indicator__ring {
+      position: absolute;
+      left: 2px;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(20, 184, 166, 0.6);
+      transform-origin: center;
+      /* animation set on .is-visible to avoid playing offscreen */
+      animation: dd-pulse 1.8s ease-out infinite;
+      z-index: 1;
+    }
+    .dd-signal-indicator__text {
+      line-height: 1;
+    }
+
+    /* === RESPONSIVE Slide 3 === */
+    @media (max-width: 991.98px) {
+      .dd-slide-dashboard { padding: 14px; gap: 10px; }
+      .dd-dash-card { padding: 14px 16px; }
+      .dd-dash-card--featured { padding: 16px 18px; }
+    }
+    @media (max-width: 575.98px) {
+      .dd-slide-dashboard {
+        grid-template-rows: auto auto;
+      }
+      .dd-dash-row {
+        grid-template-columns: 1fr;
+      }
+      .dd-dash-card__spark { height: 28px; }
+      .dd-dash-card--featured .dd-dash-card__spark { height: 36px; }
+    }
   </style>
 @endsection
 
@@ -635,9 +818,68 @@
                   </div>
                 </div>
               </div>
-              <div class="swiper-slide" data-slide="placeholder-dashboard">
-                <div class="dd-slide-stub">
-                  <span class="dd-slide-stub__label">Slide 3 — Dashboard preview (Phase 7)</span>
+              {{-- Slide 3 — Dashboard preview (Étape 3 Phase 7) :
+                   3 KPI cards carrier-grade · featured Uptime SLA + DLR + Latence ·
+                   sparklines SVG inline 12 points · signal-indicator pulse (brief 4.2.a) ·
+                   stagger fade-up déclenché sur slideChange Swiper (realIndex === 2). --}}
+              <div class="swiper-slide" data-slide="dashboard">
+                <div class="dd-slide-dashboard" data-dashboard-target>
+                  {{-- Featured card — Uptime SLA --}}
+                  <article class="dd-dash-card dd-dash-card--featured">
+                    <header class="dd-dash-card__header">
+                      <span class="dd-dash-card__label">Uptime SLA</span>
+                      <span class="dd-signal-indicator" aria-label="indicateur temps réel">
+                        <span class="dd-signal-indicator__ring" aria-hidden="true"></span>
+                        <span class="dd-signal-indicator__dot" aria-hidden="true"></span>
+                        <span class="dd-signal-indicator__text">live</span>
+                      </span>
+                    </header>
+                    <div class="dd-dash-card__value">99,95<span class="dd-dash-card__unit">%</span></div>
+                    <div class="dd-dash-card__sublabel">Disponibilité réseau</div>
+                    <svg class="dd-dash-card__spark" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true">
+                      <path class="dd-dash-card__spark-fill" d="M 5,22 L 15,20 L 25,21 L 35,18 L 45,19 L 55,16 L 65,14 L 75,15 L 85,12 L 95,10 L 105,7 L 115,4 L 115,30 L 5,30 Z"/>
+                      <path class="dd-dash-card__spark-line" d="M 5,22 L 15,20 L 25,21 L 35,18 L 45,19 L 55,16 L 65,14 L 75,15 L 85,12 L 95,10 L 105,7 L 115,4"/>
+                    </svg>
+                    <footer class="dd-dash-card__trend dd-dash-card__trend--positive">
+                      <i class="bx bx-trending-up" aria-hidden="true"></i>
+                      <span>+0,02% vs 30 derniers jours</span>
+                    </footer>
+                  </article>
+
+                  {{-- 2 small cards : DLR + Latence --}}
+                  <div class="dd-dash-row">
+                    <article class="dd-dash-card dd-dash-card--small">
+                      <header class="dd-dash-card__header">
+                        <span class="dd-dash-card__label">Taux de livraison</span>
+                      </header>
+                      <div class="dd-dash-card__value">99,2<span class="dd-dash-card__unit">%</span></div>
+                      <div class="dd-dash-card__sublabel">7 derniers jours</div>
+                      <svg class="dd-dash-card__spark" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true">
+                        <path class="dd-dash-card__spark-fill" d="M 5,24 L 15,22 L 25,20 L 35,21 L 45,18 L 55,17 L 65,15 L 75,16 L 85,13 L 95,11 L 105,9 L 115,6 L 115,30 L 5,30 Z"/>
+                        <path class="dd-dash-card__spark-line" d="M 5,24 L 15,22 L 25,20 L 35,21 L 45,18 L 55,17 L 65,15 L 75,16 L 85,13 L 95,11 L 105,9 L 115,6"/>
+                      </svg>
+                      <footer class="dd-dash-card__trend dd-dash-card__trend--positive">
+                        <i class="bx bx-trending-up" aria-hidden="true"></i>
+                        <span>+0,3pts vs mois précédent</span>
+                      </footer>
+                    </article>
+
+                    <article class="dd-dash-card dd-dash-card--small">
+                      <header class="dd-dash-card__header">
+                        <span class="dd-dash-card__label">Latence moyenne</span>
+                      </header>
+                      <div class="dd-dash-card__value">1,8<span class="dd-dash-card__unit">s</span></div>
+                      <div class="dd-dash-card__sublabel">Temps moyen de livraison</div>
+                      <svg class="dd-dash-card__spark" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true">
+                        <path class="dd-dash-card__spark-fill" d="M 5,24 L 15,20 L 25,22 L 35,19 L 45,21 L 55,16 L 65,18 L 75,14 L 85,15 L 95,11 L 105,8 L 115,6 L 115,30 L 5,30 Z"/>
+                        <path class="dd-dash-card__spark-line" d="M 5,24 L 15,20 L 25,22 L 35,19 L 45,21 L 55,16 L 65,18 L 75,14 L 85,15 L 95,11 L 105,8 L 115,6"/>
+                      </svg>
+                      <footer class="dd-dash-card__trend dd-dash-card__trend--positive">
+                        <i class="bx bx-trending-down" aria-hidden="true"></i>
+                        <span>−0,2s vs mois précédent</span>
+                      </footer>
+                    </article>
+                  </div>
                 </div>
               </div>
               <div class="swiper-slide" data-slide="placeholder-offices">

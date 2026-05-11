@@ -253,6 +253,42 @@
     }
   }
 
+  // Sprint 1.5 Phase 7 — Slide 3 Dashboard preview stagger animation
+  // -----------------------------------
+  // Toggle .is-visible on the dashboard root when Slide 3 becomes active. The
+  // CSS transitions per card (delays 0/100/200ms) produce the stagger fade-up.
+  // Class is removed on leaving so the animation replays on each return.
+  const dashboardTarget = document.querySelector('[data-dashboard-target]');
+  if (dashboardTarget && heroSlider) {
+    const prmDashboard = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prmDashboard) {
+      // Show cards immediately — CSS transitions are neutralised by the SCSS
+      // reduced-motion guard, so no fade-up animation will play regardless.
+      dashboardTarget.classList.add('is-visible');
+    } else {
+      const attachDash = function () {
+        const swiperInstance = heroSlider.swiper;
+        if (!swiperInstance) return;
+        swiperInstance.on('slideChange', function () {
+          if (swiperInstance.realIndex === 2) {
+            dashboardTarget.classList.add('is-visible');
+          } else {
+            dashboardTarget.classList.remove('is-visible');
+          }
+        });
+        // Edge case: Slide 3 happens to be the initial active slide.
+        if (swiperInstance.realIndex === 2) {
+          dashboardTarget.classList.add('is-visible');
+        }
+      };
+      if (heroSlider.swiper) {
+        attachDash();
+      } else {
+        setTimeout(attachDash, 0);
+      }
+    }
+  }
+
   // Reviews slider next and previous
   // -----------------------------------
   // Add click event listener to next button

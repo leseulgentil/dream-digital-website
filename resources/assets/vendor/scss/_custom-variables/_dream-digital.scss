@@ -316,6 +316,29 @@ $dd-z-toast:     1070;
   }
 }
 
+// ----------------------------------------------------------------------------
+// 14. PREFERS-REDUCED-MOTION GUARD (WCAG 2.1 SC 2.2.2)
+// ----------------------------------------------------------------------------
+// Neutralise les animations dd-* et dtp-* pour utilisateurs ayant activé la
+// préférence système "reduce motion". Variante ciblée par préfixe pour
+// éviter d'impacter les animations Bootstrap/Sneat natives.
+// Defense-in-depth — les vues consommatrices (landing-page, design-tokens
+// demo) ont déjà des guards spécifiques au niveau usage. Cette règle au
+// niveau token sécurise tout futur usage des keyframes dd-pulse / dd-fade-up.
+// Per paulrberg review finding HIGH-2.
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="dd-"],
+  [class*="dd-"]::before,
+  [class*="dd-"]::after,
+  [class*="dtp-"],
+  [class*="dtp-"]::before,
+  [class*="dtp-"]::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 // ============================================================================
 // FIN — Dream Digital Design Tokens v1.2 FINAL
 // ============================================================================

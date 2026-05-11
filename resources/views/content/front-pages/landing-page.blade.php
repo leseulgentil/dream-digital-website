@@ -327,6 +327,67 @@
         transform: none;
       }
     }
+
+    /* === SLIDES 2-3-4 PLACEHOLDERS (Phase 4 stubs, replaced Phases 6-7-8) === */
+    .dd-slide-stub {
+      width: 100%;
+      height: 100%;
+      min-height: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse at center, rgba(20, 184, 166, 0.06) 0%, transparent 60%),
+        linear-gradient(135deg, #0F1428 0%, #1a2138 100%);
+      border-radius: 1rem;
+    }
+    .dd-slide-stub__label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: center;
+      padding: 0 1.5rem;
+    }
+
+    /* === SWIPER PAGINATION dots (Phase 4 — minimalist Brand Kit) === */
+    .dd-hero-pagination.swiper-pagination {
+      position: absolute;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      z-index: 3;
+    }
+    .dd-hero-pagination .swiper-pagination-bullet {
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      opacity: 1;                                /* override Swiper default 0.2 */
+      border-radius: 50%;
+      transition: background-color 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                  transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+      margin: 0;                                 /* override Swiper default 0 4px */
+    }
+    .dd-hero-pagination .swiper-pagination-bullet:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .dd-hero-pagination .swiper-pagination-bullet-active {
+      background: #14B8A6;                       /* $dd-tertiary-500 */
+      transform: scale(1.15);
+    }
+    .dd-hero-pagination .swiper-pagination-bullet-active:hover {
+      background: #14B8A6;
+    }
+    /* focus visible WCAG */
+    .dd-hero-pagination .swiper-pagination-bullet:focus-visible {
+      outline: 2px solid #14B8A6;
+      outline-offset: 3px;
+    }
   </style>
 @endsection
 
@@ -430,7 +491,23 @@
                   </div>
                 </div>
               </div>
-              {{-- Slides 2/3/4 ajoutés lundi en Phases 6-7-8 --}}
+              {{-- Slides 2/3/4 — placeholders Phase 4 (stubs minimaux,
+                   remplacés intégralement en Phases 6/7/8) --}}
+              <div class="swiper-slide" data-slide="placeholder-terminal">
+                <div class="dd-slide-stub">
+                  <span class="dd-slide-stub__label">Slide 2 — Terminal code (Phase 6)</span>
+                </div>
+              </div>
+              <div class="swiper-slide" data-slide="placeholder-dashboard">
+                <div class="dd-slide-stub">
+                  <span class="dd-slide-stub__label">Slide 3 — Dashboard preview (Phase 7)</span>
+                </div>
+              </div>
+              <div class="swiper-slide" data-slide="placeholder-offices">
+                <div class="dd-slide-stub">
+                  <span class="dd-slide-stub__label">Slide 4 — Bureaux pays (Phase 8)</span>
+                </div>
+              </div>
             </div>
             <div class="swiper-pagination dd-hero-pagination"></div>
           </div>

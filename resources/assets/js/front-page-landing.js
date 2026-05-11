@@ -16,7 +16,8 @@
     ReviewsSliderNext = document.querySelector('.swiper-button-next'),
     priceDurationToggler = document.querySelector('.price-duration-toggler'),
     priceMonthlyList = [].slice.call(document.querySelectorAll('.price-monthly')),
-    priceYearlyList = [].slice.call(document.querySelectorAll('.price-yearly'));
+    priceYearlyList = [].slice.call(document.querySelectorAll('.price-yearly')),
+    heroSlider = document.querySelector('.dd-hero-slider');
 
   // Hero
   const mediaQueryXL = '1200';
@@ -80,6 +81,31 @@
           slidesPerView: 2,
           spaceBetween: 20
         }
+      }
+    });
+  }
+
+  // Sprint 1.5 Phase 4 — Hero Swiper (4 slides : map, terminal, dashboard, offices)
+  // -----------------------------------
+  // Brief Section 3.2 : fade crossfade · autoplay 6s · pause hover · pagination
+  // dots minimalistes · côté gauche fixe (Swiper côté droit uniquement).
+  if (heroSlider) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    new Swiper(heroSlider, {
+      loop: true,
+      effect: 'fade',
+      fadeEffect: { crossFade: true },
+      speed: prefersReducedMotion ? 0 : 700,
+      autoplay: prefersReducedMotion
+        ? false
+        : {
+            delay: 6000,
+            pauseOnMouseEnter: true,
+            disableOnInteraction: false
+          },
+      pagination: {
+        el: '.dd-hero-pagination',
+        clickable: true
       }
     });
   }

@@ -76,7 +76,29 @@
 }
 
 .dd-section {
-  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-block: clamp(4rem, 8vw, 8rem);
+}
+
+/* C3+C4 -- Bordures cyan subtiles signature carrier-grade sur les
+   sections light qui suivent une section dark (rythme visuel) */
+.dd-services,
+.dd-coverage,
+.dd-pricing,
+.dd-corridors,
+.dd-faq {
+  border-block-start: 1px solid rgba(20, 184, 166, .06);
+  position: relative;
+}
+
+/* Grid pattern subtil sur les sections "signature" pour rappeler le
+   monitoring carrier-grade (echo du dd-page-hero et dd-hero) */
+.dd-coverage,
+.dd-faq,
+.dd-corridors {
+  background-image:
+    linear-gradient(rgba(20, 184, 166, .025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 184, 166, .025) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
 .dd-section-heading {

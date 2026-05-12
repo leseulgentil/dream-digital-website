@@ -198,17 +198,24 @@ Route::get('/{locale}/{page}', [MarketingPageController::class, 'localized'])
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 
-Route::middleware('internal.demo')->group(function () {
-Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+// Admin back-office : auth Laravel reelle (Breeze-derived) requise.
+// internal.demo n'est plus applique pour permettre l'acces en prod aux
+// utilisateurs authentifies. Les routes Sneat de demo (lignes plus bas)
+// restent sous internal.demo.
+Route::middleware('auth')->group(function () {
+    Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::get('/create', 'create')->name('create');
-    Route::post('/', 'store')->name('store');
-    Route::get('/{pricing}/edit', 'edit')->name('edit');
-    Route::put('/{pricing}', 'update')->name('update');
-    Route::delete('/{pricing}', 'destroy')->name('destroy');
+    Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{pricing}/edit', 'edit')->name('edit');
+        Route::put('/{pricing}', 'update')->name('update');
+        Route::delete('/{pricing}', 'destroy')->name('destroy');
+    });
 });
+
+Route::middleware('internal.demo')->group(function () {
 
 Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
 Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
@@ -406,3 +413,7 @@ Route::get('/maps/leaflet', [Leaflet::class, 'index'])->name('maps-leaflet');
 Route::get('/laravel/user-management', [UserManagement::class, 'UserManagement'])->name('laravel-example-user-management');
 Route::resource('/user-list', UserManagement::class);
 });
+
+// Auth (login/logout) -- routes publiques (le login DOIT etre accessible
+// meme hors local/staging sinon impossible de se connecter en prod)
+require __DIR__.'/auth.php';

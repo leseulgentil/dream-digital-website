@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Country;
 use App\Models\Service;
 use App\Models\ServicePrice;
+use App\Models\User;
 use Database\Seeders\CountrySeeder;
 use Database\Seeders\ServiceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,6 +19,14 @@ class PricingCrudTest extends TestCase
     {
         parent::setUp();
         $this->seed([CountrySeeder::class, ServiceSeeder::class]);
+        $this->actingAs(User::factory()->create());
+    }
+
+    public function test_guest_cannot_access_pricing_admin(): void
+    {
+        auth()->logout();
+        $this->get(route('admin.pricing.index'))
+            ->assertRedirect(route('login'));
     }
 
     public function test_index_renders_with_filters(): void

@@ -430,6 +430,13 @@ Route::get('/laravel/user-management', [UserManagement::class, 'UserManagement']
 Route::resource('/user-list', UserManagement::class);
 });
 
+// SEO public routes (robots.txt + sitemap.xml dynamiques selon
+// DD_PUBLIC_INDEXABLE). DOIVENT etre accessibles en prod sans auth ni
+// internal.demo pour que les crawlers les lisent quand le site sera
+// public.
+Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots'])->name('seo.robots');
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('seo.sitemap');
+
 // Auth (login/logout) -- routes publiques (le login DOIT etre accessible
 // meme hors local/staging sinon impossible de se connecter en prod)
 require __DIR__.'/auth.php';

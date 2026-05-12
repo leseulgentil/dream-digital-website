@@ -3,9 +3,16 @@
 @php
   $t = fn ($value) => is_array($value) ? ($value[$locale] ?? $value['fr'] ?? reset($value)) : $value;
   $title = $t($pageData['title'] ?? config('dream-digital.site.meta.title_default', 'Dream Digital'));
+  $pageLead = $t($pageData['lead'] ?? '');
+  $pageEyebrow = $t($pageData['eyebrow'] ?? '');
+  $ogTitle = trim($pageEyebrow . ($pageEyebrow ? ' — ' : '') . $title) . ' | Dream Digital';
+  $ogDescription = $pageLead !== '' ? mb_substr($pageLead, 0, 280) : ($t(config('dream-digital.site.meta.description_default', '')) ?: '');
 @endphp
 
 @section('title', $title . ' | Dream Digital')
+@section('page-description', $ogDescription)
+@section('og-title', $ogTitle)
+@section('og-description', $ogDescription)
 
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])

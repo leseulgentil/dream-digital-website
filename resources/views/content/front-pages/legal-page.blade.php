@@ -2,9 +2,15 @@
 
 @php
   $title = $legal['title'] ?? '';
+  $legalLead = $legal['lead'] ?? '';
+  $ogDescription = $legalLead !== '' ? mb_substr($legalLead, 0, 280) : '';
 @endphp
 
 @section('title', $title . ' | Dream Digital')
+@section('page-description', $ogDescription)
+@section('og-title', $title . ' | Dream Digital')
+@section('og-description', $ogDescription)
+@section('og-type', 'article')
 
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])

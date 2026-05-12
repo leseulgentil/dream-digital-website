@@ -1,8 +1,7 @@
 @extends('layouts/layoutMaster')
 
 @php
-  $t = fn ($value) => is_array($value) ? ($value[$locale] ?? $value['fr'] ?? reset($value)) : $value;
-  $title = $t($legal['title'] ?? '');
+  $title = $legal['title'] ?? '';
 @endphp
 
 @section('title', $title . ' | Dream Digital')
@@ -16,9 +15,9 @@
     <section class="dd-page-hero dd-page-hero--simple">
       <div class="dd-front-container dd-page-hero__grid">
         <div>
-          <p class="dd-eyebrow">{{ $t($legal['eyebrow'] ?? '') }}</p>
+          <p class="dd-eyebrow">{{ $legal['eyebrow'] ?? '' }}</p>
           <h1>{{ $title }}</h1>
-          <p>{{ $t($legal['lead'] ?? '') }}</p>
+          <p>{{ $legal['lead'] ?? '' }}</p>
         </div>
         <aside class="dd-page-hero__panel" aria-label="Document juridique">
           <strong>{{ $locale === 'fr' ? 'Derniere mise a jour' : 'Last updated' }}</strong>
@@ -32,11 +31,11 @@
         <nav class="dd-legal__toc" aria-label="{{ $locale === 'fr' ? 'Autres documents legaux' : 'Other legal documents' }}">
           <p class="dd-eyebrow">{{ $locale === 'fr' ? 'Documents' : 'Documents' }}</p>
           <ul>
-            @foreach($allPages as $slug => $other)
-              @php $isCurrent = ($other['slug'] ?? $slug) === ($legal['slug'] ?? ''); @endphp
+            @foreach($allPages as $slugKey => $other)
+              @php $isCurrent = ($other['slug'] ?? $slugKey) === ($legal['slug'] ?? ''); @endphp
               <li>
-                <a href="{{ url("/{$locale}/legal/{$slug}") }}" class="{{ $isCurrent ? 'is-active' : '' }}">
-                  {{ $t($other['title'] ?? $slug) }}
+                <a href="{{ url("/{$locale}/legal/" . ($other['slug'] ?? $slugKey)) }}" class="{{ $isCurrent ? 'is-active' : '' }}">
+                  {{ $other['title'] ?? $slugKey }}
                 </a>
               </li>
             @endforeach
@@ -46,8 +45,8 @@
         <article class="dd-legal__body">
           @foreach($legal['sections'] ?? [] as $i => $section)
             <section id="section-{{ $i + 1 }}">
-              <h2>{{ $t($section['heading'] ?? '') }}</h2>
-              @foreach(preg_split("/\r?\n\r?\n/", trim($t($section['body'] ?? ''))) as $paragraph)
+              <h2>{{ $section['heading'] ?? '' }}</h2>
+              @foreach(preg_split("/\r?\n\r?\n/", trim($section['body'] ?? '')) as $paragraph)
                 @if(trim($paragraph) !== '')
                   <p>{!! nl2br(e($paragraph)) !!}</p>
                 @endif

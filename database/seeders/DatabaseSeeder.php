@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             ServiceSeeder::class,
             ServicePriceSeeder::class,
+            LegalPageSeeder::class,
             AdminUserSeeder::class,
         ]);
     }

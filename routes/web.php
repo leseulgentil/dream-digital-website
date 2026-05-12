@@ -195,6 +195,13 @@ Route::get('/{locale}/{page}', [MarketingPageController::class, 'localized'])
   ->whereIn('locale', ['fr', 'en'])
   ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])
   ->name('front.localized.page');
+
+// Pages legales (avant DD_PUBLIC_INDEXABLE=true)
+Route::get('/{locale}/legal/{slug}', [\App\Http\Controllers\Front\LegalController::class, 'show'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->whereIn('slug', ['mentions', 'cgu', 'rgpd'])
+  ->name('front.localized.legal');
+
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 

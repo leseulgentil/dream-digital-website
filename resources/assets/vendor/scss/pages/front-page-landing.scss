@@ -1850,3 +1850,120 @@ nav.dd-front-navbar {
     animation: none;
   }
 }
+
+/* ===========================================================
+   Pages legales (mentions, CGU, RGPD)
+   =========================================================== */
+
+.dd-legal {
+  background: #fff;
+}
+
+.dd-legal__grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+}
+
+.dd-legal__toc {
+  align-self: start;
+  position: sticky;
+  inset-block-start: 100px;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    border-inline-start: 2px solid transparent;
+    color: #586273;
+    display: block;
+    font-size: .95rem;
+    padding: .45rem .75rem;
+    text-decoration: none;
+    transition: color .2s ease, border-color .2s ease;
+
+    &:hover {
+      color: #14b8a6;
+    }
+
+    &.is-active {
+      border-inline-start-color: #14b8a6;
+      color: #0e121c;
+      font-weight: 700;
+    }
+  }
+}
+
+.dd-legal__body {
+  color: #2d3748;
+  font-size: 1rem;
+  line-height: 1.75;
+  max-inline-size: 820px;
+
+  h2 {
+    color: #0e121c;
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin-block: 2.5rem .9rem;
+  }
+
+  > section:first-child h2 {
+    margin-block-start: 0;
+  }
+
+  p {
+    margin-block: 0 1rem;
+  }
+
+  a {
+    color: #14b8a6;
+    text-decoration: underline;
+    text-underline-offset: .15em;
+  }
+}
+
+.dd-legal__divider {
+  border: 0;
+  border-block-start: 1px solid rgba(14, 18, 28, .08);
+  margin-block: 2.5rem 1.5rem;
+}
+
+.dd-legal__footer-note {
+  color: #586273;
+  font-size: .9rem;
+  font-style: italic;
+}
+
+.dd-front-footer__legal {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  a {
+    color: rgba(255, 255, 255, .72);
+    font-size: .85rem;
+    text-decoration: none;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .dd-legal__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-legal__toc {
+    position: static;
+  }
+}
+

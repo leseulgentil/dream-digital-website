@@ -45,6 +45,11 @@
 
   <div class="dd-front-container dd-front-footer__bottom">
     <span>(c) {{ date('Y') }} Dream Digital. {{ implode(' / ', $site['company']['offices'] ?? []) }}.</span>
+    <nav class="dd-front-footer__legal" aria-label="{{ $locale === 'fr' ? 'Liens legaux' : 'Legal links' }}">
+      <a href="{{ url("/{$locale}/legal/mentions") }}">{{ $locale === 'fr' ? 'Mentions legales' : 'Legal notice' }}</a>
+      <a href="{{ url("/{$locale}/legal/cgu") }}">{{ $locale === 'fr' ? 'CGU' : 'Terms' }}</a>
+      <a href="{{ url("/{$locale}/legal/rgpd") }}">{{ $locale === 'fr' ? 'RGPD' : 'Privacy' }}</a>
+    </nav>
     @include('front.components.country-language-switcher', ['locale' => $locale])
   </div>
 </footer>

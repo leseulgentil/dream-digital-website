@@ -3,6 +3,11 @@
   $isFront = true;
 @endphp
 
+@php
+  $cookieLocale = request()->route('locale') ?? session()->get('locale', 'fr');
+  $cookieLocale = in_array($cookieLocale, ['fr', 'en'], true) ? $cookieLocale : 'fr';
+@endphp
+
 @section('layoutContent')
   @extends('layouts/commonMaster')
 
@@ -13,4 +18,5 @@
   <!-- / Sections:End -->
 
   @include('layouts/sections/footer/footer-front')
+  @include('front.components.cookie-banner', ['locale' => $cookieLocale])
 @endsection

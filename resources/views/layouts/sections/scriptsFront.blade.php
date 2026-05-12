@@ -9,6 +9,9 @@
 <!-- BEGIN: Theme Switcher (Q13) -->
 @vite(['resources/assets/js/dd-theme-switcher.js'])
 <!-- END: Theme Switcher -->
+<!-- BEGIN: Cookie Consent -->
+@vite(['resources/assets/js/dd-cookie-consent.js'])
+<!-- END: Cookie Consent -->
 <!-- Pricing Modal JS-->
 @stack('pricing-script')
 <!-- END: Pricing Modal JS-->

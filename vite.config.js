@@ -50,6 +50,7 @@ const publicFrontInputs = [
   'resources/assets/vendor/libs/swiper/swiper.js',
   'resources/assets/js/front-main.js',
   'resources/assets/js/dd-theme-switcher.js',
+  'resources/assets/js/dd-cookie-consent.js',
   'resources/assets/js/front-page-landing.js'
 ];
 

@@ -31,13 +31,13 @@
 
       <ul class="navbar-nav flex-row align-items-center ms-auto">
         <li class="nav-item dropdown-style-switcher dropdown me-2">
-          <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" aria-label="Theme">
+          <button type="button" class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-label="Theme" aria-expanded="false">
             <i class="icon-base bx bx-sun icon-md theme-icon-active"></i>
-          </a>
+          </button>
           <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
-            <li><a class="dropdown-item" href="javascript:void(0);" data-theme="light"><i class="icon-base bx bx-sun icon-md me-2"></i>Light</a></li>
-            <li><a class="dropdown-item" href="javascript:void(0);" data-theme="dark"><i class="icon-base bx bx-moon icon-md me-2"></i>Dark</a></li>
-            <li><a class="dropdown-item" href="javascript:void(0);" data-theme="system"><i class="icon-base bx bx-desktop icon-md me-2"></i>System</a></li>
+            <li><button type="button" class="dropdown-item" data-theme="light"><i class="icon-base bx bx-sun icon-md me-2"></i>Light</button></li>
+            <li><button type="button" class="dropdown-item" data-theme="dark"><i class="icon-base bx bx-moon icon-md me-2"></i>Dark</button></li>
+            <li><button type="button" class="dropdown-item" data-theme="system"><i class="icon-base bx bx-desktop icon-md me-2"></i>System</button></li>
           </ul>
         </li>
         <li class="nav-item d-none d-lg-flex me-2">

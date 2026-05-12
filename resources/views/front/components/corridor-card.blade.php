@@ -13,9 +13,9 @@
   </div>
   <h3>{{ $t($corridor['title'] ?? '') }}</h3>
   <p>{{ $t($corridor['label'] ?? '') }}</p>
-  <div class="dd-corridor-card__quality" aria-label="Route quality">
+  <div class="dd-corridor-card__quality" role="img" aria-label="Route quality {{ $quality }} sur 5">
     @for($i = 1; $i <= 5; $i++)
-      <span class="{{ $i <= $quality ? 'is-active' : '' }}"></span>
+      <span class="{{ $i <= $quality ? 'is-active' : '' }}" aria-hidden="true"></span>
     @endfor
   </div>
   <small>{{ $t($corridor['status'] ?? '') }}</small>

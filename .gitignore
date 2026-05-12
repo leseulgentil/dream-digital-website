@@ -42,6 +42,11 @@ yarn-error.log
 /resources/assets/vendor/fonts/flags/**
 /resources/assets/vendor/fonts/fontawesome/**
 /resources/assets/vendor/fonts/iconify/**
+
+# Lighthouse raw JSON reports — heavy (600-800 KB each), evidence only.
+# Summary CSV + AUDIT.md are committed; regenerate JSONs locally via
+# bash docs/audits/lighthouse-2026-05-12/run-lighthouse.sh
+/docs/audits/**/*.json
 /public/css
 /public/js
 /public/mix-manifest.json

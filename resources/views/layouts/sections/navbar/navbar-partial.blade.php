@@ -91,24 +91,24 @@ use Illuminate\Support\Facades\Route;
 
     <!-- Theme switcher (Q13: Light/Dark/System) -->
     <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
-      <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" aria-label="Theme">
+      <button type="button" class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-label="Theme" aria-expanded="false">
         <i class="icon-base bx bx-sun icon-md theme-icon-active"></i>
-      </a>
+      </button>
       <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
         <li>
-          <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
+          <button type="button" class="dropdown-item" data-theme="light">
             <span class="align-middle"><i class="icon-base bx bx-sun icon-md me-3"></i>Light</span>
-          </a>
+          </button>
         </li>
         <li>
-          <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
+          <button type="button" class="dropdown-item" data-theme="dark">
             <span class="align-middle"><i class="icon-base bx bx-moon icon-md me-3"></i>Dark</span>
-          </a>
+          </button>
         </li>
         <li>
-          <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
+          <button type="button" class="dropdown-item" data-theme="system">
             <span class="align-middle"><i class="icon-base bx bx-desktop icon-md me-3"></i>System</span>
-          </a>
+          </button>
         </li>
       </ul>
     </li>

@@ -178,6 +178,31 @@
   block-size: auto;
 }
 
+.dd-hero-pagination .swiper-pagination-bullet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  block-size: 24px;
+  background: transparent;
+  opacity: 1;
+
+  &::before {
+    content: "";
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .45);
+    transition: background .2s ease, inline-size .2s ease;
+  }
+
+  &.swiper-pagination-bullet-active::before {
+    inline-size: 20px;
+    border-radius: 4px;
+    background: var(--bs-primary);
+  }
+}
+
 .dd-map-card,
 .dd-terminal-card,
 .dd-dashboard-card,

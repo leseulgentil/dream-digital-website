@@ -3,6 +3,7 @@
   $locale = request()->route('locale') ?? session()->get('locale', 'fr');
   $locale = in_array($locale, ['fr', 'en'], true) ? $locale : 'fr';
   $pageUrl = fn ($page) => url("/{$locale}/{$page}");
+  $isActive = fn ($segment) => request()->is("{$locale}/{$segment}*") ? 'is-active' : '';
 @endphp
 
 <nav class="dd-layout-navbar dd-front-navbar shadow-none py-0" aria-label="Navigation principale">
@@ -15,17 +16,17 @@
 
       <button class="navbar-toggler border-0 px-0" type="button" data-bs-toggle="collapse"
         data-bs-target="#ddFrontNav" aria-controls="ddFrontNav" aria-expanded="false" aria-label="Ouvrir la navigation">
-        <i class="icon-base bx bx-menu icon-lg align-middle text-heading fw-medium"></i>
+        <i class="icon-base bx bx-menu icon-lg align-middle fw-medium"></i>
       </button>
 
       <div class="collapse navbar-collapse landing-nav-menu" id="ddFrontNav">
         <ul class="navbar-nav mx-auto">
-          <li class="nav-item"><a class="nav-link fw-medium" href="{{ $pageUrl('products') }}">Produits</a></li>
-          <li class="nav-item"><a class="nav-link fw-medium" href="{{ $pageUrl('developers') }}">Developers</a></li>
-          <li class="nav-item"><a class="nav-link fw-medium" href="{{ $pageUrl('solutions') }}">Solutions</a></li>
-          <li class="nav-item"><a class="nav-link fw-medium" href="{{ $pageUrl('coverage') }}">Coverage</a></li>
-          <li class="nav-item"><a class="nav-link fw-medium" href="{{ $pageUrl('pricing') }}">Pricing</a></li>
-          <li class="nav-item"><a class="nav-link fw-medium" href="{{ $pageUrl('company') }}">Societe</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('products') }}" href="{{ $pageUrl('products') }}">Produits</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('developers') }}" href="{{ $pageUrl('developers') }}">Developers</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('solutions') }}" href="{{ $pageUrl('solutions') }}">Solutions</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('coverage') }}" href="{{ $pageUrl('coverage') }}">Coverage</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('pricing') }}" href="{{ $pageUrl('pricing') }}">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('company') }}" href="{{ $pageUrl('company') }}">Societe</a></li>
         </ul>
       </div>
 

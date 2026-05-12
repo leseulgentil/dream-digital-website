@@ -7,9 +7,9 @@
 }
 
 .dd-front-navbar {
-  backdrop-filter: blur(18px);
-  background: rgba(255, 255, 255, .88);
-  border-block-end: 1px solid rgba(14, 18, 28, .08);
+  backdrop-filter: blur(12px);
+  background: rgba(14, 18, 28, .95);
+  border-block-end: 1px solid rgba(20, 184, 166, .08);
   inset-block-start: 0;
   position: sticky;
   z-index: 1070;
@@ -862,21 +862,59 @@
 }
 
 .dd-front-navbar {
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 1px 0 rgba(14, 18, 28, .08);
+  background: rgba(14, 18, 28, .95);
+  box-shadow: 0 1px 0 rgba(20, 184, 166, .08);
 
   .landing-navbar {
     min-block-size: 72px;
   }
 
+  .dd-app-brand-text {
+    color: #fff;
+  }
+
+  .navbar-toggler i {
+    color: rgba(255, 255, 255, .85);
+  }
+
   .nav-link {
     border-radius: 999px;
-    color: rgba(14, 18, 28, .72);
+    color: rgba(255, 255, 255, .85);
     padding: .55rem .8rem;
+    transition: color .2s ease, background-color .2s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(20, 184, 166, .12);
+      color: #fff;
+    }
+
+    &.is-active {
+      color: #14b8a6;
+    }
+  }
+
+  .dropdown-style-switcher .nav-link,
+  .nav-link.dropdown-toggle {
+    color: rgba(255, 255, 255, .85);
 
     &:hover {
-      background: rgba(20, 184, 166, .08);
-      color: var(--dd-ink);
+      color: #fff;
+    }
+  }
+
+  .dd-locale-switcher {
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .12);
+
+    a {
+      color: rgba(255, 255, 255, .7);
+    }
+
+    a.is-active {
+      background: rgba(255, 255, 255, .14);
+      color: #fff;
+      box-shadow: none;
     }
   }
 }

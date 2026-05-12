@@ -878,6 +878,8 @@
   }
 
   .nav-link {
+    background: transparent;
+    border: 0;
     border-radius: 999px;
     color: rgba(255, 255, 255, .85);
     padding: .55rem .8rem;
@@ -891,6 +893,12 @@
 
     &.is-active {
       color: #14b8a6;
+    }
+
+    &.dropdown-toggle::after {
+      border-top-color: currentcolor;
+      margin-inline-start: .35rem;
+      vertical-align: .15rem;
     }
   }
 
@@ -918,6 +926,159 @@
     }
   }
 }
+
+/* ===========================================================
+   MegaMenu carrier-grade (dark panel, multi-column grids,
+   hover on desktop / accordion on mobile)
+   =========================================================== */
+
+.dd-megamenu-panel {
+  background: rgba(14, 18, 28, .98);
+  border: 1px solid rgba(20, 184, 166, .12);
+  border-radius: .85rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+  margin-block-start: .25rem;
+  padding: 1rem;
+}
+
+.dd-megamenu-panel--wide { inline-size: min(720px, calc(100vw - 2rem)); }
+.dd-megamenu-panel--narrow { inline-size: 280px; }
+
+.dd-megamenu-grid {
+  display: grid;
+  gap: .35rem;
+
+  &--3col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  &--2col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  &--1col { grid-template-columns: 1fr; }
+}
+
+.dd-megamenu-card {
+  align-items: flex-start;
+  border-radius: .55rem;
+  color: inherit;
+  display: flex;
+  gap: .7rem;
+  padding: .7rem .65rem;
+  text-decoration: none;
+  transition: background-color .2s ease, transform .2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(20, 184, 166, .1);
+    color: inherit;
+    outline: 0;
+    transform: translateY(-1px);
+  }
+}
+
+.dd-megamenu-card__icon {
+  align-items: center;
+  background: rgba(20, 184, 166, .14);
+  border-radius: .5rem;
+  block-size: 36px;
+  color: #14b8a6;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 1.05rem;
+  inline-size: 36px;
+  justify-content: center;
+}
+
+.dd-megamenu-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  min-inline-size: 0;
+}
+
+.dd-megamenu-card__name {
+  color: #fff;
+  font-size: .92rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dd-megamenu-card__tagline {
+  color: rgba(255, 255, 255, .62);
+  font-size: .76rem;
+  font-weight: 400;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.dd-megamenu-footer {
+  align-items: center;
+  border-block-start: 1px solid rgba(255, 255, 255, .08);
+  color: #14b8a6;
+  display: flex;
+  font-size: .85rem;
+  font-weight: 600;
+  gap: .25rem;
+  justify-content: flex-end;
+  margin-block-start: .65rem;
+  padding-block: .65rem .15rem;
+  padding-inline: .65rem;
+  text-decoration: none;
+  transition: color .2s ease, gap .2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+    gap: .5rem;
+    outline: 0;
+  }
+}
+
+/* Desktop : hover ouvre le panneau en plus du click Bootstrap */
+@media (min-width: 992px) {
+  .dd-megamenu-item:hover > .dropdown-menu,
+  .dd-megamenu-item:focus-within > .dropdown-menu {
+    display: block;
+  }
+
+  .dd-megamenu-panel--wide,
+  .dd-megamenu-panel--narrow,
+  .dd-megamenu-panel {
+    inset-block-start: 100%;
+  }
+}
+
+/* Mobile : pas de panneau flottant, accordeon dans le menu collapsed */
+@media (max-width: 991.98px) {
+  .dd-megamenu-panel {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    inline-size: 100%;
+    margin-block: 0;
+    padding: 0 0 .5rem 1rem;
+  }
+
+  .dd-megamenu-grid--3col,
+  .dd-megamenu-grid--2col {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-megamenu-card {
+    padding: .55rem .5rem;
+  }
+
+  .dd-megamenu-footer {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-megamenu-card,
+  .dd-megamenu-footer {
+    transition: none;
+  }
+}
+
 
 .dd-locale-switcher {
   align-items: center;

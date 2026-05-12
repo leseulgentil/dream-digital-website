@@ -220,6 +220,15 @@ Route::middleware('auth')->group(function () {
         Route::put('/{pricing}', 'update')->name('update');
         Route::delete('/{pricing}', 'destroy')->name('destroy');
     });
+
+    Route::prefix('admin/pages')->name('admin.pages.')->controller(\App\Http\Controllers\Admin\PagesController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{page}/edit', 'edit')->name('edit');
+        Route::put('/{page}', 'update')->name('update');
+        Route::delete('/{page}', 'destroy')->name('destroy');
+    });
 });
 
 Route::middleware('internal.demo')->group(function () {

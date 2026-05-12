@@ -58,8 +58,9 @@
           <h2 class="h5 mb-0">Raccourcis</h2>
         </div>
         <div class="card-body d-grid gap-3">
-          <a class="btn btn-primary" href="{{ url('/admin/pricing') }}">Pricing admin V0</a>
-          <a class="btn btn-outline-primary" href="{{ url('/app/access-roles') }}">Roles & permissions</a>
+          <a class="btn btn-primary" href="{{ url('/admin/pricing') }}">Pricing</a>
+          <a class="btn btn-primary" href="{{ url('/admin/pages') }}">Pages (CMS)</a>
+          <a class="btn btn-outline-primary" href="{{ url('/app/access-roles') }}">Roles &amp; permissions</a>
           <a class="btn btn-outline-primary" href="{{ url('/app/user/list') }}">Utilisateurs</a>
         </div>
       </div>

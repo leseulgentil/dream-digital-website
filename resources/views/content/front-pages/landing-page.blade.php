@@ -337,29 +337,6 @@
       }
     }
 
-    /* === SLIDES 2-3-4 PLACEHOLDERS (Phase 4 stubs, replaced Phases 6-7-8) === */
-    .dd-slide-stub {
-      width: 100%;
-      height: 100%;
-      min-height: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(ellipse at center, rgba(20, 184, 166, 0.06) 0%, transparent 60%),
-        linear-gradient(135deg, #0F1428 0%, #1a2138 100%);
-      border-radius: 1rem;
-    }
-    .dd-slide-stub__label {
-      font-family: 'JetBrains Mono', ui-monospace, monospace;
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.4);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      text-align: center;
-      padding: 0 1.5rem;
-    }
-
     /* === SWIPER PAGINATION dots (Phase 4 — minimalist Brand Kit) === */
     .dd-hero-pagination.swiper-pagination {
       position: absolute;
@@ -687,15 +664,19 @@
       .dd-dash-card--featured .dd-dash-card__spark { height: 36px; }
     }
 
-    /* === SLIDE 4 — BUREAUX PAYS (Étape 3 Phase 8) === */
+    /* === SLIDE 4 — BUREAUX PAYS (Étape 3 Phase 8b — 2026-05-12) ===
+       Layout 6-col grid : row 1 = 3 cards opérationnelles (span 2 chacune,
+       remplit 6 cells), row 2 = 2 cards expansion centrées (cells 2-3 + 4-5,
+       cells 1 et 6 vides pour centrage visuel). */
     .dd-slide-offices {
       width: 100%;
       height: 100%;
       min-height: inherit;
-      padding: 18px;
+      padding: 14px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: minmax(0, 1fr);
+      gap: 10px;
       background:
         radial-gradient(ellipse at bottom left, rgba(20, 184, 166, 0.06) 0%, transparent 55%),
         linear-gradient(135deg, #0F1428 0%, #1a2138 100%);
@@ -705,7 +686,7 @@
 
     .dd-office-card {
       position: relative;
-      padding: 18px 18px 14px;
+      padding: 14px 14px 12px;
       background: rgba(255, 255, 255, 0.025);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 10px;
@@ -713,16 +694,23 @@
       flex-direction: column;
       min-width: 0;                              /* grid item escape hatch */
       overflow: hidden;
+      grid-column: span 2;                       /* default = row 1 cards */
       /* stagger fade-up — set by JS via .is-visible on parent */
       opacity: 0;
       transform: translateY(16px);
       transition: opacity 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
                   transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    .dd-slide-offices.is-visible .dd-office-card           { opacity: 1; transform: translateY(0); }
-    .dd-slide-offices.is-visible .dd-office-card:nth-child(1) { transition-delay: 0ms; }
-    .dd-slide-offices.is-visible .dd-office-card:nth-child(2) { transition-delay: 100ms; }
-    .dd-slide-offices.is-visible .dd-office-card:nth-child(3) { transition-delay: 200ms; }
+    /* Row 2 : 2 expansion cards centered (cells 2-3 + 4-5) */
+    .dd-office-card:nth-child(4) { grid-column: 2 / span 2; }
+    .dd-office-card:nth-child(5) { grid-column: 4 / span 2; }
+
+    .dd-slide-offices.is-visible .dd-office-card                  { opacity: 1; transform: translateY(0); }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(1)     { transition-delay: 0ms; }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(2)     { transition-delay: 75ms; }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(3)     { transition-delay: 150ms; }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(4)     { transition-delay: 225ms; }
+    .dd-slide-offices.is-visible .dd-office-card:nth-child(5)     { transition-delay: 300ms; }
 
     /* HQ accent — cyan top-edge bar on Kinshasa */
     .dd-office-card--hq::before {
@@ -735,49 +723,77 @@
       background: linear-gradient(90deg, #14B8A6 0%, rgba(20, 184, 166, 0.2) 100%);
     }
 
+    /* Coming-soon variant — opacity faded, dashed border, jaune badge */
+    .dd-office-card--coming-soon {
+      opacity: 0.72;
+      border-style: dashed;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .dd-slide-offices.is-visible .dd-office-card--coming-soon {
+      opacity: 0.72;                             /* override the .is-visible opacity:1 */
+    }
+
     .dd-office-card__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 14px;
-      min-height: 22px;                          /* keep alignment on cards with no badge */
+      margin-bottom: 12px;
+      min-height: 22px;
     }
-    .dd-office-card__icon {
-      font-size: 22px;
-      color: #14B8A6;                            /* $dd-tertiary-500 */
-      line-height: 1;
+    .dd-office-card__flag {
+      display: inline-block;
+      width: 28px;
+      height: 18px;
+      line-height: 0;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+      flex-shrink: 0;
+    }
+    .dd-office-card__flag svg {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
     .dd-office-card__badge {
       font-family: 'JetBrains Mono', ui-monospace, monospace;
       font-size: 9.5px;
       font-weight: 600;
-      color: #14B8A6;
-      background: rgba(20, 184, 166, 0.12);
-      border: 1px solid rgba(20, 184, 166, 0.3);
       padding: 3px 8px;
       border-radius: 3px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       line-height: 1;
+      white-space: nowrap;
     }
-    .dd-office-card__city {
+    .dd-office-card__badge--hq {
+      color: #14B8A6;
+      background: rgba(20, 184, 166, 0.12);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+    }
+    .dd-office-card__badge--soon {
+      color: #FBBF24;                            /* $dd-code-num jaune */
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    .dd-office-card__country-primary {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-weight: 700;
-      font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+      font-size: clamp(1.15rem, 2vw, 1.5rem);
       color: #FFFFFF;
       letter-spacing: -0.015em;
       line-height: 1.1;
-      margin: 0 0 6px 0;
+      margin: 0 0 4px 0;
     }
-    .dd-office-card__country {
+    .dd-office-card__city-secondary {
       font-family: 'JetBrains Mono', ui-monospace, monospace;
       font-size: 10.5px;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.55);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -789,22 +805,22 @@
     }
     .dd-office-card__desc {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      font-size: 12.5px;
+      font-size: 11.5px;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.72);
       line-height: 1.45;
-      margin: 0 0 16px 0;
-      flex: 1;                                   /* pushes coords footer to bottom */
+      margin: 0 0 12px 0;
+      flex: 1;
     }
     .dd-office-card__coords {
       display: flex;
       align-items: center;
       gap: 6px;
       font-family: 'JetBrains Mono', ui-monospace, monospace;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.42);
-      padding-top: 10px;
+      padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
     .dd-office-card__coords i {
@@ -814,17 +830,24 @@
 
     /* === RESPONSIVE Slide 4 === */
     @media (max-width: 991.98px) {
-      .dd-slide-offices { padding: 14px; gap: 10px; }
-      .dd-office-card   { padding: 14px 14px 12px; }
-      .dd-office-card__desc { font-size: 11.5px; }
+      .dd-slide-offices { padding: 12px; gap: 8px; }
+      .dd-office-card   { padding: 12px 12px 10px; }
+      .dd-office-card__desc { font-size: 11px; }
     }
     @media (max-width: 768px) {
+      /* Switch to 2 columns. Top 3 cards : 2-up + 1 spans full. Bottom 2 : 1-up each */
       .dd-slide-offices { grid-template-columns: 1fr 1fr; }
-      .dd-office-card:nth-child(3) { grid-column: span 2; }
+      .dd-office-card               { grid-column: span 1; }
+      .dd-office-card:nth-child(3)  { grid-column: span 2; }
+      .dd-office-card:nth-child(4)  { grid-column: span 1; }
+      .dd-office-card:nth-child(5)  { grid-column: span 1; }
     }
     @media (max-width: 575.98px) {
       .dd-slide-offices { grid-template-columns: 1fr; }
-      .dd-office-card:nth-child(3) { grid-column: span 1; }
+      .dd-office-card,
+      .dd-office-card:nth-child(3),
+      .dd-office-card:nth-child(4),
+      .dd-office-card:nth-child(5) { grid-column: 1 / span 1; }
     }
   </style>
 @endsection
@@ -1022,48 +1045,95 @@
                   </div>
                 </div>
               </div>
-              {{-- Slide 4 — Bureaux pays (Étape 3 Phase 8) :
-                   3 cards Kinshasa/Abidjan/Brazzaville · typographique + GPS coords ·
-                   marker Boxicons bx-buildings · accent HQ sur Kinshasa ·
-                   données issues de config('dream-digital.coverage.offices')
-                   (même source que les office dots du Slide 1 World Map) ·
-                   stagger fade-up déclenché sur slideChange Swiper (realIndex === 3) ·
-                   pas de drapeaux nationaux (ANALYZE Q1 PO 2026-05-08 restriction). --}}
+              {{-- Slide 4 — Bureaux pays (Étape 3 Phase 8b — amendement 2026-05-12) :
+                   5 cards Kinshasa/Abidjan/Brazzaville/Nairobi/Gentilly ·
+                   pays en PRIMARY (Inter 700) + drapeau SVG · ville SECONDARY (Mono) ·
+                   accent HQ sur Kinshasa · badge "Bientôt" sur Gentilly (coming_soon) ·
+                   layout grid 3+2 (3 cards row 1 opérationnelles, 2 cards row 2 nouvelles
+                   centrées) · données depuis config('dream-digital.coverage.offices') ·
+                   stagger fade-up sur slideChange Swiper realIndex === 3.
+
+                   ⚠ Amendement vs ANALYZE Q1 PO 2026-05-08 (qui interdisait drapeaux
+                   nationaux). Nouvelle directive PO 2026-05-12 : flags réels SVG OK. --}}
               @php
-                $ddOffices  = config('dream-digital.coverage.offices', []);
-                $ddIsoCodes = [
-                  'kinshasa'    => 'COD',
-                  'abidjan'     => 'CIV',
-                  'brazzaville' => 'COG',
+                $ddOffices = config('dream-digital.coverage.offices', []);
+
+                // SVG flags inline minimaliste (viewBox 30x20, preserveAspectRatio=none
+                // pour ratio adaptable). Strictement statiques, donc {!! !!} safe.
+                $ddFlagSvgs = [
+                  // RDC (sky blue + yellow/red diagonal stripe, simplifié sans étoile)
+                  'kinshasa' => '<svg viewBox="0 0 30 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+                              . '<rect width="30" height="20" fill="#007FFF"/>'
+                              . '<polygon points="0,7 30,11 30,13 0,9" fill="#FCD116"/>'
+                              . '<polygon points="0,7.8 30,11.8 30,12.2 0,8.2" fill="#CE1126"/>'
+                              . '</svg>',
+                  // Côte d\'Ivoire (orange/blanc/vert verticaux)
+                  'abidjan' => '<svg viewBox="0 0 30 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+                             . '<rect width="10" height="20" fill="#FF8200"/>'
+                             . '<rect x="10" width="10" height="20" fill="#FFFFFF"/>'
+                             . '<rect x="20" width="10" height="20" fill="#009A44"/>'
+                             . '</svg>',
+                  // Congo (RC) — vert top, rouge bottom, bande diagonale jaune
+                  'brazzaville' => '<svg viewBox="0 0 30 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+                                 . '<polygon points="0,0 30,0 0,20" fill="#009543"/>'
+                                 . '<polygon points="30,0 30,20 0,20" fill="#DC241F"/>'
+                                 . '<polygon points="0,12 30,4 30,8 0,16" fill="#FBDE4A"/>'
+                                 . '</svg>',
+                  // Kenya — bandes horizontales noir/rouge/vert avec liserés blancs
+                  // (simplifié sans bouclier+lances central pour rendu petit propre)
+                  'nairobi' => '<svg viewBox="0 0 30 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+                             . '<rect width="30" height="6.4" fill="#000000"/>'
+                             . '<rect y="6.4" width="30" height="0.8" fill="#FFFFFF"/>'
+                             . '<rect y="7.2" width="30" height="5.6" fill="#BB0000"/>'
+                             . '<rect y="12.8" width="30" height="0.8" fill="#FFFFFF"/>'
+                             . '<rect y="13.6" width="30" height="6.4" fill="#006600"/>'
+                             . '</svg>',
+                  // France — bleu/blanc/rouge verticaux
+                  'gentilly' => '<svg viewBox="0 0 30 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+                              . '<rect width="10" height="20" fill="#002395"/>'
+                              . '<rect x="10" width="10" height="20" fill="#FFFFFF"/>'
+                              . '<rect x="20" width="10" height="20" fill="#ED2939"/>'
+                              . '</svg>',
                 ];
               @endphp
               <div class="swiper-slide" data-slide="offices">
                 <div class="dd-slide-offices" data-offices-target>
                   @foreach ($ddOffices as $office)
                     @php
-                      $isHq      = ($office['id'] ?? '') === 'kinshasa';
-                      $iso       = $ddIsoCodes[$office['id'] ?? ''] ?? '';
-                      $countryFr = is_array($office['country'] ?? null)
+                      $isHq         = (bool) ($office['is_hq'] ?? false);
+                      $isComingSoon = (bool) ($office['coming_soon'] ?? false);
+                      $iso          = $office['iso_alpha3'] ?? '';
+                      $countryFr    = is_array($office['country'] ?? null)
                           ? ($office['country']['fr'] ?? '')
                           : ($office['country'] ?? '');
-                      $descFr    = is_array($office['description'] ?? null)
+                      $descFr       = is_array($office['description'] ?? null)
                           ? ($office['description']['fr'] ?? '')
                           : ($office['description'] ?? '');
-                      $lat       = (float) ($office['lat'] ?? 0);
-                      $lng       = (float) ($office['lng'] ?? 0);
-                      $latText   = number_format(abs($lat), 2, ',', '') . '° ' . ($lat >= 0 ? 'N' : 'S');
-                      $lngText   = number_format(abs($lng), 2, ',', '') . '° ' . ($lng >= 0 ? 'E' : 'W');
+                      $lat          = (float) ($office['lat'] ?? 0);
+                      $lng          = (float) ($office['lng'] ?? 0);
+                      $latText      = number_format(abs($lat), 2, ',', '') . '° ' . ($lat >= 0 ? 'N' : 'S');
+                      $lngText      = number_format(abs($lng), 2, ',', '') . '° ' . ($lng >= 0 ? 'E' : 'W');
+                      $flagSvg      = $ddFlagSvgs[$office['id'] ?? ''] ?? '';
+
+                      $cardClass = 'dd-office-card';
+                      if ($isHq)         { $cardClass .= ' dd-office-card--hq'; }
+                      if ($isComingSoon) { $cardClass .= ' dd-office-card--coming-soon'; }
                     @endphp
-                    <article class="dd-office-card{{ $isHq ? ' dd-office-card--hq' : '' }}">
+                    <article class="{{ $cardClass }}">
                       <header class="dd-office-card__header">
-                        <i class="bx bx-buildings dd-office-card__icon" aria-hidden="true"></i>
+                        <span class="dd-office-card__flag" role="img"
+                              aria-label="Drapeau {{ $countryFr }}">
+                          {!! $flagSvg !!}
+                        </span>
                         @if ($isHq)
-                          <span class="dd-office-card__badge">Siège</span>
+                          <span class="dd-office-card__badge dd-office-card__badge--hq">Siège</span>
+                        @elseif ($isComingSoon)
+                          <span class="dd-office-card__badge dd-office-card__badge--soon">Bientôt</span>
                         @endif
                       </header>
-                      <h3 class="dd-office-card__city">{{ $office['city'] ?? '' }}</h3>
-                      <div class="dd-office-card__country">
-                        <span>{{ $countryFr }}</span>
+                      <h3 class="dd-office-card__country-primary">{{ $countryFr }}</h3>
+                      <div class="dd-office-card__city-secondary">
+                        <span>{{ $office['city'] ?? '' }}</span>
                         @if ($iso)
                           <span class="dd-office-card__iso">· {{ $iso }}</span>
                         @endif

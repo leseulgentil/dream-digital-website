@@ -1,9 +1,29 @@
 # Lighthouse audit — Sprint 1.5 (P2)
 
-Date : 2026-05-12
+Date : 2026-05-12 (re-mesure 21h post sprint correctif)
 Branche : `feature/sprint-1-5-redesign`
 Cible : 9 pages publiques `/fr/*` (mode `php artisan serve` sur `127.0.0.1:8888`)
 Preset : mobile, throttling simulé, categories perf/a11y/best-practices/seo
+
+## Re-mesure 2026-05-12 21h apres sprint correctif (commits ce416b8 -> 275fe8a)
+
+| Page | Perf | A11y | BP | SEO |
+|---|---:|---:|---:|---:|
+| /fr | 55 | 100 | 100 | 66 |
+| /fr/products | 55 | 100 | 100 | 66 |
+| /fr/products/sms-a2p | 55 | 100 | 100 | 66 |
+| /fr/developers | 55 | 100 | 100 | 66 |
+| /fr/solutions | 55 | 100 | 96 | 66 |
+| /fr/coverage | 55 | 100 | 100 | 66 |
+| /fr/pricing | 55 | 100 | 100 | 66 |
+| /fr/company | 55 | 100 | 96 | 66 |
+| /fr/contact | 55 | 100 | 100 | 66 |
+
+**A11y 100/100 sur les 9 pages** (vs 95-100 apres P2 fixes triviaux uniquement). Le sprint correctif n'a pas regresse les acquis d'accessibilite et a fait passer /fr/coverage et /fr/pricing de 95 a 100 par effet de cascade du fix corridor-card `aria-prohibited-attr` deja inclus dans P2 commit `3087cda`.
+
+BP 96 sur /fr/solutions + /fr/company : meme cause que pre-correctif (`errors-in-console` = ERR_CONNECTION_RESET dev-mode). Pas un bug code.
+
+Perf 55 invariable : compression serveur dev absente, voir section "Non-fixes documentes" plus bas. **A re-mesurer sur https://dream-digital.info derriere Nginx 1.24 + brotli/gzip** avant decision indexation publique.
 
 ## Scores avant / apres fixes (mobile)
 

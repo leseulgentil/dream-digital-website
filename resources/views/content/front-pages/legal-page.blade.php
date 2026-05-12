@@ -12,6 +12,20 @@
 @section('og-description', $ogDescription)
 @section('og-type', 'article')
 
+@php
+  $legalCrumbBase = rtrim(config('app.url'), '/') . "/{$locale}";
+  $legalCrumbPayload = [
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+      ['@type' => 'ListItem', 'position' => 1, 'name' => $locale === 'en' ? 'Home' : 'Accueil', 'item' => $legalCrumbBase],
+      ['@type' => 'ListItem', 'position' => 2, 'name' => $locale === 'en' ? 'Legal' : 'Legal', 'item' => "{$legalCrumbBase}/legal"],
+      ['@type' => 'ListItem', 'position' => 3, 'name' => $title, 'item' => "{$legalCrumbBase}/legal/" . ($legal['slug'] ?? '')],
+    ],
+  ];
+@endphp
+@section('jsonld-breadcrumb'){!! json_encode($legalCrumbPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
+
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])
 @endsection

@@ -118,6 +118,48 @@
 
   <!-- laravel CRUD token -->
   <meta name="csrf-token" content="{{ csrf_token() }}" />
+
+  @if($hreflangIsLocalized)
+    @php
+      $orgPayload = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => $ddSiteName,
+        'legalName' => config('dream-digital.site.company.legal_name') ?: $ddSiteName,
+        'url' => $hreflangBase,
+        'logo' => asset('img/brand/logo-dd-icon.png'),
+        'description' => $ddDescResolved,
+        'sameAs' => array_values(array_filter([
+          config('dream-digital.site.social.linkedin'),
+          config('dream-digital.site.social.twitter'),
+          config('dream-digital.site.social.github'),
+        ])),
+        'contactPoint' => [[
+          '@type' => 'ContactPoint',
+          'email' => config('dream-digital.site.contact.email_sales', 'sales@dream-digital.info'),
+          'contactType' => 'sales',
+          'availableLanguage' => ['fr', 'en'],
+        ]],
+        'address' => array_values(array_filter(array_map(function ($office) {
+          if (!is_string($office)) return null;
+          preg_match('/^([^(]+)\s*\(([^)]+)\)/', $office, $matches);
+          if (count($matches) < 3) return null;
+          $countryMap = ['RDC' => 'CD', 'CI' => 'CI', 'CG' => 'CG', 'KENYA' => 'KE', 'FRANCE' => 'FR'];
+          $isoCountry = $countryMap[strtoupper(trim($matches[2]))] ?? trim($matches[2]);
+          return [
+            '@type' => 'PostalAddress',
+            'addressLocality' => trim($matches[1]),
+            'addressCountry' => $isoCountry,
+          ];
+        }, config('dream-digital.site.company.offices', [])))),
+      ];
+      if (empty($orgPayload['sameAs'])) unset($orgPayload['sameAs']);
+    @endphp
+    <script type="application/ld+json">{!! json_encode($orgPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    @hasSection('jsonld-breadcrumb')
+      <script type="application/ld+json">@yield('jsonld-breadcrumb')</script>
+    @endif
+  @endif
   <!-- Favicon — Dream Digital (Brand Kit v1.2, S5) -->
   <link rel="icon" type="image/svg+xml" href="{{ asset('img/brand/logo-dd-icon.svg') }}" />
   <link rel="alternate icon" type="image/png" href="{{ asset('img/brand/logo-dd-icon.png') }}" />

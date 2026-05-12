@@ -14,6 +14,22 @@
 @section('og-title', $ogTitle)
 @section('og-description', $ogDescription)
 
+@php
+  $crumbBase = rtrim(config('app.url'), '/') . "/{$locale}";
+  $crumbHomeName = $locale === 'en' ? 'Home' : 'Accueil';
+  $crumbItems = [
+    ['@type' => 'ListItem', 'position' => 1, 'name' => $crumbHomeName, 'item' => $crumbBase],
+  ];
+  if ($page === 'product' && !empty($service)) {
+    $crumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $locale === 'en' ? 'Products' : 'Produits', 'item' => "{$crumbBase}/products"];
+    $crumbItems[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $title, 'item' => "{$crumbBase}/products/" . ($service['slug'] ?? $service['id'] ?? '')];
+  } else {
+    $crumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $title, 'item' => "{$crumbBase}/{$page}"];
+  }
+  $crumbPayload = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $crumbItems];
+@endphp
+@section('jsonld-breadcrumb'){!! json_encode($crumbPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
+
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])
 @endsection

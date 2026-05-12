@@ -34,6 +34,24 @@ const CoreScssFiles = GetFilesArray('resources/assets/vendor/scss/**/!(_)*.scss'
 const FontsScssFiles = GetFilesArray('resources/assets/vendor/fonts/!(_)*.scss');
 const FontsJsFiles = GetFilesArray('resources/assets/vendor/fonts/**/!(_)*.js');
 const FontsCssFiles = GetFilesArray('resources/assets/vendor/fonts/**/!(_)*.css');
+const publicOnlyBuild = process.env.DD_BUILD_PUBLIC_ONLY === 'true';
+
+const publicFrontInputs = [
+  'resources/assets/vendor/fonts/iconify/iconify.css',
+  'resources/assets/vendor/scss/core.scss',
+  'resources/assets/css/demo.css',
+  'resources/assets/vendor/scss/pages/front-page.scss',
+  'resources/assets/vendor/scss/pages/front-page-landing.scss',
+  'resources/assets/vendor/libs/swiper/swiper.scss',
+  'resources/assets/vendor/js/helpers.js',
+  'resources/assets/js/front-config.js',
+  'resources/assets/vendor/libs/popper/popper.js',
+  'resources/assets/vendor/js/bootstrap.js',
+  'resources/assets/vendor/libs/swiper/swiper.js',
+  'resources/assets/js/front-main.js',
+  'resources/assets/js/dd-theme-switcher.js',
+  'resources/assets/js/front-page-landing.js'
+];
 
 // Processing Window Assignment for Libs like jKanban, pdfMake
 function libsWindowAssignment() {
@@ -53,21 +71,23 @@ function libsWindowAssignment() {
 export default defineConfig({
   plugins: [
     laravel({
-      input: [
-        'resources/css/app.css',
-        'resources/assets/css/demo.css',
-        'resources/js/app.js',
-        ...pageJsFiles,
-        ...vendorJsFiles,
-        ...LibsJsFiles,
-        'resources/js/laravel-user-management.js', // Processing Laravel User Management CRUD JS File
-        ...CoreScssFiles,
-        ...LibsScssFiles,
-        ...LibsCssFiles,
-        ...FontsScssFiles,
-        ...FontsJsFiles,
-        ...FontsCssFiles
-      ],
+      input: publicOnlyBuild
+        ? publicFrontInputs
+        : [
+            'resources/css/app.css',
+            'resources/assets/css/demo.css',
+            'resources/js/app.js',
+            ...pageJsFiles,
+            ...vendorJsFiles,
+            ...LibsJsFiles,
+            'resources/js/laravel-user-management.js', // Processing Laravel User Management CRUD JS File
+            ...CoreScssFiles,
+            ...LibsScssFiles,
+            ...LibsCssFiles,
+            ...FontsScssFiles,
+            ...FontsJsFiles,
+            ...FontsCssFiles
+          ],
       refresh: true
     }),
     html(),

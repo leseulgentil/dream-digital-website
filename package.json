@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:public": "cross-env DD_BUILD_PUBLIC_ONLY=true vite build",
     "preview": "vite preview"
   },
   "dependencies": {

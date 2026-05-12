@@ -63,12 +63,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <title>
-    @yield('title') | {{ config('variables.templateName') ? config('variables.templateName') : 'TemplateName' }}
-    - {{ config('variables.templateSuffix') ? config('variables.templateSuffix') : 'TemplateSuffix' }}
-  </title>
+  <title>@yield('title', config('dream-digital.site.meta.title_default', config('variables.templateName', 'Dream Digital')))</title>
   <meta name="description"
-    content="{{ config('variables.templateDescription') ? config('variables.templateDescription') : '' }}" />
+    content="@yield('page-description', config('dream-digital.site.meta.description_default', config('variables.templateDescription', ''))) " />
   <meta name="keywords"
     content="{{ config('variables.templateKeyword') ? config('variables.templateKeyword') : '' }}" />
   <meta property="og:title" content="{{ config('variables.ogTitle') ? config('variables.ogTitle') : '' }}" />
@@ -79,7 +76,7 @@
     content="{{ config('variables.templateDescription') ? config('variables.templateDescription') : '' }}" />
   <meta property="og:site_name"
     content="{{ config('variables.creatorName') ? config('variables.creatorName') : '' }}" />
-  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="{{ filter_var(env('DD_PUBLIC_INDEXABLE', false), FILTER_VALIDATE_BOOLEAN) ? 'index, follow' : 'noindex, nofollow' }}" />
   <!-- laravel CRUD token -->
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <!-- Canonical SEO -->

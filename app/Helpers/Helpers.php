@@ -255,7 +255,7 @@ class Helpers
    */
   public static function generatePrimaryColorCSS($color)
   {
-    if (!$color) return '';
+    if (!is_string($color) || !preg_match('/^#[0-9a-fA-F]{6}$/', $color)) return '';
 
     // Check if the color actually came from a cookie or explicit configuration
     // Don't generate CSS if there's no specific need for a custom color

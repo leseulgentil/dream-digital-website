@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GeoDetectController;
+use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\Sprint1TestController;
 use App\Http\Controllers\laravel_example\UserManagement;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\dashboard\Crm;
@@ -8,8 +11,6 @@ use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\layouts\CollapsedMenu;
 use App\Http\Controllers\layouts\ContentNavbar;
 use App\Http\Controllers\layouts\ContentNavSidebar;
-use App\Http\Controllers\layouts\NavbarFull;
-use App\Http\Controllers\layouts\NavbarFullSidebar;
 use App\Http\Controllers\layouts\Horizontal;
 use App\Http\Controllers\layouts\Vertical;
 use App\Http\Controllers\layouts\WithoutMenu;
@@ -23,6 +24,9 @@ use App\Http\Controllers\front_pages\Payment;
 use App\Http\Controllers\front_pages\Checkout;
 use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
+use App\Http\Controllers\Front\MarketingPageController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PricingController as AdminPricingController;
 use App\Http\Controllers\apps\Email;
 use App\Http\Controllers\apps\Chat;
 use App\Http\Controllers\apps\Calendar;
@@ -162,20 +166,51 @@ use App\Http\Controllers\maps\Leaflet;
 
 // Main Page Route — / renders the corporate landing (front-pages/landing view)
 // Dashboard remains accessible at /dashboard/analytics (and is the post-login destination)
-Route::get('/', [Landing::class, 'index'])->name('home');
-Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
-Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
+Route::get('/', [GeoDetectController::class, 'index'])->name('home');
+Route::get('/_reset-country', [GeoDetectController::class, 'resetToGlobal'])->name('reset-country');
+Route::get('/{locale}', [Landing::class, 'index'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('front.localized.home');
+Route::get('/{locale}/test', [Sprint1TestController::class, 'global'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('sprint1.global.test');
+
+Route::prefix('{country}/{locale}')
+  ->where(['country' => 'cd|cg|ci', 'locale' => 'fr|en'])
+  ->group(function () {
+    Route::get('/', [Sprint1TestController::class, 'country'])->name('sprint1.country');
+    Route::get('/test', [Sprint1TestController::class, 'test'])->name('sprint1.country.test');
+  });
+
+Route::get('/products/{service}', [MarketingPageController::class, 'product'])
+  ->name('front.product');
+Route::get('/{locale}/products/{service}', [MarketingPageController::class, 'localizedProduct'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('front.localized.product');
+
+Route::get('/{page}', [MarketingPageController::class, 'show'])
+  ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])
+  ->name('front.page');
+Route::get('/{locale}/{page}', [MarketingPageController::class, 'localized'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])
+  ->name('front.localized.page');
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
+
+Route::middleware('internal.demo')->group(function () {
+Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/pricing', [AdminPricingController::class, 'index'])->name('admin.pricing.index');
+
+Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
+Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
 
 // layout
 Route::get('/layouts/collapsed-menu', [CollapsedMenu::class, 'index'])->name('layouts-collapsed-menu');
 Route::get('/layouts/content-navbar', [ContentNavbar::class, 'index'])->name('layouts-content-navbar');
 Route::get('/layouts/content-nav-sidebar', [ContentNavSidebar::class, 'index'])->name('layouts-content-nav-sidebar');
-Route::get('/layouts/navbar-full', [NavbarFull::class, 'index'])->name('layouts-navbar-full');
-Route::get('/layouts/navbar-full-sidebar', [NavbarFullSidebar::class, 'index'])->name('layouts-navbar-full-sidebar');
-Route::get('/layouts/horizontal', [Horizontal::class, 'index'])->name('dashboard-analytics');
-Route::get('/layouts/vertical', [Vertical::class, 'index'])->name('dashboard-analytics');
+Route::get('/layouts/horizontal', [Horizontal::class, 'index'])->name('layouts-horizontal');
+Route::get('/layouts/vertical', [Vertical::class, 'index'])->name('layouts-vertical');
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
 Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
 Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
@@ -183,13 +218,7 @@ Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-con
 Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 
 // Sprint 1.5 — Design System Preview (internal dev page, remove before prod)
-Route::get('/preview/design-tokens', function () {
-    abort_unless(
-        app()->environment('local', 'staging') || config('app.debug'),
-        404
-    );
-    return view('preview.design-tokens');
-})->name('preview.design-tokens');
+Route::get('/preview/design-tokens', [PreviewController::class, 'designTokens'])->name('preview.design-tokens');
 
 // Front Pages
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
@@ -269,7 +298,7 @@ Route::get('/auth/verify-email-basic', [VerifyEmailBasic::class, 'index'])->name
 Route::get('/auth/verify-email-cover', [VerifyEmailCover::class, 'index'])->name('auth-verify-email-cover');
 Route::get('/auth/reset-password-basic', [ResetPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
 Route::get('/auth/reset-password-cover', [ResetPasswordCover::class, 'index'])->name('auth-reset-password-cover');
-Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
+Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-forgot-password-basic');
 Route::get('/auth/forgot-password-cover', [ForgotPasswordCover::class, 'index'])->name('auth-forgot-password-cover');
 Route::get('/auth/two-steps-basic', [TwoStepsBasic::class, 'index'])->name('auth-two-steps-basic');
 Route::get('/auth/two-steps-cover', [TwoStepsCover::class, 'index'])->name('auth-two-steps-cover');
@@ -368,3 +397,4 @@ Route::get('/maps/leaflet', [Leaflet::class, 'index'])->name('maps-leaflet');
 // laravel example
 Route::get('/laravel/user-management', [UserManagement::class, 'UserManagement'])->name('laravel-example-user-management');
 Route::resource('/user-list', UserManagement::class);
+});

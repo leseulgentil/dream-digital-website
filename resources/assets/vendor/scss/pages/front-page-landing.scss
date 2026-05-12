@@ -452,10 +452,13 @@
   color: inherit;
   min-block-size: 260px;
   padding: 1.5rem;
-  transition: background-color .2s ease;
+  position: relative;
+  transition: background-color .25s ease, transform .25s ease, box-shadow .25s ease;
 
   &:hover {
     background: rgba(20, 184, 166, .08);
+    box-shadow: 0 18px 40px rgba(14, 18, 28, .08);
+    transform: translateY(-4px);
   }
 
   h3 {
@@ -476,6 +479,17 @@
     display: inline-flex;
     font-weight: 700;
     gap: .35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-service-card {
+    transition: none;
+
+    &:hover {
+      box-shadow: none;
+      transform: none;
+    }
   }
 }
 
@@ -1794,5 +1808,24 @@
 @media (prefers-reduced-motion: reduce) {
   .dd-signal-indicator__dot::after {
     animation: none !important;
+  }
+}
+
+/* C1 -- Subtle ripple glow autour des CTA primary (hero + cta-banner) */
+@keyframes dd-cta-glow {
+  0% { box-shadow: 0 0 0 0 rgba(20, 184, 166, .45); }
+  70% { box-shadow: 0 0 0 10px rgba(20, 184, 166, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+}
+
+.dd-hero .dd-button--primary,
+.dd-cta .dd-button--primary {
+  animation: dd-cta-glow 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-hero .dd-button--primary,
+  .dd-cta .dd-button--primary {
+    animation: none;
   }
 }

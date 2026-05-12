@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\Page;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class MarketingPageController extends Controller
 {
@@ -29,14 +31,52 @@ class MarketingPageController extends Controller
 
   private function render(string $locale, string $page)
   {
-    $pageData = config("dream-digital.pages.pages.$page");
+    $pageData = $this->resolveMarketingPage($page, $locale);
 
-    abort_if(empty($pageData), 404);
+    abort_if($pageData === null, 404);
 
     app()->setLocale($locale);
     session()->put('locale', $locale);
 
     return view('content.front-pages.marketing-page', $this->viewData($locale, $page, $pageData));
+  }
+
+  /**
+   * Resolve marketing page content: DB-first (section='marketing'),
+   * fallback config dream-digital.pages.pages. Retourne null si
+   * aucune source ne couvre le slug.
+   */
+  private function resolveMarketingPage(string $page, string $locale): ?array
+  {
+    $dbPage = Schema::hasTable('pages')
+      ? Page::published()
+          ->where('section', 'marketing')
+          ->where('slug', $page)
+          ->where('locale', $locale)
+          ->whereNull('country_id')
+          ->first()
+      : null;
+
+    if ($dbPage !== null) {
+      $blocks = $dbPage->content_blocks ?? [];
+      return [
+        'eyebrow' => $blocks['eyebrow'] ?? '',
+        'title' => $dbPage->title,
+        'lead' => $blocks['lead'] ?? '',
+        'source' => 'db',
+      ];
+    }
+
+    $cfg = config("dream-digital.pages.pages.$page");
+    if (empty($cfg)) {
+      return null;
+    }
+
+    // Preserve l'API existante : tableaux nested fr/en sont resolus par
+    // le helper $t() cote vue (hero-simple / hero-banner). Pas besoin de
+    // pre-resoudre ici cote controller pour rester compatible avec la
+    // structure de config historique.
+    return array_merge($cfg, ['source' => 'config']);
   }
 
   private function renderProduct(string $locale, string $service)

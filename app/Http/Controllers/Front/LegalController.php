@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class LegalController extends Controller
@@ -36,12 +37,14 @@ class LegalController extends Controller
      */
     private function resolveLegal(string $slug, string $locale): ?array
     {
-        $page = Page::published()
-            ->where('section', 'legal')
-            ->where('slug', $slug)
-            ->where('locale', $locale)
-            ->whereNull('country_id')
-            ->first();
+        $page = Schema::hasTable('pages')
+            ? Page::published()
+                ->where('section', 'legal')
+                ->where('slug', $slug)
+                ->where('locale', $locale)
+                ->whereNull('country_id')
+                ->first()
+            : null;
 
         if ($page !== null) {
             return $this->pageToLegalArray($page);
@@ -89,12 +92,14 @@ class LegalController extends Controller
      */
     private function resolveAllPages(string $locale): array
     {
-        $dbPages = Page::published()
-            ->where('section', 'legal')
-            ->where('locale', $locale)
-            ->whereNull('country_id')
-            ->orderBy('slug')
-            ->get();
+        $dbPages = Schema::hasTable('pages')
+            ? Page::published()
+                ->where('section', 'legal')
+                ->where('locale', $locale)
+                ->whereNull('country_id')
+                ->orderBy('slug')
+                ->get()
+            : collect();
 
         if ($dbPages->isNotEmpty()) {
             return $dbPages

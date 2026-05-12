@@ -79,6 +79,28 @@
   <meta name="robots" content="{{ filter_var(env('DD_PUBLIC_INDEXABLE', false), FILTER_VALIDATE_BOOLEAN) ? 'index, follow' : 'noindex, nofollow' }}" />
   <link rel="canonical" href="@yield('canonical-url', $ddCanonicalDefault)" />
 
+  @php
+    // hreflang : detecte la locale dans le path et genere les alternates
+    // FR / EN / x-default pour les pages publiques /{locale}/* et /{locale}.
+    $hreflangPath = request()->path();
+    $hreflangSegments = explode('/', $hreflangPath, 2);
+    $hreflangFirst = $hreflangSegments[0] ?? '';
+    $hreflangIsLocalized = in_array($hreflangFirst, ['fr', 'en'], true);
+    $hreflangRest = $hreflangSegments[1] ?? '';
+    $hreflangBase = rtrim(config('app.url'), '/');
+    $hreflangFr = $hreflangIsLocalized
+      ? ($hreflangRest === '' ? "{$hreflangBase}/fr" : "{$hreflangBase}/fr/{$hreflangRest}")
+      : null;
+    $hreflangEn = $hreflangIsLocalized
+      ? ($hreflangRest === '' ? "{$hreflangBase}/en" : "{$hreflangBase}/en/{$hreflangRest}")
+      : null;
+  @endphp
+  @if($hreflangIsLocalized)
+    <link rel="alternate" hreflang="fr" href="{{ $hreflangFr }}" />
+    <link rel="alternate" hreflang="en" href="{{ $hreflangEn }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ $hreflangFr }}" />
+  @endif
+
   <!-- OpenGraph -->
   <meta property="og:type" content="@yield('og-type', 'website')" />
   <meta property="og:site_name" content="{{ $ddSiteName }}" />

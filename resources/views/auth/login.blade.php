@@ -1,3 +1,7 @@
+@php
+  $pageConfigs = ['myLayout' => 'blank'];
+@endphp
+
 @extends('layouts/layoutMaster')
 
 @section('title', 'Connexion -- Admin Dream Digital')

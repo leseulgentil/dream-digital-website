@@ -47,6 +47,11 @@ yarn-error.log
 # Summary CSV + AUDIT.md are committed; regenerate JSONs locally via
 # bash docs/audits/lighthouse-2026-05-12/run-lighthouse.sh
 /docs/audits/**/*.json
+
+# Responsive matrix screenshots — 30 PNG pleine-page (~15 MB total).
+# AUDIT.md resume les resultats; regenerable via
+# node docs/audits/responsive-2026-05-12/run-responsive.cjs
+/docs/audits/**/*.png
 /public/css
 /public/js
 /public/mix-manifest.json

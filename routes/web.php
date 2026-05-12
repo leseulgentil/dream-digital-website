@@ -200,7 +200,15 @@ Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 
 Route::middleware('internal.demo')->group(function () {
 Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-Route::get('/admin/pricing', [AdminPricingController::class, 'index'])->name('admin.pricing.index');
+
+Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/create', 'create')->name('create');
+    Route::post('/', 'store')->name('store');
+    Route::get('/{pricing}/edit', 'edit')->name('edit');
+    Route::put('/{pricing}', 'update')->name('update');
+    Route::delete('/{pricing}', 'destroy')->name('destroy');
+});
 
 Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
 Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');

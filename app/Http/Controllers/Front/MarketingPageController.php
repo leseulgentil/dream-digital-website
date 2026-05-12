@@ -51,9 +51,13 @@ class MarketingPageController extends Controller
     app()->setLocale($locale);
     session()->put('locale', $locale);
 
+    $serviceName = $serviceData['name'] ?? ['fr' => '', 'en' => ''];
     $pageData = [
-      'eyebrow' => ['fr' => 'Produit', 'en' => 'Product'],
-      'title' => $serviceData['name'] ?? ['fr' => 'Produit', 'en' => 'Product'],
+      'eyebrow' => [
+        'fr' => 'Produits › ' . ($serviceName['fr'] ?? ''),
+        'en' => 'Products › ' . ($serviceName['en'] ?? ''),
+      ],
+      'title' => $serviceName,
       'lead' => $serviceData['description'] ?? $serviceData['tagline'] ?? '',
     ];
 

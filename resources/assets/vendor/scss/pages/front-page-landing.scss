@@ -804,6 +804,20 @@
   }
 }
 
+/* B1 -- Hero 1024 (Bootstrap lg, layout single-column) : redonner du
+   souffle au headline sinon il casse en 6-7 lignes avec la copy actuelle.
+   Cible : 3-4 lignes plus impactantes. */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .dd-hero__content h1 {
+    font-size: clamp(2.4rem, 4.6vw, 3.6rem);
+    max-inline-size: 880px;
+  }
+
+  .dd-hero__lead {
+    max-inline-size: 820px;
+  }
+}
+
 @media (max-width: 767.98px) {
   .dd-front-container {
     inline-size: min(100% - 2rem, 1280px);

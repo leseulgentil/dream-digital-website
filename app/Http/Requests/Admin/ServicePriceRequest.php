@@ -25,6 +25,9 @@ class ServicePriceRequest extends FormRequest
             'local_currency' => ['nullable', 'string', 'size:3', 'alpha'],
             'unit' => ['required', 'string', 'max:20'],
             'use_manual_local' => ['sometimes', 'boolean'],
+            'quality' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'status_fr' => ['nullable', 'string', 'max:100'],
+            'status_en' => ['nullable', 'string', 'max:100'],
             'is_published' => ['sometimes', 'boolean'],
         ];
     }

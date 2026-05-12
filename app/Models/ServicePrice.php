@@ -18,6 +18,9 @@ class ServicePrice extends Model
         'local_currency',
         'unit',
         'use_manual_local',
+        'quality',
+        'status_fr',
+        'status_en',
         'is_published',
         'updated_by',
     ];
@@ -26,6 +29,7 @@ class ServicePrice extends Model
         'price_usd' => 'decimal:6',
         'price_local' => 'decimal:6',
         'use_manual_local' => 'boolean',
+        'quality' => 'integer',
         'is_published' => 'boolean',
     ];
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\ServicePrice;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
@@ -121,9 +122,53 @@ class MarketingPageController extends Controller
       'coverage' => config('dream-digital.coverage'),
       'stats' => config('dream-digital.pages.stats', []),
       'features' => config('dream-digital.pages.features', []),
-      'corridors' => config('dream-digital.pages.corridors', []),
+      'corridors' => $this->resolveCorridors($locale),
       'liveFeed' => config('dream-digital.pages.live_feed', []),
     ];
+  }
+
+  /**
+   * Charge les corridor cards depuis ServicePrice (DB) si disponible,
+   * sinon retombe sur config('dream-digital.pages.corridors').
+   * Pre-resoud le libelle/status pour la locale demandee.
+   */
+  private function resolveCorridors(string $locale): array
+  {
+    if (!Schema::hasTable('service_prices')) {
+      return config('dream-digital.pages.corridors', []);
+    }
+
+    $records = ServicePrice::published()
+      ->whereNotNull('destination_country')
+      ->with('country')
+      ->orderByDesc('quality')
+      ->limit(6)
+      ->get();
+
+    if ($records->isEmpty()) {
+      return config('dream-digital.pages.corridors', []);
+    }
+
+    return $records->map(function (ServicePrice $sp) use ($locale) {
+      $fromCode = $sp->country?->code ? strtoupper($sp->country->code) : '--';
+      $toCode = strtoupper($sp->destination_country ?? '--');
+      $fromName = $locale === 'en' ? ($sp->country?->name_en ?? '') : ($sp->country?->name_fr ?? '');
+
+      return [
+        'from' => $fromCode,
+        'to' => $toCode,
+        'title' => $fromName ? "{$fromName} {$this->arrow($locale)} {$toCode}" : "{$fromCode} {$this->arrow($locale)} {$toCode}",
+        'label' => $locale === 'en' ? ($sp->label_en ?? '') : ($sp->label_fr ?? ''),
+        'quality' => (int) ($sp->quality ?? 3),
+        'status' => $locale === 'en' ? ($sp->status_en ?? '') : ($sp->status_fr ?? ''),
+        'source' => 'db',
+      ];
+    })->all();
+  }
+
+  private function arrow(string $locale): string
+  {
+    return $locale === 'en' ? 'to' : 'vers';
   }
 
   private function contentLocale(): string

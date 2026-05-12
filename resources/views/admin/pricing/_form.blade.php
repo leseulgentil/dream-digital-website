@@ -98,6 +98,30 @@
     </div>
   </div>
 
+  <div class="col-12"><hr class="m-0"><h5 class="mt-3 mb-0">Affichage corridor (page publique)</h5><p class="text-muted mb-0">Champs utilises par /fr/pricing et /fr/coverage pour la card corridor.</p></div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="quality">Qualite de route <small class="text-muted">(1-5 etoiles)</small></label>
+    <select id="quality" name="quality" class="form-select @error('quality') is-invalid @enderror">
+      @for($i = 1; $i <= 5; $i++)
+        <option value="{{ $i }}" @selected(old('quality', $price->quality ?? 3) == $i)>{{ str_repeat('*', $i) }} ({{ $i }})</option>
+      @endfor
+    </select>
+    @error('quality')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="status_fr">Status FR <small class="text-muted">(ex: "Route prioritaire")</small></label>
+    <input type="text" id="status_fr" name="status_fr" maxlength="100" class="form-control @error('status_fr') is-invalid @enderror" value="{{ old('status_fr', $price->status_fr) }}">
+    @error('status_fr')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="status_en">Status EN <small class="text-muted">(ex: "Priority route")</small></label>
+    <input type="text" id="status_en" name="status_en" maxlength="100" class="form-control @error('status_en') is-invalid @enderror" value="{{ old('status_en', $price->status_en) }}">
+    @error('status_en')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
   <div class="col-12 d-flex justify-content-end gap-2 pt-2">
     <a href="{{ route('admin.pricing.index') }}" class="btn btn-outline-secondary">Annuler</a>
     <button type="submit" class="btn btn-primary">

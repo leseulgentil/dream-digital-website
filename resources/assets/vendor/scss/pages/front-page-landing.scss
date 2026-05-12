@@ -6,12 +6,10 @@
   font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-.dd-front-navbar {
-  backdrop-filter: blur(12px);
-  background: rgba(14, 18, 28, .95);
+nav.dd-front-navbar {
+  background: #0e121c;
   border-block-end: 1px solid rgba(20, 184, 166, .08);
   inset-block-start: 0;
-  position: sticky;
   z-index: 1070;
 }
 
@@ -915,8 +913,8 @@
     linear-gradient(180deg, #f8fbfa 0%, #ffffff 36%, #f4f8f7 100%);
 }
 
-.dd-front-navbar {
-  background: rgba(14, 18, 28, .95);
+nav.dd-front-navbar {
+  background: #0e121c;
   box-shadow: 0 1px 0 rgba(20, 184, 166, .08);
 
   .landing-navbar {
@@ -996,6 +994,7 @@
 }
 
 .dd-megamenu-panel--wide { inline-size: min(720px, calc(100vw - 2rem)); }
+.dd-megamenu-panel--medium { inline-size: min(540px, calc(100vw - 2rem)); }
 .dd-megamenu-panel--narrow { inline-size: 280px; }
 
 .dd-megamenu-grid {

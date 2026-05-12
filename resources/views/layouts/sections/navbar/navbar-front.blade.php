@@ -55,7 +55,7 @@
               data-bs-toggle="dropdown" data-bs-display="dynamic" aria-expanded="false" aria-haspopup="true">
               Developers
             </button>
-            <div class="dropdown-menu dd-megamenu-panel" role="menu" aria-label="Developers">
+            <div class="dropdown-menu dd-megamenu-panel dd-megamenu-panel--medium" role="menu" aria-label="Developers">
               <div class="dd-megamenu-grid dd-megamenu-grid--2col">
                 <a class="dd-megamenu-card" href="{{ $pageUrl('developers') }}#docs" role="menuitem">
                   <span class="dd-megamenu-card__icon"><i class="bx bx-book-content" aria-hidden="true"></i></span>
@@ -95,7 +95,7 @@
               data-bs-toggle="dropdown" data-bs-display="dynamic" aria-expanded="false" aria-haspopup="true">
               Solutions
             </button>
-            <div class="dropdown-menu dd-megamenu-panel" role="menu" aria-label="Solutions">
+            <div class="dropdown-menu dd-megamenu-panel dd-megamenu-panel--medium" role="menu" aria-label="Solutions">
               <div class="dd-megamenu-grid dd-megamenu-grid--2col">
                 @foreach ($industries as $industry)
                   <a class="dd-megamenu-card" href="{{ $pageUrl('solutions') }}#{{ $industry['id'] }}" role="menuitem">

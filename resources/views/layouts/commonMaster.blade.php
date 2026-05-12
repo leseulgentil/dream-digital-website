@@ -62,9 +62,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+  @php
+    $ddDescDefault = config('dream-digital.site.meta.description_default');
+    $ddDescLocale = app()->getLocale() === 'en' ? 'en' : 'fr';
+    $ddDescResolved = is_array($ddDescDefault)
+      ? ($ddDescDefault[$ddDescLocale] ?? reset($ddDescDefault))
+      : ($ddDescDefault ?? config('variables.templateDescription', ''));
+  @endphp
   <title>@yield('title', config('dream-digital.site.meta.title_default', config('variables.templateName', 'Dream Digital')))</title>
   <meta name="description"
-    content="@yield('page-description', config('dream-digital.site.meta.description_default', config('variables.templateDescription', ''))) " />
+    content="@yield('page-description', $ddDescResolved) " />
   <meta name="keywords"
     content="{{ config('variables.templateKeyword') ? config('variables.templateKeyword') : '' }}" />
   <meta property="og:title" content="{{ config('variables.ogTitle') ? config('variables.ogTitle') : '' }}" />

@@ -19,11 +19,11 @@ return [
         'countries_count' => 200,
         'countries_label' => [
             'fr' => 'pays couverts SMS',
-            'en' => 'countries covered SMS',
+            'en' => 'countries covered for SMS',
         ],
         'description' => [
             'fr' => 'Notre infrastructure couvre plus de 200 destinations à travers le monde grâce à un réseau de partenariats opérateurs directs et d\'interconnexions stratégiques. Nos équipes humaines sont basées en Afrique francophone, mais nos services sont conçus pour des cas d\'usage globaux.',
-            'en' => 'Notre infrastructure couvre plus de 200 destinations à travers le monde grâce à un réseau de partenariats opérateurs directs et d\'interconnexions stratégiques. Nos équipes humaines sont basées en Afrique francophone, mais nos services sont conçus pour des cas d\'usage globaux.',
+            'en' => 'Our infrastructure covers 200+ destinations worldwide through a network of direct carrier partnerships and strategic interconnects. Our teams are based in Francophone Africa, but our services are designed for global use cases.',
         ],
     ],
 

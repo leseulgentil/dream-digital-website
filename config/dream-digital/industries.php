@@ -23,7 +23,7 @@ return [
             ],
             'description' => [
                 'fr' => 'OTP transactionnels, alertes fraude, confirmations KYC, notifications compte.',
-                'en' => 'OTP transactionnels, alertes fraude, confirmations KYC, notifications compte.',
+                'en' => 'Transactional OTP, fraud alerts, KYC confirmations, account notifications.',
             ],
             'icon'        => 'bx-bank',
             'order'       => 1,
@@ -37,7 +37,7 @@ return [
             ],
             'description' => [
                 'fr' => 'Confirmations de commande, notifications de livraison, campagnes promotionnelles, programmes de fidélité.',
-                'en' => 'Confirmations de commande, notifications de livraison, campagnes promotionnelles, programmes de fidélité.',
+                'en' => 'Order confirmations, delivery notifications, promotional campaigns, loyalty programs.',
             ],
             'icon'        => 'bx-store',
             'order'       => 2,
@@ -51,7 +51,7 @@ return [
             ],
             'description' => [
                 'fr' => 'Tracking de livraison temps réel, notifications conducteurs, alertes opérationnelles, communication B2B.',
-                'en' => 'Tracking de livraison temps réel, notifications conducteurs, alertes opérationnelles, communication B2B.',
+                'en' => 'Real-time delivery tracking, driver notifications, operational alerts, B2B communications.',
             ],
             'icon'        => 'bx-package',
             'order'       => 3,
@@ -65,7 +65,7 @@ return [
             ],
             'description' => [
                 'fr' => 'Confirmations de réservation, check-in numérique, communications conciergerie, programmes de fidélisation.',
-                'en' => 'Confirmations de réservation, check-in numérique, communications conciergerie, programmes de fidélisation.',
+                'en' => 'Booking confirmations, digital check-in, concierge messaging, loyalty programs.',
             ],
             'icon'        => 'bx-hotel',
             'order'       => 4,

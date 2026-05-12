@@ -123,11 +123,12 @@ Sprint 1.5 ou Sprint 1) :
 
 ═══════════════════════════════════════════════════════════════
 
-## TD-005 — Configs CMS i18n EN identique au FR
+## TD-005 — Configs CMS i18n EN identique au FR — RÉSOLU 2026-05-12
 
 **Origine** : Sprint 1.5 Étape 2 (configs CMS-ready, commit `a8b2589`)
 **Plan de résolution** : Sprint 1 (fondations multi-pays + i18n FR/EN)
 **Sévérité** : Moyenne (impact : visiteurs EN reçoivent du texte FR)
+**Résolu par** : commit de traduction i18n EN complète, 2026-05-12 (suite chantier post-Sprint 1.5 + Sprint correctif).
 
 ### Description
 Dans les configs `config/dream-digital/*.php` créées en Étape 2
@@ -169,6 +170,20 @@ Sprint 1 — Fondations multi-pays + i18n FR/EN :
 
 Per paulrberg review finding MED-2
 (`docs/REVIEW_sprint-1-5_2026-05-08.md`).
+
+### Résolution effective 2026-05-12
+
+Traductions EN appliquées :
+- `site.php` : `sub_headline.en`, `pitch.title.en`, `pitch.paragraphs[].en`, `transition_cta.text.en` (tagline reste intentionnellement identique en FR/EN par décision PO marque)
+- `services.php` : 6 services × `description.en` (tagline + cta_label étaient déjà OK)
+- `industries.php` : 4 industries × `description.en`
+- `coverage.php` : `global.description.en` + `global.countries_label.en`
+- `site.meta.description_default` : conversion en array localisé fr/en (impact : meta description HTML correcte selon la locale, gestion array dans `commonMaster.blade.php` et `footer-front.blade.php`)
+- Autres configs (home, footer, pages, trust-signals, partners) étaient déjà entièrement traduites
+
+Convention NULL VALUE (docblock site.php) reste applicable tant que `legal_name`, `og_image`, `email_support`, `phone`, `social.*` sont à null (en attente input PO) — c'est un sujet distinct de TD-005 (qui couvrait spécifiquement les FR copiés dans EN).
+
+Tests : `tests/Feature/I18nContentTest.php` — 6 tests vérifient que /en/* rend bien en anglais et que /fr/* reste en français.
 
 ═══════════════════════════════════════════════════════════════
 

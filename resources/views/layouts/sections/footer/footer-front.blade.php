@@ -13,7 +13,11 @@
         <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
         <span class="dd-app-brand-text demo fw-bold ms-2 ps-1">{{ $site['company']['name'] ?? 'Dream Digital' }}</span>
       </a>
-      <p>{{ $site['meta']['description_default'] ?? 'Voice. SMS. eSIM. And More.' }}</p>
+      @php
+        $footerDesc = $site['meta']['description_default'] ?? 'Voice. SMS. eSIM. And More.';
+        if (is_array($footerDesc)) { $footerDesc = $footerDesc[$locale] ?? $footerDesc['fr'] ?? reset($footerDesc); }
+      @endphp
+      <p>{{ $footerDesc }}</p>
       <a href="{{ $pageUrl('contact') }}" class="dd-front-footer__status">
         <span></span> {{ $locale === 'fr' ? 'Tous les services operationnels' : 'All services operational' }}
       </a>

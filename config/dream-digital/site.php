@@ -45,22 +45,22 @@ return [
 
     'sub_headline' => [
         'fr' => 'Dream Digital est l\'opérateur télécom CPaaS et ITSP qui connecte les entreprises modernes à plus de 200 pays. Voix, messagerie, data mobile, SIP trunking — sous une seule plateforme, avec une exigence carrier-grade.',
-        'en' => 'Dream Digital est l\'opérateur télécom CPaaS et ITSP qui connecte les entreprises modernes à plus de 200 pays. Voix, messagerie, data mobile, SIP trunking — sous une seule plateforme, avec une exigence carrier-grade.',
+        'en' => 'Dream Digital is the CPaaS and ITSP telecom operator that connects modern enterprises to 200+ countries. Voice, messaging, mobile data, SIP trunking — on a single platform, with carrier-grade requirements.',
     ],
 
     'pitch' => [
         'title' => [
             'fr' => 'Une infrastructure télécom globale, des équipes proches de vous',
-            'en' => 'Une infrastructure télécom globale, des équipes proches de vous',
+            'en' => 'Global telecom infrastructure, teams close to you',
         ],
         'paragraphs' => [
             [
                 'fr' => 'Depuis nos bureaux opérationnels à Kinshasa, Abidjan et Brazzaville, Dream Digital opère une plateforme de communications unifiées qui sert clients et partenaires sur tous les continents. 60% de notre clientèle et 80% de notre écosystème de partenaires se trouvent en dehors de l\'Afrique — preuve qu\'une expertise ancrée localement peut servir une ambition globale.',
-                'en' => 'Depuis nos bureaux opérationnels à Kinshasa, Abidjan et Brazzaville, Dream Digital opère une plateforme de communications unifiées qui sert clients et partenaires sur tous les continents. 60% de notre clientèle et 80% de notre écosystème de partenaires se trouvent en dehors de l\'Afrique — preuve qu\'une expertise ancrée localement peut servir une ambition globale.',
+                'en' => 'From our operational offices in Kinshasa, Abidjan and Brazzaville, Dream Digital runs a unified communications platform serving clients and partners across every continent. 60% of our customer base and 80% of our partner ecosystem operate outside Africa — proof that locally-rooted expertise can power a global ambition.',
             ],
             [
                 'fr' => 'Notre approche : la fiabilité et la latence d\'un opérateur historique, l\'agilité d\'un acteur tech moderne, et des prix calibrés pour les marchés émergents comme pour les économies matures. Nous travaillons aux côtés de fintechs, opérateurs mobiles, BPO, intégrateurs et éditeurs SaaS qui ont besoin de canaux de communication réellement scalables.',
-                'en' => 'Notre approche : la fiabilité et la latence d\'un opérateur historique, l\'agilité d\'un acteur tech moderne, et des prix calibrés pour les marchés émergents comme pour les économies matures. Nous travaillons aux côtés de fintechs, opérateurs mobiles, BPO, intégrateurs et éditeurs SaaS qui ont besoin de canaux de communication réellement scalables.',
+                'en' => 'Our approach: the reliability and latency of a legacy carrier, the agility of a modern tech vendor, and pricing calibrated for both emerging markets and mature economies. We work alongside fintechs, MNOs, BPOs, integrators and SaaS vendors that need genuinely scalable communication channels.',
             ],
         ],
     ],
@@ -72,7 +72,7 @@ return [
         ],
         'text' => [
             'fr' => 'Vous lisez actuellement une version courte de notre présentation. Notre nouveau site corporate, avec catalogue produit détaillé, tarifs en ligne, documentation API, portail self-service et préview eSIM, sera mis en ligne dans les prochaines semaines. D\'ici là, nous restons disponibles pour discuter de votre projet de communication. Que vous ayez besoin d\'un proof-of-concept, d\'une étude tarifaire pour une route précise, ou simplement d\'échanger sur vos enjeux télécom — n\'hésitez pas.',
-            'en' => 'Vous lisez actuellement une version courte de notre présentation. Notre nouveau site corporate, avec catalogue produit détaillé, tarifs en ligne, documentation API, portail self-service et préview eSIM, sera mis en ligne dans les prochaines semaines. D\'ici là, nous restons disponibles pour discuter de votre projet de communication. Que vous ayez besoin d\'un proof-of-concept, d\'une étude tarifaire pour une route précise, ou simplement d\'échanger sur vos enjeux télécom — n\'hésitez pas.',
+            'en' => 'You are currently reading a short version of our presentation. Our new corporate website, with a detailed product catalogue, live pricing, API documentation, self-service portal and eSIM preview, will go live in the coming weeks. Until then, we remain available to discuss your communications project. Whether you need a proof-of-concept, pricing analysis for a specific route, or simply want to talk through your telecom challenges — get in touch.',
         ],
         'cta_primary' => [
             'fr' => 'Échanger avec notre équipe',
@@ -108,7 +108,10 @@ return [
 
     'meta' => [
         'title_default'       => 'Dream Digital — CPaaS / ITSP carrier-grade',
-        'description_default' => 'Voice. SMS. eSIM. And More. L\'opérateur télécom qui connecte les entreprises modernes à 200+ pays.',
+        'description_default' => [
+            'fr' => 'Voice. SMS. eSIM. And More. L\'opérateur télécom qui connecte les entreprises modernes à 200+ pays.',
+            'en' => 'Voice. SMS. eSIM. And More. The telecom operator connecting modern enterprises to 200+ countries.',
+        ],
         'og_image'            => '/img/og/dream-digital-default.png',  // à fournir par PO
     ],
 ];

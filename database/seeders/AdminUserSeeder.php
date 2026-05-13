@@ -24,6 +24,8 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => env('DD_ADMIN_NAME', 'Admin Dream Digital'),
                 'password' => Hash::make($password),
+                'role' => User::ROLE_OWNER,
+                'is_active' => true,
                 'email_verified_at' => now(),
             ],
         );

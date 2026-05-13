@@ -11,9 +11,11 @@
             <h1 class="h3 mb-2">Pricing</h1>
             <p class="mb-0 text-muted">CRUD service_prices : gerer les tarifs par service x pays (corridor). Bascule de publication, support double devise locale, audit `updated_by` automatique.</p>
           </div>
-          <a href="{{ route('admin.pricing.create') }}" class="btn btn-primary align-self-start">
-            <i class="bx bx-plus me-1"></i> Nouveau tarif
-          </a>
+          @if(auth()->user()?->canManageContent())
+            <a href="{{ route('admin.pricing.create') }}" class="btn btn-primary align-self-start">
+              <i class="bx bx-plus me-1"></i> Nouveau tarif
+            </a>
+          @endif
         </div>
       </div>
     </div>
@@ -120,21 +122,30 @@
                     @endif
                   </td>
                   <td class="text-end">
-                    <a href="{{ route('admin.pricing.edit', $price) }}" class="btn btn-sm btn-icon btn-outline-primary me-1" title="Editer">
-                      <i class="bx bx-pencil"></i>
-                    </a>
-                    <form method="POST" action="{{ route('admin.pricing.destroy', $price) }}" class="d-inline" onsubmit="return confirm('Supprimer ce tarif ?');">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Supprimer">
-                        <i class="bx bx-trash"></i>
-                      </button>
-                    </form>
+                    @if(auth()->user()?->canManageContent())
+                      <a href="{{ route('admin.pricing.edit', $price) }}" class="btn btn-sm btn-icon btn-outline-primary me-1" title="Editer">
+                        <i class="bx bx-pencil"></i>
+                      </a>
+                      <form method="POST" action="{{ route('admin.pricing.destroy', $price) }}" class="d-inline" onsubmit="return confirm('Supprimer ce tarif ?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Supprimer">
+                          <i class="bx bx-trash"></i>
+                        </button>
+                      </form>
+                    @else
+                      <span class="text-muted">Lecture</span>
+                    @endif
                   </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="10" class="text-center text-muted py-4">Aucun tarif. <a href="{{ route('admin.pricing.create') }}">Ajouter le premier</a>.</td>
+                  <td colspan="10" class="text-center text-muted py-4">
+                    Aucun tarif.
+                    @if(auth()->user()?->canManageContent())
+                      <a href="{{ route('admin.pricing.create') }}">Ajouter le premier</a>.
+                    @endif
+                  </td>
                 </tr>
               @endforelse
             </tbody>

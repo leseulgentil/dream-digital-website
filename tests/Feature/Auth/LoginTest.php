@@ -31,6 +31,7 @@ class LoginTest extends TestCase
         ])->assertRedirect(route('admin.dashboard'));
 
         $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($user->fresh()->last_login_at);
     }
 
     public function test_user_cannot_login_with_invalid_credentials(): void
@@ -43,6 +44,22 @@ class LoginTest extends TestCase
         $this->post(route('login'), [
             'email' => 'admin@dream-digital.info',
             'password' => 'wrong-password',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
+    public function test_inactive_user_cannot_login_to_admin(): void
+    {
+        User::factory()->create([
+            'email' => 'inactive@dream-digital.info',
+            'password' => Hash::make('correct-horse'),
+            'is_active' => false,
+        ]);
+
+        $this->post(route('login'), [
+            'email' => 'inactive@dream-digital.info',
+            'password' => 'correct-horse',
         ])->assertSessionHasErrors('email');
 
         $this->assertGuest();

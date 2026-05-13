@@ -26,7 +26,9 @@ use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PagesController as AdminPagesController;
 use App\Http\Controllers\Admin\PricingController as AdminPricingController;
+use App\Http\Controllers\Admin\UsersController as AdminUsersController;
 use App\Http\Controllers\apps\Email;
 use App\Http\Controllers\apps\Chat;
 use App\Http\Controllers\apps\Calendar;
@@ -209,25 +211,44 @@ Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 // internal.demo n'est plus applique pour permettre l'acces en prod aux
 // utilisateurs authentifies. Les routes Sneat de demo (lignes plus bas)
 // restent sous internal.demo.
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
-        Route::get('/{pricing}/edit', 'edit')->name('edit');
-        Route::put('/{pricing}', 'update')->name('update');
-        Route::delete('/{pricing}', 'destroy')->name('destroy');
+
+        Route::middleware('admin.role:owner,admin,editor')->group(function () {
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{pricing}/edit', 'edit')->name('edit');
+            Route::put('/{pricing}', 'update')->name('update');
+            Route::delete('/{pricing}', 'destroy')->name('destroy');
+        });
     });
 
-    Route::prefix('admin/pages')->name('admin.pages.')->controller(\App\Http\Controllers\Admin\PagesController::class)->group(function () {
+    Route::prefix('admin/pages')->name('admin.pages.')->controller(AdminPagesController::class)->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
-        Route::get('/{page}/edit', 'edit')->name('edit');
-        Route::put('/{page}', 'update')->name('update');
-        Route::delete('/{page}', 'destroy')->name('destroy');
+
+        Route::middleware('admin.role:owner,admin,editor')->group(function () {
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{page}/edit', 'edit')->name('edit');
+            Route::put('/{page}', 'update')->name('update');
+            Route::delete('/{page}', 'destroy')->name('destroy');
+        });
+    });
+
+    Route::prefix('admin/users')
+        ->name('admin.users.')
+        ->controller(AdminUsersController::class)
+        ->middleware('admin.role:owner,admin')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{user}/edit', 'edit')->name('edit');
+            Route::put('/{user}', 'update')->name('update');
+            Route::delete('/{user}', 'destroy')->name('destroy');
     });
 });
 

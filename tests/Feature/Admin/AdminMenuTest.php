@@ -20,13 +20,26 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('Dashboard', $menuHtml);
         $this->assertStringContainsString('Pages', $menuHtml);
         $this->assertStringContainsString('Pricing', $menuHtml);
+        $this->assertStringContainsString('Utilisateurs', $menuHtml);
         $this->assertStringContainsString('Voir le site', $menuHtml);
         $this->assertStringContainsString('/admin/pages', $menuHtml);
         $this->assertStringContainsString('/admin/pricing', $menuHtml);
+        $this->assertStringContainsString('/admin/users', $menuHtml);
 
-        foreach (['eCommerce', 'Layouts', 'Academy', 'Form Elements', 'Datatables', 'Roles', 'Utilisateurs'] as $legacyLabel) {
+        foreach (['eCommerce', 'Layouts', 'Academy', 'Form Elements', 'Datatables', 'Roles'] as $legacyLabel) {
             $this->assertStringNotContainsString($legacyLabel, $menuHtml);
         }
+    }
+
+    public function test_viewer_does_not_see_user_management_link(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_VIEWER]));
+
+        $response = $this->get(route('admin.dashboard'))->assertOk();
+        $menuHtml = $this->extractVerticalMenu($response->getContent());
+
+        $this->assertStringNotContainsString('Utilisateurs', $menuHtml);
+        $this->assertStringNotContainsString('/admin/users', $menuHtml);
     }
 
     public function test_vertical_menu_config_stays_compact(): void
@@ -38,6 +51,7 @@ class AdminMenuTest extends TestCase
             'Dashboard',
             'Pages',
             'Pricing',
+            'Utilisateurs',
             'Public',
             'Voir le site',
         ], collect($menu['menu'])->map(fn (array $item) => $item['menuHeader'] ?? $item['name'])->all());

@@ -11,9 +11,11 @@
             <h1 class="h3 mb-2">Pages</h1>
             <p class="mb-0 text-muted">CMS Eloquent : pages publiques editables (legales, marketing, etc.). Le frontend lit la DB en priorite, fallback config si vide.</p>
           </div>
-          <a href="{{ route('admin.pages.create') }}" class="btn btn-primary align-self-start">
-            <i class="bx bx-plus me-1"></i> Nouvelle page
-          </a>
+          @if(auth()->user()?->canManageContent())
+            <a href="{{ route('admin.pages.create') }}" class="btn btn-primary align-self-start">
+              <i class="bx bx-plus me-1"></i> Nouvelle page
+            </a>
+          @endif
         </div>
       </div>
     </div>
@@ -98,21 +100,30 @@
                   </td>
                   <td class="small text-muted">{{ $page->updated_at?->format('Y-m-d H:i') }}</td>
                   <td class="text-end">
-                    <a href="{{ route('admin.pages.edit', $page) }}" class="btn btn-sm btn-icon btn-outline-primary me-1" title="Editer">
-                      <i class="bx bx-pencil"></i>
-                    </a>
-                    <form method="POST" action="{{ route('admin.pages.destroy', $page) }}" class="d-inline" onsubmit="return confirm('Supprimer cette page ?');">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Supprimer">
-                        <i class="bx bx-trash"></i>
-                      </button>
-                    </form>
+                    @if(auth()->user()?->canManageContent())
+                      <a href="{{ route('admin.pages.edit', $page) }}" class="btn btn-sm btn-icon btn-outline-primary me-1" title="Editer">
+                        <i class="bx bx-pencil"></i>
+                      </a>
+                      <form method="POST" action="{{ route('admin.pages.destroy', $page) }}" class="d-inline" onsubmit="return confirm('Supprimer cette page ?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Supprimer">
+                          <i class="bx bx-trash"></i>
+                        </button>
+                      </form>
+                    @else
+                      <span class="text-muted">Lecture</span>
+                    @endif
                   </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center text-muted py-4">Aucune page. <a href="{{ route('admin.pages.create') }}">Ajouter la premiere</a>.</td>
+                  <td colspan="8" class="text-center text-muted py-4">
+                    Aucune page.
+                    @if(auth()->user()?->canManageContent())
+                      <a href="{{ route('admin.pages.create') }}">Ajouter la premiere</a>.
+                    @endif
+                  </td>
                 </tr>
               @endforelse
             </tbody>

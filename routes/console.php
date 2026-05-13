@@ -67,7 +67,15 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     }
 
     if (Schema::hasTable('users')) {
-        $record(User::query()->exists(), 'At least one admin user exists');
+        $record(
+            User::query()
+                ->where('is_active', true)
+                ->whereIn('role', [User::ROLE_OWNER, User::ROLE_ADMIN])
+                ->exists(),
+            'At least one active owner/admin user exists',
+            true,
+            'No active owner/admin user exists'
+        );
     }
 
     foreach ([

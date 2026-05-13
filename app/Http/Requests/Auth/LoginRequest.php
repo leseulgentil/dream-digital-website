@@ -50,6 +50,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! $this->user()?->canViewAdmin()) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Ce compte n est pas autorise a acceder a l admin Dream Digital.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

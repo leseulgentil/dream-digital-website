@@ -9,7 +9,7 @@
         <div class="card-body d-flex flex-column flex-lg-row justify-content-between gap-4">
           <div>
             <h1 class="h3 mb-2">Dream Digital Admin</h1>
-            <p class="mb-0 text-muted">Backoffice V0 pour aligner le projet avec le cahier des charges: pricing multi-pays, RBAC, utilisateurs et publication de contenu.</p>
+            <p class="mb-0 text-muted">Backoffice V2 : pricing multi-pays, publication de contenu, utilisateurs actifs et roles admin.</p>
           </div>
           <div class="d-flex align-items-center gap-2">
             <span class="badge bg-label-success">Internal</span>
@@ -60,6 +60,9 @@
         <div class="card-body d-grid gap-3">
           <a class="btn btn-primary" href="{{ url('/admin/pricing') }}">Pricing</a>
           <a class="btn btn-primary" href="{{ url('/admin/pages') }}">Pages (CMS)</a>
+          @if(auth()->user()?->canManageUsers())
+            <a class="btn btn-primary" href="{{ url('/admin/users') }}">Utilisateurs</a>
+          @endif
           <a class="btn btn-outline-primary" href="{{ url('/fr') }}" target="_blank" rel="noopener">Voir le site public</a>
         </div>
       </div>

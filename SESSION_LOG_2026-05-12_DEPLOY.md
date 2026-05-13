@@ -37,6 +37,7 @@ Restent bloquants avant ouverture publique :
 - Decision PO explicite avant `DD_PUBLIC_INDEXABLE=true` et retrait/limitation Basic Auth.
 - Nettoyage du menu gauche admin : fait le 2026-05-13. Le menu expose uniquement Dashboard, Pages, Pricing, Voir le site.
 - Executer `php artisan dd:launch-check --public` sur le VPS juste avant ouverture. La commande doit retourner `Launch check OK.`
+- Regle de travail PO ajoutee : a la fin de chaque sprint/bloc, presenter 3-4 choix de prochain chantier, avec une option recommandee, et attendre le choix avant d'attaquer un nouveau gros bloc.
 
 ## Action items pour la session de demain (par ordre)
 

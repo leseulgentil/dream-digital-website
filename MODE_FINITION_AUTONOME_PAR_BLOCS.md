@@ -24,6 +24,28 @@ L'agent dev travaille en autonomie sur des blocs cohérents de 2 a 4 heures, pui
 
 Le PO ne doit etre sollicite que pour les validations produit/design importantes, pas pour les corrections techniques courantes.
 
+## Choix du prochain bloc
+
+A la fin de chaque sprint ou bloc, l'agent doit presenter au PO une liste de choix claire avant de continuer.
+
+Format attendu :
+
+- 3 a 4 options maximum ;
+- une option marquee **Recommande** ;
+- chaque option doit indiquer l'impact, le risque et le type de validation attendue ;
+- si l'interface le permet, utiliser un select/choix interactif ;
+- sinon, presenter une liste numerotee et attendre le choix du PO avant d'attaquer un nouveau gros chantier.
+
+Exemple :
+
+```text
+Choisis le prochain bloc :
+1. Ouverture publique (Recommande) — securite, SEO, Basic Auth, indexation.
+2. Admin V2 — roles, utilisateurs, historique, upload images.
+3. CMS contenu — enrichir pages produits, developers, pricing.
+4. Performance front — bundle public minimal, Lighthouse, assets.
+```
+
 ## Validations PO obligatoires
 
 Demander une validation explicite seulement pour :
@@ -121,4 +143,5 @@ Verifications : <commandes + resultat>
 Risques restants : <liste courte>
 Validation PO requise : oui/non + sujet exact
 Prochain bloc recommande : <nom>
+Choix proposes au PO : <3-4 options, avec une option Recommande>
 ```

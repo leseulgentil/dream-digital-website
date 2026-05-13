@@ -3,6 +3,16 @@
 @section('title', 'Editer page -- Admin Pages')
 
 @section('content')
+  @php
+    $publicUrl = match ($page->section) {
+      'blog' => url("/{$page->locale}/blog/{$page->slug}"),
+      'legal' => url("/{$page->locale}/legal/{$page->slug}"),
+      'marketing' => url("/{$page->locale}/{$page->slug}"),
+      default => null,
+    };
+    $targetLocale = $page->locale === 'fr' ? 'en' : 'fr';
+  @endphp
+
   <div class="row g-6">
     <div class="col-12">
       <div class="card">
@@ -19,20 +29,32 @@
             </p>
             <p class="text-muted small mb-0 mt-2">
               Maj le {{ $page->updated_at?->format('Y-m-d H:i') }}.
-              @if($page->is_published && $page->section === 'legal')
-                <a href="{{ url("/{$page->locale}/legal/{$page->slug}") }}" target="_blank" rel="noopener">
+              @if($page->is_published && $publicUrl)
+                <a href="{{ $publicUrl }}" target="_blank" rel="noopener">
                   <i class="bx bx-link-external"></i> Voir page publique
                 </a>
               @endif
             </p>
           </div>
-          <form method="POST" action="{{ route('admin.pages.destroy', $page) }}" class="align-self-start" onsubmit="return confirm('Supprimer cette page ?');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-outline-danger">
-              <i class="bx bx-trash me-1"></i> Supprimer
-            </button>
-          </form>
+          <div class="d-flex flex-wrap gap-2 align-self-start">
+            <a href="{{ route('admin.pages.preview', $page) }}" target="_blank" rel="noopener" class="btn btn-outline-primary">
+              <i class="bx bx-show me-1"></i> Preview
+            </a>
+            <form method="POST" action="{{ route('admin.pages.duplicate-locale', $page) }}">
+              @csrf
+              <input type="hidden" name="target_locale" value="{{ $targetLocale }}">
+              <button type="submit" class="btn btn-outline-secondary">
+                <i class="bx bx-copy me-1"></i> Dupliquer {{ strtoupper($targetLocale) }}
+              </button>
+            </form>
+            <form method="POST" action="{{ route('admin.pages.destroy', $page) }}" onsubmit="return confirm('Supprimer cette page ?');">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-outline-danger">
+                <i class="bx bx-trash me-1"></i> Supprimer
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

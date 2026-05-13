@@ -245,6 +245,8 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         Route::middleware('admin.role:owner,admin,editor')->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
+            Route::get('/{page}/preview', 'preview')->name('preview');
+            Route::post('/{page}/duplicate-locale', 'duplicateLocale')->name('duplicate-locale');
             Route::get('/{page}/edit', 'edit')->name('edit');
             Route::put('/{page}', 'update')->name('update');
             Route::delete('/{page}', 'destroy')->name('destroy');

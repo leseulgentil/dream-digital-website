@@ -8,6 +8,9 @@ use App\Models\Country;
 use App\Models\Page;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class PagesController extends Controller
@@ -80,6 +83,79 @@ class PagesController extends Controller
             ->with('status', "Page mise a jour : {$page->title}");
     }
 
+    public function preview(Request $request, Page $page): View
+    {
+        app()->setLocale($page->locale);
+        $request->session()->put('locale', $page->locale);
+
+        return match ($page->section) {
+            'blog' => view('content.front-pages.blog-show', [
+                'pageConfigs' => ['myLayout' => 'front'],
+                'locale' => $page->locale,
+                'article' => $this->pageToArticle($page),
+                'related' => Page::published()
+                    ->where('section', 'blog')
+                    ->where('locale', $page->locale)
+                    ->whereNull('country_id')
+                    ->where('id', '!=', $page->id)
+                    ->orderByDesc('published_at')
+                    ->limit(3)
+                    ->get()
+                    ->map(fn (Page $relatedPage) => $this->pageToArticle($relatedPage)),
+                'site' => config('dream-digital.site'),
+            ]),
+            'legal' => view('content.front-pages.legal-page', [
+                'pageConfigs' => ['myLayout' => 'front'],
+                'locale' => $page->locale,
+                'page' => 'legal-' . $page->slug,
+                'legal' => $this->pageToLegal($page),
+                'site' => config('dream-digital.site'),
+                'allPages' => $this->legalPagesFor($page),
+            ]),
+            'marketing' => view('content.front-pages.marketing-page', $this->marketingPreviewData($page)),
+            default => view('content.front-pages.cms-preview', [
+                'pageConfigs' => ['myLayout' => 'front'],
+                'locale' => $page->locale,
+                'page' => $this->pageToLegal($page),
+                'site' => config('dream-digital.site'),
+            ]),
+        };
+    }
+
+    public function duplicateLocale(Request $request, Page $page): RedirectResponse
+    {
+        $validated = $request->validate([
+            'target_locale' => ['required', Rule::in(['fr', 'en'])],
+        ]);
+        $targetLocale = $validated['target_locale'];
+
+        abort_if($targetLocale === $page->locale, 422);
+
+        $existing = Page::query()
+            ->where('slug', $page->slug)
+            ->where('section', $page->section)
+            ->where('locale', $targetLocale)
+            ->when($page->country_id, fn ($query) => $query->where('country_id', $page->country_id), fn ($query) => $query->whereNull('country_id'))
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->route('admin.pages.edit', $existing)
+                ->with('status', "Version {$targetLocale} deja existante : {$existing->title}");
+        }
+
+        $duplicate = $page->replicate();
+        $duplicate->locale = $targetLocale;
+        $duplicate->title = '[' . strtoupper($targetLocale) . '] ' . $page->title;
+        $duplicate->is_published = false;
+        $duplicate->published_at = null;
+        $duplicate->save();
+
+        return redirect()
+            ->route('admin.pages.edit', $duplicate)
+            ->with('status', "Brouillon {$targetLocale} cree depuis {$page->locale}.");
+    }
+
     public function destroy(Page $page): RedirectResponse
     {
         $label = $page->title;
@@ -93,6 +169,7 @@ class PagesController extends Controller
     {
         $validated = $request->validated();
         $sectionsArray = $request->decodedSections() ?? [];
+        $uploadedImagePath = $this->uploadedImagePath($request, $validated);
 
         return [
             'slug' => $validated['slug'],
@@ -101,7 +178,7 @@ class PagesController extends Controller
             'locale' => $validated['locale'],
             'title' => $validated['title'],
             'meta_description' => $validated['meta_description'] ?? null,
-            'meta_image_path' => $validated['meta_image_path'] ?? null,
+            'meta_image_path' => $uploadedImagePath ?? ($validated['meta_image_path'] ?? null),
             'content_blocks' => [
                 'seo_title' => $validated['seo_title'] ?? null,
                 'eyebrow' => $validated['eyebrow'] ?? null,
@@ -118,5 +195,117 @@ class PagesController extends Controller
             'is_published' => $validated['is_published'] ?? false,
             'published_at' => ($validated['is_published'] ?? false) ? now() : null,
         ];
+    }
+
+    private function uploadedImagePath(PageRequest $request, array $validated): ?string
+    {
+        if (!$request->hasFile('image_file')) {
+            return null;
+        }
+
+        $file = $request->file('image_file');
+        $directory = public_path('img/cms/pages');
+        File::ensureDirectoryExists($directory);
+
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
+        $filename = now()->format('YmdHis') . '-' . $validated['section'] . '-' . $validated['slug'] . '-' . $validated['locale'] . '.' . $extension;
+
+        $file->move($directory, $filename);
+
+        return '/img/cms/pages/' . $filename;
+    }
+
+    private function pageToArticle(Page $page): array
+    {
+        $blocks = $page->content_blocks ?? [];
+
+        return [
+            'slug' => $page->slug,
+            'title' => $page->title,
+            'seo_title' => $blocks['seo_title'] ?? $page->title,
+            'meta_description' => $page->meta_description,
+            'meta_image_path' => $page->meta_image_path,
+            'eyebrow' => $blocks['eyebrow'] ?? 'Blog',
+            'lead' => $blocks['lead'] ?? '',
+            'author' => $blocks['author'] ?? 'Dream Digital',
+            'reading_time' => $blocks['reading_time'] ?? null,
+            'image_alt' => $blocks['image_alt'] ?? $page->title,
+            'image_credit' => $blocks['image_credit'] ?? null,
+            'image_source_url' => $blocks['image_source_url'] ?? null,
+            'tags' => $blocks['tags'] ?? [],
+            'sections' => $blocks['sections'] ?? [],
+            'published_at' => $page->published_at ?? $page->created_at,
+            'updated_at' => $page->updated_at,
+            'url' => url('/' . $page->locale . '/blog/' . $page->slug),
+        ];
+    }
+
+    private function pageToLegal(Page $page): array
+    {
+        $blocks = $page->content_blocks ?? [];
+
+        return [
+            'slug' => $page->slug,
+            'title' => $page->title,
+            'eyebrow' => $blocks['eyebrow'] ?? '',
+            'lead' => $blocks['lead'] ?? '',
+            'last_updated' => $blocks['last_updated'] ?? optional($page->updated_at)->format('Y-m-d'),
+            'sections' => $blocks['sections'] ?? [],
+            'source' => 'preview',
+        ];
+    }
+
+    private function legalPagesFor(Page $page): array
+    {
+        $pages = Page::query()
+            ->where('section', 'legal')
+            ->where('locale', $page->locale)
+            ->whereNull('country_id')
+            ->orderBy('slug')
+            ->get();
+
+        if ($pages->doesntContain('id', $page->id)) {
+            $pages->push($page);
+        }
+
+        return $pages
+            ->mapWithKeys(fn (Page $legalPage) => [$legalPage->slug => ['slug' => $legalPage->slug, 'title' => $legalPage->title]])
+            ->all();
+    }
+
+    private function marketingPreviewData(Page $page): array
+    {
+        $blocks = $page->content_blocks ?? [];
+        $locale = $page->locale;
+
+        return [
+            'pageConfigs' => ['myLayout' => 'front'],
+            'locale' => $locale,
+            'page' => $page->slug,
+            'pageData' => [
+                'eyebrow' => $blocks['eyebrow'] ?? '',
+                'title' => $page->title,
+                'lead' => $blocks['lead'] ?? '',
+                'source' => 'preview',
+            ],
+            'site' => config('dream-digital.site'),
+            'home' => config('dream-digital.home'),
+            'services' => $this->activeItems(config('dream-digital.services.items', [])),
+            'industries' => $this->activeItems(config('dream-digital.industries.items', [])),
+            'coverage' => config('dream-digital.coverage'),
+            'stats' => config('dream-digital.pages.stats', []),
+            'features' => config('dream-digital.pages.features', []),
+            'corridors' => config('dream-digital.pages.corridors', []),
+            'liveFeed' => config('dream-digital.pages.live_feed', []),
+        ];
+    }
+
+    private function activeItems(array $items): array
+    {
+        return Collection::make($items)
+            ->filter(fn ($item) => (bool) ($item['active'] ?? true))
+            ->sortBy('order')
+            ->values()
+            ->all();
     }
 }

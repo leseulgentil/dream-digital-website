@@ -4,7 +4,7 @@
   $blocks = $page->content_blocks ?? [];
 @endphp
 
-<form method="POST" action="{{ $formAction }}" class="card-body row g-4" novalidate>
+<form method="POST" action="{{ $formAction }}" class="card-body row g-4" enctype="multipart/form-data" novalidate>
   @csrf
   @if($isEdit)
     @method('PUT')
@@ -92,6 +92,16 @@
     <label class="form-label" for="meta_image_path">Image OG / Blog <small class="text-muted">(URL ou chemin public/...)</small></label>
     <input type="text" id="meta_image_path" name="meta_image_path" maxlength="500" class="form-control @error('meta_image_path') is-invalid @enderror" value="{{ old('meta_image_path', $page->meta_image_path) }}" placeholder="/img/og/mentions.png">
     @error('meta_image_path')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    @if($page->meta_image_path)
+      <small class="text-muted d-block text-truncate mt-1">{{ $page->meta_image_path }}</small>
+    @endif
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="image_file">Uploader une image locale</label>
+    <input type="file" id="image_file" name="image_file" accept="image/jpeg,image/png,image/webp" class="form-control @error('image_file') is-invalid @enderror">
+    @error('image_file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    <small class="text-muted">JPG, PNG ou WebP. Remplace le champ image si un fichier est choisi.</small>
   </div>
 
   <div class="col-md-4">

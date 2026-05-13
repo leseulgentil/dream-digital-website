@@ -26,6 +26,7 @@ class PageRequest extends FormRequest
             'seo_title' => ['nullable', 'string', 'max:220'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_image_path' => ['nullable', 'string', 'max:500'],
+            'image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'eyebrow' => ['nullable', 'string', 'max:200'],
             'lead' => ['nullable', 'string'],
             'author' => ['nullable', 'string', 'max:120'],

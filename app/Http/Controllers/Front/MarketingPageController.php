@@ -104,7 +104,11 @@ class MarketingPageController extends Controller
 
     return view('content.front-pages.marketing-page', array_merge(
       $this->viewData($locale, 'product', $pageData),
-      ['service' => $serviceData]
+      [
+        'service' => $serviceData,
+        'productDetail' => config('dream-digital.product-pages.items.' . ($serviceData['slug'] ?? $serviceData['id']), []),
+        'blogGuides' => $this->resolveBlogGuides($locale, $serviceData['slug'] ?? $serviceData['id'] ?? null),
+      ]
     ));
   }
 
@@ -169,6 +173,74 @@ class MarketingPageController extends Controller
   private function arrow(string $locale): string
   {
     return $locale === 'en' ? 'to' : 'vers';
+  }
+
+  private function resolveBlogGuides(string $locale, ?string $serviceSlug): array
+  {
+    if (!Schema::hasTable('pages')) {
+      return [];
+    }
+
+    $keywords = [
+      'sms-a2p' => ['sms', 'otp', 'a2p'],
+      'voice' => ['voice', 'voix'],
+      'did' => ['did', 'numero', 'number'],
+      'sip' => ['sip', 'trunk'],
+      'dialo' => ['contact', 'dialo', 'omnichannel', 'omnicanal'],
+      'esim' => ['esim'],
+    ][$serviceSlug] ?? [];
+
+    $articles = Page::published()
+      ->where('section', 'blog')
+      ->where('locale', $locale)
+      ->whereNull('country_id')
+      ->orderByDesc('published_at')
+      ->get();
+
+    if ($articles->isEmpty()) {
+      return [];
+    }
+
+    $matches = $articles
+      ->filter(function (Page $page) use ($keywords) {
+        if ($keywords === []) {
+          return false;
+        }
+
+        $blocks = $page->content_blocks ?? [];
+        $haystack = mb_strtolower(implode(' ', array_filter([
+          $page->slug,
+          $page->title,
+          $blocks['eyebrow'] ?? '',
+          $blocks['lead'] ?? '',
+          implode(' ', $blocks['tags'] ?? []),
+        ])));
+
+        return collect($keywords)->contains(fn (string $keyword) => str_contains($haystack, $keyword));
+      })
+      ->sortByDesc(fn (Page $page) => str_contains($page->slug, (string) $serviceSlug) ? 2 : 1)
+      ->take(3);
+
+    if ($matches->count() < 3) {
+      $matches = $matches
+        ->concat($articles->whereNotIn('id', $matches->pluck('id'))->take(3 - $matches->count()))
+        ->values();
+    }
+
+    return $matches
+      ->map(function (Page $page) {
+        $blocks = $page->content_blocks ?? [];
+
+        return [
+          'title' => $page->title,
+          'eyebrow' => $blocks['eyebrow'] ?? 'Blog',
+          'lead' => $blocks['lead'] ?? '',
+          'image' => $page->meta_image_path,
+          'image_alt' => $blocks['image_alt'] ?? $page->title,
+          'url' => url('/' . $page->locale . '/blog/' . $page->slug),
+        ];
+      })
+      ->all();
   }
 
   private function contentLocale(): string

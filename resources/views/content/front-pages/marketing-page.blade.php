@@ -64,6 +64,8 @@
             @include('front.components.feature-list', ['features' => $features['developers'] ?? [], 'locale' => $locale])
           </div>
         </section>
+        @include('front.components.product-proof', ['detail' => $productDetail ?? [], 'locale' => $locale])
+        @include('front.components.blog-teaser', ['articles' => $blogGuides ?? [], 'locale' => $locale])
         @include('front.components.cta-banner', ['site' => $site, 'locale' => $locale])
         @break
 

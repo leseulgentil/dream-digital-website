@@ -1662,6 +1662,141 @@ nav.dd-front-navbar {
   }
 }
 
+.dd-product-proof {
+  background: #f7fafc;
+  padding-block-start: 3rem;
+}
+
+.dd-product-proof__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dd-product-proof__grid article,
+.dd-product-workflow__steps article,
+.dd-blog-teaser__grid article {
+  background: #fff;
+  border: 1px solid rgba(14, 18, 28, .08);
+  border-radius: 8px;
+}
+
+.dd-product-proof__grid article {
+  padding: 1.4rem;
+
+  i {
+    align-items: center;
+    background: rgba(15, 118, 110, .09);
+    border-radius: .7rem;
+    color: #0f766e;
+    display: inline-flex;
+    font-size: 1.45rem;
+    justify-content: center;
+    margin-block-end: 1rem;
+    min-block-size: 2.8rem;
+    min-inline-size: 2.8rem;
+  }
+
+  h3 {
+    color: #121826;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    margin-block-end: .5rem;
+  }
+
+  p {
+    color: #586273;
+    line-height: 1.65;
+    margin: 0;
+  }
+}
+
+.dd-product-workflow {
+  margin-block-start: clamp(2rem, 5vw, 4rem);
+}
+
+.dd-product-workflow__steps {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dd-product-workflow__steps article {
+  padding: 1.3rem;
+  position: relative;
+
+  span {
+    color: rgba(15, 118, 110, .34);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 1.55rem;
+    font-weight: 800;
+  }
+
+  h3 {
+    color: #121826;
+    font-size: 1.12rem;
+    margin-block: .65rem .45rem;
+  }
+
+  p {
+    color: #586273;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.dd-blog-teaser {
+  background: #fff;
+}
+
+.dd-blog-teaser__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dd-blog-teaser__grid article {
+  overflow: hidden;
+
+  > div {
+    padding: 1.15rem;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    line-height: 1.3;
+    margin-block: .4rem .55rem;
+  }
+
+  h3 a {
+    color: #121826;
+    text-decoration: none;
+
+    &:hover {
+      color: #0f766e;
+    }
+  }
+
+  p:not(.dd-eyebrow) {
+    color: #586273;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.dd-blog-teaser__media {
+  aspect-ratio: 16 / 9;
+  background: #0f172a;
+  display: block;
+  overflow: hidden;
+
+  img {
+    block-size: 100%;
+    inline-size: 100%;
+    object-fit: cover;
+  }
+}
+
 .dd-corridors {
   background: #fff;
 }
@@ -1773,7 +1908,10 @@ nav.dd-front-navbar {
 
   .dd-dashboard-card__metrics,
   .dd-stats-strip__grid,
-  .dd-corridors__grid {
+  .dd-corridors__grid,
+  .dd-product-proof__grid,
+  .dd-product-workflow__steps,
+  .dd-blog-teaser__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1808,6 +1946,9 @@ nav.dd-front-navbar {
   .dd-dashboard-card__metrics,
   .dd-stats-strip__grid,
   .dd-corridors__grid,
+  .dd-product-proof__grid,
+  .dd-product-workflow__steps,
+  .dd-blog-teaser__grid,
   .dd-contact-page__grid {
     grid-template-columns: 1fr;
   }

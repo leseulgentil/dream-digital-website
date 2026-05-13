@@ -120,6 +120,7 @@ Nouveaux items à ouvrir (V2 si besoin) :
 - TD-014 : Bundle CSS public optimization (core.scss 708 KB + iconify.css 1.26 MB)
 - TD-015 : Performance Lighthouse Perf >85 production (re-mesurer sur dream-digital.info quand Nginx gzip/brotli actif)
 - TD-016 : Validation juridique des 3 pages légales par avocat (avant DD_PUBLIC_INDEXABLE=true)
+- **TD-017** : **Resolue** — menu gauche admin reduit aux modules utiles : Dashboard, Pages, Pricing, Voir le site. Test `AdminMenuTest` ajoute pour eviter le retour des liens demo.
 
 ---
 

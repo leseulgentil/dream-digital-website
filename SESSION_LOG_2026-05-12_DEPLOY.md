@@ -34,6 +34,7 @@ Restent bloquants avant ouverture publique :
 - Validation juridique des pages legales.
 - Re-mesure Lighthouse/console sur production avec Basic Auth.
 - Decision PO explicite avant `DD_PUBLIC_INDEXABLE=true` et retrait/limitation Basic Auth.
+- Nettoyage du menu gauche admin : fait le 2026-05-13. Le menu expose uniquement Dashboard, Pages, Pricing, Voir le site.
 
 ## Action items pour la session de demain (par ordre)
 

@@ -122,6 +122,11 @@ Nouveaux items à ouvrir (V2 si besoin) :
 - TD-016 : Validation juridique des 3 pages légales par avocat (avant DD_PUBLIC_INDEXABLE=true)
 - **TD-017** : **Resolue** — menu gauche admin reduit aux modules utiles : Dashboard, Pages, Pricing, Voir le site. Test `AdminMenuTest` ajoute pour eviter le retour des liens demo.
 
+Outil ajoute le 2026-05-13 :
+
+- `php artisan dd:launch-check` : verifie les donnees seed, les champs business, les pages legales/marketing et les confirmations operationnelles.
+- `php artisan dd:launch-check --public` : mode strict avant ouverture publique. Requiert notamment `APP_ENV=production`, `APP_DEBUG=false`, `DD_PUBLIC_INDEXABLE=true`, rotation admin, validation juridique, retrait Basic Auth public et backups confirmes.
+
 ---
 
 ## 5. Procédure de mise en production

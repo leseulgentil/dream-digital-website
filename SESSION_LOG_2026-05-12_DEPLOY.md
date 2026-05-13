@@ -26,6 +26,7 @@ Etat confirme apres validation visuelle PO du point 3 :
 - `https://www.dream-digital.info/fr` : 301 vers `https://dream-digital.info/fr`.
 - `https://dream-digital.info/fr` : 401 Basic Auth, conforme au gate pre-launch.
 - Warning PHPUnit doc-comment `@dataProvider` corrige vers attribut `#[DataProvider]`.
+- Commande pre-lancement ajoutee : `php artisan dd:launch-check` et mode strict `php artisan dd:launch-check --public`.
 
 Restent bloquants avant ouverture publique :
 
@@ -35,6 +36,7 @@ Restent bloquants avant ouverture publique :
 - Re-mesure Lighthouse/console sur production avec Basic Auth.
 - Decision PO explicite avant `DD_PUBLIC_INDEXABLE=true` et retrait/limitation Basic Auth.
 - Nettoyage du menu gauche admin : fait le 2026-05-13. Le menu expose uniquement Dashboard, Pages, Pricing, Voir le site.
+- Executer `php artisan dd:launch-check --public` sur le VPS juste avant ouverture. La commande doit retourner `Launch check OK.`
 
 ## Action items pour la session de demain (par ordre)
 

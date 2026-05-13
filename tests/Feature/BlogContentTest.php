@@ -73,6 +73,34 @@ class BlogContentTest extends TestCase
         $this->assertSame(['SMS A2P', 'Test CMS'], $page->content_blocks['tags']);
     }
 
+    public function test_blog_article_renders_rich_section_html(): void
+    {
+        Page::create([
+            'slug' => 'rich-body',
+            'section' => 'blog',
+            'locale' => 'fr',
+            'title' => 'Article riche',
+            'meta_description' => 'Description riche',
+            'content_blocks' => [
+                'lead' => 'Lead riche',
+                'sections' => [
+                    [
+                        'heading' => 'Bloc riche',
+                        'body' => 'Texte riche',
+                        'body_html' => '<p><strong>Texte riche</strong></p><ul><li>Point SEO</li></ul>',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $this->get('/fr/blog/rich-body')
+            ->assertOk()
+            ->assertSee('<strong>Texte riche</strong>', false)
+            ->assertSee('<li>Point SEO</li>', false);
+    }
+
     private function formPayload(Page $page): array
     {
         $blocks = $page->content_blocks ?? [];

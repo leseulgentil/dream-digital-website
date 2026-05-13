@@ -104,11 +104,7 @@
             @foreach($article['sections'] ?? [] as $i => $section)
               <section id="section-{{ $i + 1 }}">
                 <h2>{{ $section['heading'] ?? '' }}</h2>
-                @foreach(preg_split("/\r?\n\r?\n/", trim($section['body'] ?? '')) as $paragraph)
-                  @if(trim($paragraph) !== '')
-                    <p>{!! nl2br(e($paragraph)) !!}</p>
-                  @endif
-                @endforeach
+                @include('content.front-pages.partials.section-body', ['section' => $section])
               </section>
             @endforeach
           </div>

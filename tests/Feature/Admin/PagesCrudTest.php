@@ -39,7 +39,10 @@ class PagesCrudTest extends TestCase
     {
         $this->get(route('admin.pages.create'))
             ->assertOk()
-            ->assertSee('Nouvelle page');
+            ->assertSee('Nouvelle page')
+            ->assertSee('Generate Article')
+            ->assertSee('Editeur riche des sections')
+            ->assertSee('Sections (JSON avance)');
     }
 
     public function test_store_creates_page_with_content_blocks(): void
@@ -63,6 +66,25 @@ class PagesCrudTest extends TestCase
         $this->assertSame('Lead test paragraph.', $page->content_blocks['lead']);
         $this->assertCount(2, $page->content_blocks['sections']);
         $this->assertSame('Section 1', $page->content_blocks['sections'][0]['heading']);
+    }
+
+    public function test_store_preserves_rich_section_html(): void
+    {
+        $payload = $this->formPayload();
+        $payload['slug'] = 'rich-html';
+        $payload['sections_json'] = json_encode([
+            [
+                'heading' => 'Section riche',
+                'body' => 'Texte riche',
+                'body_html' => '<p><strong>Texte riche</strong></p><ul><li>Point SEO</li></ul>',
+            ],
+        ]);
+
+        $this->post(route('admin.pages.store'), $payload)
+            ->assertRedirect(route('admin.pages.index'));
+
+        $page = Page::firstWhere('slug', 'rich-html');
+        $this->assertSame('<p><strong>Texte riche</strong></p><ul><li>Point SEO</li></ul>', $page->content_blocks['sections'][0]['body_html']);
     }
 
     public function test_store_rejects_invalid_slug(): void

@@ -7,6 +7,8 @@ use App\Http\Requests\Admin\PageRequest;
 use App\Models\Country;
 use App\Models\Page;
 use App\Models\PageRevision;
+use App\Services\Admin\ArticleGeneratorService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -17,6 +19,10 @@ use Illuminate\View\View;
 class PagesController extends Controller
 {
     private const SECTIONS = ['legal', 'marketing', 'blog', 'help'];
+
+    public function __construct(private readonly ArticleGeneratorService $articleGenerator)
+    {
+    }
 
     public function index(Request $request): View
     {
@@ -174,6 +180,21 @@ class PagesController extends Controller
 
         return redirect()->route('admin.pages.index')
             ->with('status', "Page supprimee : {$label}");
+    }
+
+    public function generateArticle(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'idea' => ['required', 'string', 'max:200'],
+            'keywords' => ['nullable', 'string', 'max:500'],
+            'guidelines' => ['nullable', 'string', 'max:2000'],
+            'locale' => ['required', Rule::in(['fr', 'en'])],
+            'variants' => ['required', 'integer', 'min:1', 'max:5'],
+        ]);
+
+        return response()->json([
+            'articles' => $this->articleGenerator->generate($validated),
+        ]);
     }
 
     private function payload(PageRequest $request): array

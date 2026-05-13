@@ -28,6 +28,7 @@ use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\Admin\NavigationController as AdminNavigationController;
 use App\Http\Controllers\Admin\PagesController as AdminPagesController;
 use App\Http\Controllers\Admin\PricingController as AdminPricingController;
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
@@ -240,11 +241,25 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
         });
     });
 
+    Route::prefix('admin/navigation')
+        ->name('admin.navigation.')
+        ->controller(AdminNavigationController::class)
+        ->middleware('admin.role:owner,admin,editor')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{navigation}/edit', 'edit')->name('edit');
+            Route::put('/{navigation}', 'update')->name('update');
+            Route::delete('/{navigation}', 'destroy')->name('destroy');
+        });
+
     Route::prefix('admin/pages')->name('admin.pages.')->controller(AdminPagesController::class)->group(function () {
         Route::get('/', 'index')->name('index');
 
         Route::middleware('admin.role:owner,admin,editor')->group(function () {
             Route::get('/create', 'create')->name('create');
+            Route::post('/generate-article', 'generateArticle')->name('generate-article');
             Route::post('/', 'store')->name('store');
             Route::get('/{page}/preview', 'preview')->name('preview');
             Route::post('/{page}/duplicate-locale', 'duplicateLocale')->name('duplicate-locale');

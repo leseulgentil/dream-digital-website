@@ -1,0 +1,183 @@
+<?php
+
+namespace App\Services\Admin;
+
+use Illuminate\Support\Str;
+
+class ArticleGeneratorService
+{
+    public function generate(array $input): array
+    {
+        $locale = in_array($input['locale'] ?? 'fr', ['fr', 'en'], true) ? $input['locale'] : 'fr';
+        $idea = trim((string) $input['idea']);
+        $keywords = $this->keywords($input['keywords'] ?? '');
+        $guidelines = trim((string) ($input['guidelines'] ?? ''));
+        $variants = max(1, min(5, (int) ($input['variants'] ?? 3)));
+
+        return collect(range(1, $variants))
+            ->map(fn (int $index) => $this->variant($idea, $keywords, $guidelines, $locale, $index))
+            ->all();
+    }
+
+    private function variant(string $idea, array $keywords, string $guidelines, string $locale, int $index): array
+    {
+        $keywordLine = $keywords ? implode(', ', $keywords) : ($locale === 'fr' ? 'telecom B2B, CPaaS, Afrique' : 'B2B telecom, CPaaS, Africa');
+        $angle = $this->angle($locale, $index);
+        $title = $this->title($idea, $angle, $locale, $index);
+        $lead = $this->lead($title, $keywordLine, $locale);
+        $sections = $this->sections($idea, $keywords, $guidelines, $locale, $index);
+
+        return [
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'section' => 'blog',
+            'locale' => $locale,
+            'seo_title' => Str::limit($title . ($locale === 'fr' ? ' | Guide Dream Digital' : ' | Dream Digital guide'), 68, ''),
+            'meta_description' => Str::limit($lead, 155, ''),
+            'eyebrow' => 'Blog',
+            'lead' => $lead,
+            'author' => 'Dream Digital',
+            'reading_time' => $locale === 'fr' ? '6 min' : '6 min read',
+            'tags' => $keywords ?: ['CPaaS', 'SMS A2P', 'Voice', 'B2B'],
+            'meta_image_path' => $this->imageUrl($index),
+            'image_alt' => $locale === 'fr'
+                ? "Equipe telecom analysant {$idea}"
+                : "Telecom team reviewing {$idea}",
+            'image_credit' => 'Photo Unsplash',
+            'image_source_url' => 'https://unsplash.com/',
+            'sections' => $sections,
+        ];
+    }
+
+    private function title(string $idea, string $angle, string $locale, int $index): string
+    {
+        if ($locale === 'en') {
+            return match ($index) {
+                1 => "{$idea}: {$angle} for B2B telecom teams",
+                2 => "How to use {$idea} to improve delivery and margins",
+                default => "{$idea} playbook: practical steps for scalable CPaaS growth",
+            };
+        }
+
+        return match ($index) {
+            1 => "{$idea} : {$angle} pour les equipes telecom B2B",
+            2 => "Comment utiliser {$idea} pour ameliorer delivrabilite et marges",
+            default => "{$idea} : plan d'action pour une croissance CPaaS scalable",
+        };
+    }
+
+    private function lead(string $title, string $keywordLine, string $locale): string
+    {
+        if ($locale === 'en') {
+            return "{$title} explains how Dream Digital helps operators, aggregators and digital businesses turn {$keywordLine} into measurable performance: cleaner routing, better observability and stronger customer experience.";
+        }
+
+        return "{$title} explique comment Dream Digital aide les operateurs, agregateurs et entreprises digitales a transformer {$keywordLine} en performance mesurable : routage plus propre, meilleure observabilite et experience client plus fiable.";
+    }
+
+    private function sections(string $idea, array $keywords, string $guidelines, string $locale, int $index): array
+    {
+        $keywordsText = $keywords ? implode(', ', $keywords) : ($locale === 'fr' ? 'SMS A2P, voice, CPaaS' : 'A2P SMS, voice, CPaaS');
+        $guidelineSentence = $guidelines !== ''
+            ? ($locale === 'fr' ? "Contrainte editoriale a respecter : {$guidelines}." : "Editorial guideline to respect: {$guidelines}.")
+            : ($locale === 'fr' ? 'Le contenu doit rester concret, commercialement utile et oriente decision.' : 'The content should stay concrete, commercially useful and decision-oriented.');
+        $ideaHtml = e($idea);
+        $keywordsHtml = e($keywordsText);
+        $guidelineHtml = e($guidelineSentence);
+
+        $content = $locale === 'en'
+            ? [
+                [
+                    'heading' => 'Why this topic matters now',
+                    'body' => "{$idea} is no longer a side topic for telecom teams. Growth now depends on delivery quality, transparent routing and the ability to connect product, sales and operations around the same indicators.\n\n{$guidelineSentence}",
+                    'body_html' => "<p><strong>{$ideaHtml}</strong> is no longer a side topic for telecom teams. Growth now depends on delivery quality, transparent routing and the ability to connect product, sales and operations around the same indicators.</p><p>{$guidelineHtml}</p>",
+                ],
+                [
+                    'heading' => 'What Dream Digital brings to the workflow',
+                    'body' => "Dream Digital combines CPaaS APIs, negotiated routes and operational dashboards so teams can launch faster without losing control of quality. The priority is simple: fewer blind spots, fewer manual checks and clearer decisions.\n\nRelevant keywords: {$keywordsText}.",
+                    'body_html' => "<p>Dream Digital combines CPaaS APIs, negotiated routes and operational dashboards so teams can launch faster without losing control of quality.</p><ul><li>Fewer blind spots</li><li>Fewer manual checks</li><li>Clearer routing decisions</li></ul><p>Relevant keywords: {$keywordsHtml}.</p>",
+                ],
+                [
+                    'heading' => 'Implementation checklist',
+                    'body' => "Start with a measurable use case, define the expected SLA, then validate routing, fallback logic and reporting before scaling. Teams that document these rules early save time when volumes increase.",
+                    'body_html' => '<p>Start with a measurable use case, define the expected SLA, then validate routing, fallback logic and reporting before scaling.</p><p>Teams that document these rules early save time when volumes increase.</p>',
+                ],
+                [
+                    'heading' => 'How to measure success',
+                    'body' => "Track delivery rate, conversion, incident response time, gross margin and customer feedback together. A good CPaaS setup is not only technical; it creates a shared language between revenue and operations.",
+                    'body_html' => '<p>Track delivery rate, conversion, incident response time, gross margin and customer feedback together.</p><p>A good CPaaS setup is not only technical; it creates a shared language between revenue and operations.</p>',
+                ],
+            ]
+            : [
+                [
+                    'heading' => 'Pourquoi ce sujet compte maintenant',
+                    'body' => "{$idea} n'est plus un sujet secondaire pour les equipes telecom. La croissance depend de la qualite de livraison, de la transparence du routage et de la capacite a relier produit, sales et operations autour des memes indicateurs.\n\n{$guidelineSentence}",
+                    'body_html' => "<p><strong>{$ideaHtml}</strong> n'est plus un sujet secondaire pour les equipes telecom. La croissance depend de la qualite de livraison, de la transparence du routage et de la capacite a relier produit, sales et operations autour des memes indicateurs.</p><p>{$guidelineHtml}</p>",
+                ],
+                [
+                    'heading' => 'Ce que Dream Digital apporte au workflow',
+                    'body' => "Dream Digital combine APIs CPaaS, routes negociees et tableaux de bord operationnels pour lancer plus vite sans perdre le controle de la qualite. La priorite est claire : moins d'angles morts, moins de controles manuels et des decisions plus lisibles.\n\nMots cles utiles : {$keywordsText}.",
+                    'body_html' => "<p>Dream Digital combine APIs CPaaS, routes negociees et tableaux de bord operationnels pour lancer plus vite sans perdre le controle de la qualite.</p><ul><li>Moins d'angles morts</li><li>Moins de controles manuels</li><li>Decisions de routage plus lisibles</li></ul><p>Mots cles utiles : {$keywordsHtml}.</p>",
+                ],
+                [
+                    'heading' => 'Checklist de mise en place',
+                    'body' => "Commencez par un cas d'usage mesurable, definissez le SLA attendu, puis validez le routage, les regles de fallback et le reporting avant de scaler. Les equipes qui documentent ces regles tot gagnent du temps quand les volumes montent.",
+                    'body_html' => "<p>Commencez par un cas d'usage mesurable, definissez le SLA attendu, puis validez le routage, les regles de fallback et le reporting avant de scaler.</p><p>Les equipes qui documentent ces regles tot gagnent du temps quand les volumes montent.</p>",
+                ],
+                [
+                    'heading' => 'Comment mesurer le succes',
+                    'body' => "Suivez ensemble taux de livraison, conversion, delai de reaction incident, marge brute et retours clients. Une bonne stack CPaaS n'est pas seulement technique : elle cree un langage commun entre revenu et operations.",
+                    'body_html' => "<p>Suivez ensemble taux de livraison, conversion, delai de reaction incident, marge brute et retours clients.</p><p>Une bonne stack CPaaS n'est pas seulement technique : elle cree un langage commun entre revenu et operations.</p>",
+                ],
+            ];
+
+        if ($index % 2 === 0) {
+            $content[] = $locale === 'fr'
+                ? [
+                    'heading' => 'Prochaine action recommandee',
+                    'body' => "Identifiez un corridor, une campagne ou un flux OTP prioritaire, puis comparez les resultats avant/apres sur une periode courte. Cette approche donne rapidement une preuve de valeur exploitable par le business.",
+                    'body_html' => "<p>Identifiez un corridor, une campagne ou un flux OTP prioritaire, puis comparez les resultats avant/apres sur une periode courte.</p><p>Cette approche donne rapidement une preuve de valeur exploitable par le business.</p>",
+                ]
+                : [
+                    'heading' => 'Recommended next step',
+                    'body' => 'Pick one corridor, campaign or OTP flow, then compare before/after results over a short period. This creates a proof point the business can use quickly.',
+                    'body_html' => '<p>Pick one corridor, campaign or OTP flow, then compare before/after results over a short period.</p><p>This creates a proof point the business can use quickly.</p>',
+                ];
+        }
+
+        return $content;
+    }
+
+    private function keywords(string $keywords): array
+    {
+        return collect(explode(',', $keywords))
+            ->map(fn (string $keyword) => trim($keyword))
+            ->filter()
+            ->unique()
+            ->take(8)
+            ->values()
+            ->all();
+    }
+
+    private function angle(string $locale, int $index): string
+    {
+        $angles = $locale === 'en'
+            ? ['a practical growth guide', 'a delivery quality framework', 'a margin-first operating model']
+            : ['guide pratique de croissance', 'cadre de qualite de livraison', 'modele operationnel oriente marge'];
+
+        return $angles[($index - 1) % count($angles)];
+    }
+
+    private function imageUrl(int $index): string
+    {
+        $images = [
+            'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80',
+            'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80',
+            'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80',
+            'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1600&q=80',
+            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80',
+        ];
+
+        return $images[($index - 1) % count($images)];
+    }
+}

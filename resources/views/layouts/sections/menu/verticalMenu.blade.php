@@ -33,6 +33,7 @@ $configData = Helper::appClasses();
       <span class="dd-menu-header-text">{{ __($menu->menuHeader) }}</span>
     </li>
     @else
+    @continue((isset($menu->hidden) && $menu->hidden) || (isset($menu->enabled) && ! $menu->enabled))
     @continue(isset($menu->ability) && ! (auth()->user()?->{$menu->ability}() ?? false))
 
     {{-- active menu method --}}

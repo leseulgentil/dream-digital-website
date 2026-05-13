@@ -5,7 +5,7 @@
   $schema = ($cmsSchemas ?? [])[old('section', $page->section)] ?? null;
 @endphp
 
-<form method="POST" action="{{ $formAction }}" class="card-body row g-4" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ $formAction }}" id="dd-cms-page-form" class="card-body row g-4" enctype="multipart/form-data" data-generate-article-url="{{ route('admin.pages.generate-article') }}" data-csrf-token="{{ csrf_token() }}" novalidate>
   @csrf
   @if($isEdit)
     @method('PUT')
@@ -73,6 +73,16 @@
     <label class="form-label" for="seo_title">Titre SEO personnalise <small class="text-muted">(optionnel)</small></label>
     <input type="text" id="seo_title" name="seo_title" maxlength="220" class="form-control @error('seo_title') is-invalid @enderror" value="{{ old('seo_title', $blocks['seo_title'] ?? '') }}" placeholder="Titre optimise Google si different du H1">
     @error('seo_title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center">
+    <div>
+      <h5 class="mb-1">Assistant Blog SEO</h5>
+      <p class="text-muted mb-0">Genere un article complet puis remplis le formulaire apres validation.</p>
+    </div>
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ddGenerateArticleModal">
+      <i class="bx bx-bot me-1"></i> Generate Article
+    </button>
   </div>
 
   <div class="col-12"><hr class="m-0"><h5 class="mt-3 mb-0">Contenu (content_blocks)</h5><p class="text-muted mb-0">Champs structures qui alimentent le rendu Blade de la page publique.</p></div>
@@ -163,10 +173,70 @@
   </div>
 
   <div class="col-12">
-    <label class="form-label" for="sections_json">Sections (JSON) <small class="text-muted">tableau d'objets {heading, body}</small></label>
-    <textarea id="sections_json" name="sections_json" rows="14" class="form-control font-monospace small @error('sections_json') is-invalid @enderror">{{ old('sections_json', $sectionsJson) }}</textarea>
-    @error('sections_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    <small class="text-muted">Format attendu : <code>[{"heading":"Titre section","body":"Paragraphe 1.\n\nParagraphe 2."}, ...]</code>. Utilise <code>\n\n</code> pour creer des paragraphes dans le body.</small>
+    <label class="form-label" for="sections_rich_editor">Editeur riche des sections</label>
+    <div class="border rounded overflow-hidden">
+      <div id="sections_rich_editor" class="bg-body" style="min-height: 320px;"></div>
+    </div>
+    <small class="text-muted">Utilise les titres H2 pour separer automatiquement les sections. Le JSON reste disponible ci-dessous pour les corrections avancees.</small>
+  </div>
+
+  <div class="col-12">
+    <details>
+      <summary class="fw-medium">Sections (JSON avance)</summary>
+      <div class="mt-3">
+        <label class="form-label" for="sections_json">Sections (JSON) <small class="text-muted">tableau d'objets {heading, body, body_html}</small></label>
+        <textarea id="sections_json" name="sections_json" rows="8" class="form-control font-monospace small @error('sections_json') is-invalid @enderror">{{ old('sections_json', $sectionsJson) }}</textarea>
+        @error('sections_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <small class="text-muted">Format attendu : <code>[{"heading":"Titre section","body":"Paragraphe 1.\n\nParagraphe 2.","body_html":"&lt;p&gt;...&lt;/p&gt;"}, ...]</code>.</small>
+      </div>
+    </details>
+  </div>
+
+  <div class="modal fade" id="ddGenerateArticleModal" tabindex="-1" aria-labelledby="ddGenerateArticleTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="ddGenerateArticleTitle">Generate Article</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-4">
+            <div class="col-md-8">
+              <label class="form-label" for="article_generator_idea">Titre ou idee principale</label>
+              <input type="text" id="article_generator_idea" class="form-control" placeholder="SMS A2P, OTP, CPaaS Afrique">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label" for="article_generator_locale">Langue</label>
+              <select id="article_generator_locale" class="form-select">
+                <option value="fr" @selected(old('locale', $page->locale) === 'fr')>FR</option>
+                <option value="en" @selected(old('locale', $page->locale) === 'en')>EN</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label" for="article_generator_variants">Articles</label>
+              <input type="number" id="article_generator_variants" min="1" max="5" value="3" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="article_generator_keywords">Mots cles</label>
+              <input type="text" id="article_generator_keywords" class="form-control" placeholder="SMS A2P, OTP, delivery rate, Afrique">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="article_generator_guidelines">Guidelines</label>
+              <input type="text" id="article_generator_guidelines" class="form-control" placeholder="Ton expert, conversion B2B, exemples concrets">
+            </div>
+            <div class="col-12">
+              <button type="button" class="btn btn-primary" id="article_generator_submit">
+                <i class="bx bx-bot me-1"></i> Generer
+              </button>
+              <span class="text-muted small ms-2" id="article_generator_status"></span>
+            </div>
+            <div class="col-12">
+              <div class="row g-3" id="article_generator_results"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="col-12 d-flex justify-content-end gap-2 pt-2">

@@ -19,18 +19,20 @@ class AdminMenuTest extends TestCase
 
         $this->assertStringContainsString('Dashboard', $menuHtml);
         $this->assertStringContainsString('Pages', $menuHtml);
+        $this->assertStringContainsString('Navigation', $menuHtml);
         $this->assertStringContainsString('Blog', $menuHtml);
         $this->assertStringContainsString('Media CMS', $menuHtml);
         $this->assertStringContainsString('Pricing', $menuHtml);
         $this->assertStringContainsString('Utilisateurs', $menuHtml);
         $this->assertStringContainsString('Voir le site', $menuHtml);
         $this->assertStringContainsString('/admin/pages', $menuHtml);
+        $this->assertStringContainsString('/admin/navigation', $menuHtml);
         $this->assertStringContainsString('/admin/pages?section=blog', $menuHtml);
         $this->assertStringContainsString('/admin/media', $menuHtml);
         $this->assertStringContainsString('/admin/pricing', $menuHtml);
         $this->assertStringContainsString('/admin/users', $menuHtml);
 
-        foreach (['eCommerce', 'Layouts', 'Academy', 'Form Elements', 'Datatables', 'Roles'] as $legacyLabel) {
+        foreach (['eCommerce', 'Layouts', 'Academy', 'Form Elements', 'Datatables', 'Roles', 'Email', 'Discuter', 'Calendrier', 'Commerce', 'Logistique', 'Facture', 'Authentification', 'Laravel Example', 'Premi'] as $legacyLabel) {
             $this->assertStringNotContainsString($legacyLabel, $menuHtml);
         }
     }
@@ -54,6 +56,7 @@ class AdminMenuTest extends TestCase
             'Dream Digital',
             'Dashboard',
             'Pages',
+            'Navigation',
             'Blog',
             'Media CMS',
             'Pricing',

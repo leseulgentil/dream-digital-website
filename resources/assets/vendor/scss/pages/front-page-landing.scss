@@ -2346,6 +2346,27 @@ nav.dd-front-navbar {
   margin-block-end: 1.15rem;
 }
 
+.dd-richtext {
+  p {
+    margin-block-end: 1.15rem;
+  }
+
+  ul,
+  ol {
+    margin-block: 0 1.25rem;
+    padding-inline-start: 1.35rem;
+  }
+
+  li + li {
+    margin-block-start: .35rem;
+  }
+
+  strong {
+    color: #121826;
+    font-weight: 800;
+  }
+}
+
 .dd-blog-related {
   background: #f7fafc;
 }

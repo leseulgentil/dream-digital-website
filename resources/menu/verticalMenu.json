@@ -16,6 +16,12 @@
       "slug": "admin.pages"
     },
     {
+      "url": "admin/navigation",
+      "name": "Navigation",
+      "icon": "dd-menu-icon icon-base bx bx-menu",
+      "slug": "admin.navigation"
+    },
+    {
       "url": "admin/pages?section=blog",
       "name": "Blog",
       "icon": "dd-menu-icon icon-base bx bx-news",

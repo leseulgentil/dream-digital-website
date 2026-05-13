@@ -105,4 +105,31 @@ class AdminCmsAdvancedTest extends TestCase
             ->assertSee('Article blog SEO')
             ->assertSee('seo_title, meta_description, author', false);
     }
+
+    public function test_article_generator_returns_selectable_variants(): void
+    {
+        $this->postJson(route('admin.pages.generate-article'), [
+            'idea' => 'SMS A2P pour banques africaines',
+            'keywords' => 'SMS A2P, OTP, banking',
+            'guidelines' => 'Inclure un angle conversion et support',
+            'locale' => 'fr',
+            'variants' => 3,
+        ])
+            ->assertOk()
+            ->assertJsonCount(3, 'articles')
+            ->assertJsonPath('articles.0.section', 'blog')
+            ->assertJsonPath('articles.0.locale', 'fr')
+            ->assertJsonStructure([
+                'articles' => [[
+                    'title',
+                    'slug',
+                    'seo_title',
+                    'meta_description',
+                    'meta_image_path',
+                    'lead',
+                    'tags',
+                    'sections',
+                ]],
+            ]);
+    }
 }

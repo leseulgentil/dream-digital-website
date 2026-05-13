@@ -5,15 +5,14 @@ namespace Tests\Feature;
 use App\Models\Page;
 use Database\Seeders\LegalPageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class LegalPagesTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @dataProvider legalCombinations
-     */
+    #[DataProvider('legalCombinations')]
     public function test_legal_pages_render_in_both_locales(string $locale, string $slug, string $expectedTitle): void
     {
         $this->get("/{$locale}/legal/{$slug}")

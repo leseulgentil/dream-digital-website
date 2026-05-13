@@ -102,7 +102,7 @@ Suite à la revue PO des 30 captures responsive + visite home, 7 catégories d'a
 
 | ID | Statut | Notes |
 |---|---|---|
-| TD-001 | **Open** | Doublons routes `dashboard-analytics` (route:cache impossible) |
+| **TD-001** | **Resolue** | `php artisan route:cache` OK le 2026-05-13. Dette documentaire obsolete apres correctifs routes. |
 | TD-002 | **Open** | Résidus Sneat sur pages back-office (mitigé via `internal.demo`) |
 | TD-003 | **Open** | Renouvellement cert SSL 2026-10-15 (action PO manuelle septembre 2026) |
 | TD-004 | **Open** | Backups VPS (pg_dump + rsync) à mettre en place avant trafic significatif |

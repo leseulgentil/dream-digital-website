@@ -16,6 +16,25 @@
 
 ⚠️ **`DD_PUBLIC_INDEXABLE=false`** maintenu → robots.txt "Disallow: /", sitemap.xml 410 Gone.
 
+## Reprise 2026-05-13
+
+Etat confirme apres validation visuelle PO du point 3 :
+
+- Validation visuelle PO : OK, le 2026-05-13.
+- `php artisan test` local : OK, 106 tests / 368 assertions.
+- `php artisan route:cache` local : OK. La note TD-001 ci-dessous est donc obsolete cote code.
+- `https://www.dream-digital.info/fr` : 301 vers `https://dream-digital.info/fr`.
+- `https://dream-digital.info/fr` : 401 Basic Auth, conforme au gate pre-launch.
+- Warning PHPUnit doc-comment `@dataProvider` corrige vers attribut `#[DataProvider]`.
+
+Restent bloquants avant ouverture publique :
+
+- Confirmation rotation du mot de passe admin Laravel si pas deja faite hors chat.
+- Completion des infos business `config/dream-digital/site.php`.
+- Validation juridique des pages legales.
+- Re-mesure Lighthouse/console sur production avec Basic Auth.
+- Decision PO explicite avant `DD_PUBLIC_INDEXABLE=true` et retrait/limitation Basic Auth.
+
 ## Action items pour la session de demain (par ordre)
 
 ### 1. Vérifier rotation password admin Laravel (CRITIQUE)

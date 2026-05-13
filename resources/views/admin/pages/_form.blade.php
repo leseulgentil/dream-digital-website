@@ -2,6 +2,7 @@
   $isEdit = $page->exists;
   $formAction = $isEdit ? route('admin.pages.update', $page) : route('admin.pages.store');
   $blocks = $page->content_blocks ?? [];
+  $schema = ($cmsSchemas ?? [])[old('section', $page->section)] ?? null;
 @endphp
 
 <form method="POST" action="{{ $formAction }}" class="card-body row g-4" enctype="multipart/form-data" novalidate>
@@ -75,6 +76,21 @@
   </div>
 
   <div class="col-12"><hr class="m-0"><h5 class="mt-3 mb-0">Contenu (content_blocks)</h5><p class="text-muted mb-0">Champs structures qui alimentent le rendu Blade de la page publique.</p></div>
+
+  @if($schema)
+    <div class="col-12">
+      <div class="alert alert-info mb-0" role="note">
+        <strong>{{ $schema['label'] ?? 'Schema CMS' }}</strong>
+        <span class="d-block small">Champs prioritaires : {{ implode(', ', $schema['fields'] ?? []) }}.</span>
+        @if(!empty($schema['sections_example']))
+          <details class="mt-2">
+            <summary class="small">Voir un exemple de JSON sections</summary>
+            <pre class="small mt-2 mb-0">{{ json_encode($schema['sections_example'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+          </details>
+        @endif
+      </div>
+    </div>
+  @endif
 
   <div class="col-md-4">
     <label class="form-label" for="eyebrow">Eyebrow <small class="text-muted">(petit label cyan au-dessus du titre)</small></label>

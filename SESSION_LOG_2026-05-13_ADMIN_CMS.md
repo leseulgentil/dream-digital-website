@@ -64,24 +64,62 @@ Mode actif : **finition autonome par blocs**.
 - Test de garde-fou ajoute : `tests/Feature/FrontPerformanceAssetsTest.php`.
 - `npm run build:public` confirme un build public separe, sans compiler tout le template admin/demo.
 
+### Reprise blocs 1 a 4 - 2026-05-13
+
+Ordre traite : **1. ouverture publique readiness**, **2. theme front minimal**, **3. CMS contenu avance**, **4. QA finale**.
+
+#### 1. Ouverture publique readiness
+
+- Variables publiques ajoutees dans `.env.example` : contacts business, legal name, reseaux sociaux, OG image.
+- Configuration `config/dream-digital/site.php` alignee sur ces variables d'environnement.
+- Seeders business executes localement (`Country`, `Service`, `Pricing`, `Legal`, `Marketing`, `Blog`).
+- Document de lancement ajoute : `docs/LAUNCH_READINESS_2026-05-13.md`.
+- Etat volontairement bloquant avant mise en ligne publique : owner/admin actif, legal name, email support et telephone doivent etre renseignes en environnement cible.
+
+#### 2. Theme front minimal
+
+- Extraction d'un `front-core.scss` dedie a la vitrine au lieu de charger tout `core.scss`.
+- Layout front branche sur ce core public plus leger.
+- Generation Iconify selective : le CSS d'icones compile uniquement les icones reellement utilisees plus quelques fallbacks.
+- Resultat build public observe :
+  - `iconify.css` : environ 1,26 MB -> 49 KB.
+  - `front-core.css` : environ 709 KB -> 330 KB.
+
+#### 3. CMS contenu avance
+
+- Historique de revisions ajoute via `page_revisions`.
+- Les pages CMS enregistrent un snapshot a la creation, modification et duplication locale.
+- Guide de schema par section ajoute dans l'admin Pages (`marketing`, `blog`, `legal`, `help`).
+- Media library admin ajoutee sur `/admin/media`, limitee aux images CMS locales.
+- Menu admin enrichi avec `Media CMS`.
+
+#### 4. QA finale
+
+- Smoke test public ajoute : home FR/EN, hubs marketing, produit detail, blog, legal, absence de residus template.
+- Couverture admin CMS avance ajoutee : revisions, media library, guide schema.
+- Document QA ajoute : `docs/QA_FINAL_2026-05-13.md`.
+
 ## Verifications effectuees
 
-- `php artisan test` : 136 passed / 485 assertions.
+- `php artisan test` : 140 passed / 565 assertions.
 - `php artisan test tests\Feature\FrontPerformanceAssetsTest.php tests\Feature\ProductPagePolishTest.php tests\Feature\MarketingPagesDbTest.php` : 10 passed / 42 assertions.
+- `php artisan test tests\Feature\Admin\AdminCmsAdvancedTest.php tests\Feature\Admin\AdminCmsV3Test.php tests\Feature\Admin\AdminMenuTest.php tests\Feature\FrontPerformanceAssetsTest.php` : 11 passed / 60 assertions.
+- `php artisan test tests\Feature\PublicQaSmokeTest.php tests\Feature\LaunchReadinessCommandTest.php` : 4 passed / 71 assertions.
 - `npm run build:public` : OK, 110 modules transformes.
 - `npm run build` : OK.
-- `php artisan migrate --force` : migration admin appliquee localement.
-- `php artisan db:seed --class=BlogContentSeeder --force` : 20 entrees blog creees localement.
+- `php artisan migrate --force` : migrations appliquees localement, dont `page_revisions`.
+- `php artisan db:seed --force` : seeders business executes localement ; admin non cree tant que `DD_ADMIN_PASSWORD` est vide.
 - `php artisan config:cache` : OK.
 - `php artisan route:cache` : OK.
 - `php artisan view:cache` : OK.
+- `php artisan dd:launch-check` : contenu business OK apres seed, mais blocage attendu sur owner/admin actif et champs business obligatoires.
 
 ## Points restants connus
 
 - `dd:launch-check` local reste bloquant tant que la base locale/prod n'a pas tous les seeders business, un owner/admin actif et les champs business (`legal_name`, support email, phone).
 - Les images blog sont des URLs Unsplash externes avec credits/source dans le contenu.
 - Les contenus articles sont une base SEO initiale, enrichissable ensuite depuis l'admin.
-- Le build public reste encore lourd a cause de `core.scss` et surtout `iconify.css`; prochaine optimisation serieuse : theme front minimal + subset d'icones.
+- Le build public a ete allege via `front-core.scss` et un subset d'icones, mais il reste possible de pousser plus loin en supprimant d'autres morceaux Bootstrap/vendor inutiles.
 - Le build complet admin reste volontairement plus lourd car il compile encore les assets du template et des modules demo/proteges.
 
 ## Prochains choix a proposer au PO

@@ -25,6 +25,8 @@ class FrontPerformanceAssetsTest extends TestCase
             ->getContent();
 
         $this->assertMatchesRegularExpression('/front-page-landing-[^"\']+\.js/', $content);
+        $this->assertMatchesRegularExpression('/front-core-[^"\']+\.css/', $content);
+        $this->assertStringNotContainsString('/assets/core-', $content);
         $this->assertStringNotContainsString('Public+Sans', $content);
     }
 }

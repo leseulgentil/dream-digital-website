@@ -5,7 +5,7 @@
 @yield('vendor-style')
 
 <!-- Core CSS -->
-@vite(['resources/assets/vendor/scss/core.scss', 'resources/assets/css/demo.css', 'resources/assets/vendor/scss/pages/front-page.scss'])
+@vite(['resources/assets/vendor/scss/front-core.scss', 'resources/assets/css/demo.css', 'resources/assets/vendor/scss/pages/front-page.scss'])
 
 <!-- Page Styles -->
 @yield('page-style')

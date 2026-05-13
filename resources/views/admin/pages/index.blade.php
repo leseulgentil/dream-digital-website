@@ -73,6 +73,7 @@
                 <th>Pays</th>
                 <th>Titre</th>
                 <th>Statut</th>
+                <th>Revisions</th>
                 <th>Mis a jour</th>
                 <th class="text-end">Actions</th>
               </tr>
@@ -98,6 +99,7 @@
                       <span class="badge bg-label-warning">Brouillon</span>
                     @endif
                   </td>
+                  <td><span class="badge bg-label-secondary">{{ $page->revisions_count }}</span></td>
                   <td class="small text-muted">{{ $page->updated_at?->format('Y-m-d H:i') }}</td>
                   <td class="text-end">
                     @if(auth()->user()?->canManageContent())
@@ -118,7 +120,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center text-muted py-4">
+                  <td colspan="9" class="text-center text-muted py-4">
                     Aucune page.
                     @if(auth()->user()?->canManageContent())
                       <a href="{{ route('admin.pages.create') }}">Ajouter la premiere</a>.

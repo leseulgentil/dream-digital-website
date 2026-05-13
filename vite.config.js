@@ -38,7 +38,7 @@ const publicOnlyBuild = process.env.DD_BUILD_PUBLIC_ONLY === 'true';
 
 const publicFrontInputs = [
   'resources/assets/vendor/fonts/iconify/iconify.css',
-  'resources/assets/vendor/scss/core.scss',
+  'resources/assets/vendor/scss/front-core.scss',
   'resources/assets/css/demo.css',
   'resources/assets/vendor/scss/pages/front-page.scss',
   'resources/assets/vendor/scss/pages/front-page-landing.scss',

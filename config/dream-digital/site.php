@@ -85,20 +85,20 @@ return [
     ],
 
     'contact' => [
-        'email_sales'   => 'sales@dream-digital.info',
-        'email_support' => null,  // à fournir par PO
-        'phone'         => null,  // à fournir par PO
+        'email_sales'   => env('DD_SALES_EMAIL', 'sales@dream-digital.info'),
+        'email_support' => env('DD_SUPPORT_EMAIL'),  // a fournir par PO avant ouverture publique
+        'phone'         => env('DD_PUBLIC_PHONE'),  // a fournir par PO avant ouverture publique
     ],
 
     'social' => [
-        'linkedin' => null,  // URL à fournir par PO
-        'twitter'  => null,
-        'github'   => null,
+        'linkedin' => env('DD_SOCIAL_LINKEDIN'),  // URL a fournir par PO
+        'twitter'  => env('DD_SOCIAL_TWITTER'),
+        'github'   => env('DD_SOCIAL_GITHUB'),
     ],
 
     'company' => [
         'name'       => 'Dream Digital',
-        'legal_name' => null,  // SARL / SAS / etc. à fournir par PO
+        'legal_name' => env('DD_COMPANY_LEGAL_NAME'),  // SARL / SAS / etc. a fournir par PO
         'offices'    => [
             'Kinshasa (RDC)',
             'Abidjan (CI)',
@@ -112,6 +112,6 @@ return [
             'fr' => 'Voice. SMS. eSIM. And More. L\'opérateur télécom qui connecte les entreprises modernes à 200+ pays.',
             'en' => 'Voice. SMS. eSIM. And More. The telecom operator connecting modern enterprises to 200+ countries.',
         ],
-        'og_image'            => '/img/og/dream-digital-default.png',  // à fournir par PO
+        'og_image'            => env('DD_OG_IMAGE', '/img/og/dream-digital-default.png'),  // a fournir par PO
     ],
 ];

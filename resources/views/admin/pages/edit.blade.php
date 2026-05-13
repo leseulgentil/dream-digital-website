@@ -63,5 +63,47 @@
         @include('admin.pages._form')
       </div>
     </div>
+
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="h5 mb-0">Revisions recentes</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Action</th>
+                <th>Auteur</th>
+                <th>Titre snapshot</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($revisions as $revision)
+                <tr>
+                  <td class="small text-muted">{{ $revision->created_at?->format('Y-m-d H:i') }}</td>
+                  <td><span class="badge bg-label-secondary">{{ $revision->action }}</span></td>
+                  <td>{{ $revision->user?->name ?? 'Systeme' }}</td>
+                  <td>{{ \Illuminate\Support\Str::limit($revision->title, 80) }}</td>
+                  <td>
+                    @if($revision->is_published)
+                      <span class="badge bg-label-success">Publie</span>
+                    @else
+                      <span class="badge bg-label-warning">Brouillon</span>
+                    @endif
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="5" class="text-muted">Aucune revision enregistree pour le moment.</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 @endsection

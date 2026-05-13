@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PageRequest;
 use App\Models\Country;
 use App\Models\Page;
+use App\Models\PageRevision;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -19,7 +20,11 @@ class PagesController extends Controller
 
     public function index(Request $request): View
     {
-        $query = Page::with('country')->orderBy('section')->orderBy('slug')->orderBy('locale');
+        $query = Page::with('country')
+            ->withCount('revisions')
+            ->orderBy('section')
+            ->orderBy('slug')
+            ->orderBy('locale');
 
         if ($section = $request->input('section')) {
             $query->where('section', $section);
@@ -49,12 +54,14 @@ class PagesController extends Controller
             'countries' => Country::active()->orderBy('sort_order')->get(),
             'sections' => self::SECTIONS,
             'sectionsJson' => '[]',
+            'cmsSchemas' => config('dream-digital.cms.schemas', []),
         ]);
     }
 
     public function store(PageRequest $request): RedirectResponse
     {
         $page = Page::create($this->payload($request));
+        $this->recordRevision($page, 'created');
 
         return redirect()->route('admin.pages.index')
             ->with('status', "Page creee : {$page->title} ({$page->section}/{$page->locale})");
@@ -68,6 +75,8 @@ class PagesController extends Controller
             'page' => $page,
             'countries' => Country::active()->orderBy('sort_order')->get(),
             'sections' => self::SECTIONS,
+            'cmsSchemas' => config('dream-digital.cms.schemas', []),
+            'revisions' => $page->revisions()->with('user')->limit(8)->get(),
             'sectionsJson' => json_encode(
                 $blocks['sections'] ?? [],
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
@@ -78,6 +87,7 @@ class PagesController extends Controller
     public function update(PageRequest $request, Page $page): RedirectResponse
     {
         $page->update($this->payload($request));
+        $this->recordRevision($page, 'updated');
 
         return redirect()->route('admin.pages.index')
             ->with('status', "Page mise a jour : {$page->title}");
@@ -150,6 +160,7 @@ class PagesController extends Controller
         $duplicate->is_published = false;
         $duplicate->published_at = null;
         $duplicate->save();
+        $this->recordRevision($duplicate, 'duplicated');
 
         return redirect()
             ->route('admin.pages.edit', $duplicate)
@@ -195,6 +206,24 @@ class PagesController extends Controller
             'is_published' => $validated['is_published'] ?? false,
             'published_at' => ($validated['is_published'] ?? false) ? now() : null,
         ];
+    }
+
+    private function recordRevision(Page $page, string $action): void
+    {
+        PageRevision::create([
+            'page_id' => $page->id,
+            'user_id' => auth()->id(),
+            'action' => $action,
+            'slug' => $page->slug,
+            'section' => $page->section,
+            'locale' => $page->locale,
+            'title' => $page->title,
+            'meta_description' => $page->meta_description,
+            'meta_image_path' => $page->meta_image_path,
+            'content_blocks' => $page->content_blocks,
+            'is_published' => $page->is_published,
+            'published_at' => $page->published_at,
+        ]);
     }
 
     private function uploadedImagePath(PageRequest $request, array $validated): ?string

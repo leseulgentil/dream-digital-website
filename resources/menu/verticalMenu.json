@@ -22,6 +22,12 @@
       "slug": "admin.pages"
     },
     {
+      "url": "admin/media",
+      "name": "Media CMS",
+      "icon": "dd-menu-icon icon-base bx bx-image",
+      "slug": "admin.media.index"
+    },
+    {
       "url": "admin/pricing",
       "name": "Pricing",
       "icon": "dd-menu-icon icon-base bx bx-purchase-tag-alt",

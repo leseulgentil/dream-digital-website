@@ -27,6 +27,7 @@ use App\Http\Controllers\front_pages\HelpCenterArticle;
 use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\PagesController as AdminPagesController;
 use App\Http\Controllers\Admin\PricingController as AdminPricingController;
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
@@ -252,6 +253,10 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
             Route::delete('/{page}', 'destroy')->name('destroy');
         });
     });
+
+    Route::get('/admin/media', [AdminMediaController::class, 'index'])
+        ->middleware('admin.role:owner,admin,editor')
+        ->name('admin.media.index');
 
     Route::prefix('admin/users')
         ->name('admin.users.')

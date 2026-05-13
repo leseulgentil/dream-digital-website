@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class Page extends Model
+class PageRevision extends Model
 {
     protected $fillable = [
+        'page_id',
+        'user_id',
+        'action',
         'slug',
         'section',
-        'country_id',
         'locale',
         'title',
         'meta_description',
@@ -26,18 +27,13 @@ class Page extends Model
         'published_at' => 'datetime',
     ];
 
-    public function country()
+    public function page()
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(Page::class);
     }
 
-    public function revisions()
+    public function user()
     {
-        return $this->hasMany(PageRevision::class)->latest();
-    }
-
-    public function scopePublished(Builder $query): Builder
-    {
-        return $query->where('is_published', true);
+        return $this->belongsTo(User::class);
     }
 }

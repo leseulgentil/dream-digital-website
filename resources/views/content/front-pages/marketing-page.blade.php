@@ -34,10 +34,6 @@
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])
 @endsection
 
-@section('page-script')
-  @vite(['resources/assets/js/front-page-landing.js'])
-@endsection
-
 @section('content')
   <main class="dd-home dd-public-page dd-public-page--{{ $page }}">
     @if(in_array($page, ['pricing', 'contact'], true))

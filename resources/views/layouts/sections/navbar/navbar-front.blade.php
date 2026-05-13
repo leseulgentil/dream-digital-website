@@ -116,6 +116,7 @@
           {{-- Coverage et Pricing : liens simples --}}
           <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('coverage') }}" href="{{ $pageUrl('coverage') }}">Coverage</a></li>
           <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('pricing') }}" href="{{ $pageUrl('pricing') }}">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium {{ $isActive('blog') }}" href="{{ $pageUrl('blog') }}">Blog</a></li>
 
           {{-- Societe : 2 liens --}}
           <li class="nav-item dropdown dd-megamenu-item dd-megamenu-item--narrow">

@@ -42,6 +42,7 @@
       <h2>Societe</h2>
       <a href="{{ $pageUrl('coverage') }}">Coverage</a>
       <a href="{{ $pageUrl('solutions') }}">Solutions</a>
+      <a href="{{ $pageUrl('blog') }}">Blog</a>
       <a href="{{ $pageUrl('company') }}">A propos</a>
       <a href="{{ $pageUrl('contact') }}">Contact</a>
     </nav>

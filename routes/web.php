@@ -24,6 +24,7 @@ use App\Http\Controllers\front_pages\Payment;
 use App\Http\Controllers\front_pages\Checkout;
 use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
+use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PagesController as AdminPagesController;
@@ -189,6 +190,18 @@ Route::get('/products/{service}', [MarketingPageController::class, 'product'])
 Route::get('/{locale}/products/{service}', [MarketingPageController::class, 'localizedProduct'])
   ->whereIn('locale', ['fr', 'en'])
   ->name('front.localized.product');
+
+Route::get('/blog', [BlogController::class, 'index'])->name('front.blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])
+  ->where('slug', '[a-z0-9-]+')
+  ->name('front.blog.show');
+Route::get('/{locale}/blog', [BlogController::class, 'localizedIndex'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('front.localized.blog.index');
+Route::get('/{locale}/blog/{slug}', [BlogController::class, 'localizedShow'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->where('slug', '[a-z0-9-]+')
+  ->name('front.localized.blog.show');
 
 Route::get('/{page}', [MarketingPageController::class, 'show'])
   ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])

@@ -52,7 +52,7 @@ class SeoController extends Controller
 
         $base = rtrim(config('app.url'), '/');
         $locales = ['fr', 'en'];
-        $hubs = ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'];
+        $hubs = ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact', 'blog'];
         $legalSlugs = ['mentions', 'cgu', 'rgpd'];
         $serviceSlugs = collect(config('dream-digital.services.items', []))
             ->where('active', true)
@@ -78,6 +78,10 @@ class SeoController extends Controller
             foreach ($legalSlugs as $slug) {
                 $urls[] = ['loc' => "{$base}/{$locale}/legal/{$slug}", 'priority' => '0.3', 'changefreq' => 'yearly', 'lastmod' => $this->lastmodForLegal($slug, $locale, $today)];
             }
+        }
+
+        foreach ($this->blogUrls($base, $today) as $blogUrl) {
+            $urls[] = $blogUrl;
         }
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -110,5 +114,26 @@ class SeoController extends Controller
             ->whereNull('country_id')
             ->first();
         return optional($page?->updated_at)->toDateString() ?? $fallback;
+    }
+
+    private function blogUrls(string $base, string $fallback): array
+    {
+        if (!Schema::hasTable('pages')) {
+            return [];
+        }
+
+        return Page::published()
+            ->where('section', 'blog')
+            ->whereNull('country_id')
+            ->orderBy('locale')
+            ->orderBy('slug')
+            ->get()
+            ->map(fn (Page $page) => [
+                'loc' => "{$base}/{$page->locale}/blog/{$page->slug}",
+                'priority' => '0.6',
+                'changefreq' => 'monthly',
+                'lastmod' => optional($page->updated_at)->toDateString() ?? $fallback,
+            ])
+            ->all();
     }
 }

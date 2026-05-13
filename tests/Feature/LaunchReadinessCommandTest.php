@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\BlogContentSeeder;
 use Database\Seeders\CountrySeeder;
 use Database\Seeders\LegalPageSeeder;
 use Database\Seeders\MarketingPageSeeder;
@@ -88,6 +89,7 @@ class LaunchReadinessCommandTest extends TestCase
             ServicePriceSeeder::class,
             LegalPageSeeder::class,
             MarketingPageSeeder::class,
+            BlogContentSeeder::class,
         ]);
 
         User::factory()->create(['email' => 'admin@dream-digital.info']);

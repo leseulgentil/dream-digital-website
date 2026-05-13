@@ -159,6 +159,9 @@
     @hasSection('jsonld-breadcrumb')
       <script type="application/ld+json">@yield('jsonld-breadcrumb')</script>
     @endif
+    @hasSection('jsonld-extra')
+      <script type="application/ld+json">@yield('jsonld-extra')</script>
+    @endif
   @endif
   <!-- Favicon — Dream Digital (Brand Kit v1.2, S5) -->
   <link rel="icon" type="image/svg+xml" href="{{ asset('img/brand/logo-dd-icon.svg') }}" />

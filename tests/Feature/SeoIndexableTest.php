@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\BlogContentSeeder;
 use Database\Seeders\CountrySeeder;
 use Database\Seeders\ServiceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -102,6 +103,19 @@ class SeoIndexableTest extends TestCase
         // 6 services config (sms-a2p, voice, did, sip, dialo, esim)
         $response->assertSee('/fr/products/sms-a2p</loc>', false);
         $response->assertSee('/en/products/voice</loc>', false);
+    }
+
+    public function test_sitemap_contains_blog_index_and_articles(): void
+    {
+        $this->seed([CountrySeeder::class, ServiceSeeder::class, BlogContentSeeder::class]);
+        putenv('DD_PUBLIC_INDEXABLE=true');
+
+        $response = $this->get('/sitemap.xml');
+        $response->assertOk();
+        $response->assertSee('/fr/blog</loc>', false);
+        $response->assertSee('/en/blog</loc>', false);
+        $response->assertSee('/fr/blog/sms-a2p-otp-afrique-francophone</loc>', false);
+        $response->assertSee('/en/blog/sms-a2p-otp-afrique-francophone</loc>', false);
     }
 
     protected function tearDown(): void

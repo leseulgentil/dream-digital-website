@@ -68,6 +68,12 @@
     @error('meta_description')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
+  <div class="col-12">
+    <label class="form-label" for="seo_title">Titre SEO personnalise <small class="text-muted">(optionnel)</small></label>
+    <input type="text" id="seo_title" name="seo_title" maxlength="220" class="form-control @error('seo_title') is-invalid @enderror" value="{{ old('seo_title', $blocks['seo_title'] ?? '') }}" placeholder="Titre optimise Google si different du H1">
+    @error('seo_title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
   <div class="col-12"><hr class="m-0"><h5 class="mt-3 mb-0">Contenu (content_blocks)</h5><p class="text-muted mb-0">Champs structures qui alimentent le rendu Blade de la page publique.</p></div>
 
   <div class="col-md-4">
@@ -83,9 +89,45 @@
   </div>
 
   <div class="col-md-4">
-    <label class="form-label" for="meta_image_path">Image OG <small class="text-muted">(chemin public/...)</small></label>
+    <label class="form-label" for="meta_image_path">Image OG / Blog <small class="text-muted">(URL ou chemin public/...)</small></label>
     <input type="text" id="meta_image_path" name="meta_image_path" maxlength="500" class="form-control @error('meta_image_path') is-invalid @enderror" value="{{ old('meta_image_path', $page->meta_image_path) }}" placeholder="/img/og/mentions.png">
     @error('meta_image_path')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="author">Auteur</label>
+    <input type="text" id="author" name="author" maxlength="120" class="form-control @error('author') is-invalid @enderror" value="{{ old('author', $blocks['author'] ?? '') }}" placeholder="Dream Digital">
+    @error('author')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="reading_time">Temps de lecture</label>
+    <input type="text" id="reading_time" name="reading_time" maxlength="40" class="form-control @error('reading_time') is-invalid @enderror" value="{{ old('reading_time', $blocks['reading_time'] ?? '') }}" placeholder="5 min">
+    @error('reading_time')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="tags">Tags <small class="text-muted">(separes par virgule)</small></label>
+    <input type="text" id="tags" name="tags" maxlength="500" class="form-control @error('tags') is-invalid @enderror" value="{{ old('tags', implode(', ', $blocks['tags'] ?? [])) }}" placeholder="SMS A2P, OTP, CPaaS">
+    @error('tags')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="image_alt">Texte alternatif image</label>
+    <input type="text" id="image_alt" name="image_alt" maxlength="220" class="form-control @error('image_alt') is-invalid @enderror" value="{{ old('image_alt', $blocks['image_alt'] ?? '') }}">
+    @error('image_alt')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="image_credit">Credit image</label>
+    <input type="text" id="image_credit" name="image_credit" maxlength="220" class="form-control @error('image_credit') is-invalid @enderror" value="{{ old('image_credit', $blocks['image_credit'] ?? '') }}" placeholder="Photo Unsplash / Auteur">
+    @error('image_credit')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="image_source_url">URL source image</label>
+    <input type="url" id="image_source_url" name="image_source_url" maxlength="500" class="form-control @error('image_source_url') is-invalid @enderror" value="{{ old('image_source_url', $blocks['image_source_url'] ?? '') }}">
+    @error('image_source_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
   <div class="col-12">

@@ -23,10 +23,17 @@ class PageRequest extends FormRequest
             'country_id' => ['nullable', 'integer', Rule::exists('countries', 'id')],
             'locale' => ['required', 'string', 'size:2', Rule::in(['fr', 'en'])],
             'title' => ['required', 'string', 'max:200'],
+            'seo_title' => ['nullable', 'string', 'max:220'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_image_path' => ['nullable', 'string', 'max:500'],
             'eyebrow' => ['nullable', 'string', 'max:200'],
             'lead' => ['nullable', 'string'],
+            'author' => ['nullable', 'string', 'max:120'],
+            'reading_time' => ['nullable', 'string', 'max:40'],
+            'image_alt' => ['nullable', 'string', 'max:220'],
+            'image_credit' => ['nullable', 'string', 'max:220'],
+            'image_source_url' => ['nullable', 'string', 'max:500'],
+            'tags' => ['nullable', 'string', 'max:500'],
             'last_updated' => ['nullable', 'string', 'max:30'],
             'sections_json' => ['nullable', 'string'],
             'is_published' => ['sometimes', 'boolean'],
@@ -45,6 +52,16 @@ class PageRequest extends FormRequest
             'slug' => $rawSlug ? strtolower(trim($rawSlug)) : null,
             'locale' => $rawLocale ? strtolower($rawLocale) : null,
         ]);
+    }
+
+    public function decodedTags(): array
+    {
+        return collect(explode(',', (string) $this->input('tags')))
+            ->map(fn (string $tag) => trim($tag))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**

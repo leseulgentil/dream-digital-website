@@ -64,6 +64,7 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     if (Schema::hasTable('pages')) {
         $record(Page::published()->where('section', 'legal')->count() >= 6, '6 published legal pages exist');
         $record(Page::published()->where('section', 'marketing')->count() >= 14, '14 published marketing pages exist');
+        $record(Page::published()->where('section', 'blog')->where('locale', 'fr')->count() >= 10, '10 published FR blog articles exist');
     }
 
     if (Schema::hasTable('users')) {

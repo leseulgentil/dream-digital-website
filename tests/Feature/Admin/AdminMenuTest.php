@@ -19,10 +19,12 @@ class AdminMenuTest extends TestCase
 
         $this->assertStringContainsString('Dashboard', $menuHtml);
         $this->assertStringContainsString('Pages', $menuHtml);
+        $this->assertStringContainsString('Blog', $menuHtml);
         $this->assertStringContainsString('Pricing', $menuHtml);
         $this->assertStringContainsString('Utilisateurs', $menuHtml);
         $this->assertStringContainsString('Voir le site', $menuHtml);
         $this->assertStringContainsString('/admin/pages', $menuHtml);
+        $this->assertStringContainsString('/admin/pages?section=blog', $menuHtml);
         $this->assertStringContainsString('/admin/pricing', $menuHtml);
         $this->assertStringContainsString('/admin/users', $menuHtml);
 
@@ -50,6 +52,7 @@ class AdminMenuTest extends TestCase
             'Dream Digital',
             'Dashboard',
             'Pages',
+            'Blog',
             'Pricing',
             'Utilisateurs',
             'Public',

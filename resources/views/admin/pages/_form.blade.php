@@ -80,7 +80,7 @@
       <h5 class="mb-1">Assistant Blog SEO</h5>
       <p class="text-muted mb-0">Genere un article complet puis remplis le formulaire apres validation.</p>
     </div>
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ddGenerateArticleModal">
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ddGenerateArticleModal" data-dd-open-article-generator>
       <i class="bx bx-bot me-1"></i> Generate Article
     </button>
   </div>

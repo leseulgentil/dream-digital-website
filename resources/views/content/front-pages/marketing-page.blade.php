@@ -1,18 +1,25 @@
 @extends('layouts/layoutMaster')
 
 @php
+  use Illuminate\Support\Str;
+
   $t = fn ($value) => is_array($value) ? ($value[$locale] ?? $value['fr'] ?? reset($value)) : $value;
-  $title = $t($pageData['title'] ?? config('dream-digital.site.meta.title_default', 'Dream Digital'));
+  $displayTitle = $t($pageData['title'] ?? config('dream-digital.site.meta.title_default', 'Dream Digital'));
+  $seoTitle = $t($pageData['seo_title'] ?? $displayTitle);
   $pageLead = $t($pageData['lead'] ?? '');
-  $pageEyebrow = $t($pageData['eyebrow'] ?? '');
-  $ogTitle = trim($pageEyebrow . ($pageEyebrow ? ' — ' : '') . $title) . ' | Dream Digital';
-  $ogDescription = $pageLead !== '' ? mb_substr($pageLead, 0, 280) : ($t(config('dream-digital.site.meta.description_default', '')) ?: '');
+  $ogTitle = $seoTitle . ' | Dream Digital';
+  $ogDescription = $t($pageData['meta_description'] ?? '') ?: ($pageLead !== '' ? mb_substr($pageLead, 0, 280) : ($t(config('dream-digital.site.meta.description_default', '')) ?: ''));
+  $imagePath = $pageData['meta_image_path'] ?? null;
+  $ogImage = blank($imagePath) ? null : (Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset(ltrim($imagePath, '/')));
 @endphp
 
-@section('title', $title . ' | Dream Digital')
+@section('title', $seoTitle . ' | Dream Digital')
 @section('page-description', $ogDescription)
 @section('og-title', $ogTitle)
 @section('og-description', $ogDescription)
+@if($ogImage)
+  @section('og-image', $ogImage)
+@endif
 
 @php
   $crumbBase = rtrim(config('app.url'), '/') . "/{$locale}";
@@ -22,9 +29,9 @@
   ];
   if ($page === 'product' && !empty($service)) {
     $crumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $locale === 'en' ? 'Products' : 'Produits', 'item' => "{$crumbBase}/products"];
-    $crumbItems[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $title, 'item' => "{$crumbBase}/products/" . ($service['slug'] ?? $service['id'] ?? '')];
+    $crumbItems[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $displayTitle, 'item' => "{$crumbBase}/products/" . ($service['slug'] ?? $service['id'] ?? '')];
   } else {
-    $crumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $title, 'item' => "{$crumbBase}/{$page}"];
+    $crumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $displayTitle, 'item' => "{$crumbBase}/{$page}"];
   }
   $crumbPayload = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $crumbItems];
 @endphp

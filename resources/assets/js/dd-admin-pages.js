@@ -133,6 +133,47 @@
   const generatorButton = document.getElementById('article_generator_submit');
   const generatorStatus = document.getElementById('article_generator_status');
   const generatorResults = document.getElementById('article_generator_results');
+  const generatorModal = document.getElementById('ddGenerateArticleModal');
+
+  const openModalFallback = modalEl => {
+    if (!modalEl) return;
+    modalEl.style.display = 'block';
+    modalEl.removeAttribute('aria-hidden');
+    modalEl.setAttribute('aria-modal', 'true');
+    modalEl.classList.add('show');
+    document.body.classList.add('modal-open');
+
+    if (!document.querySelector('.modal-backdrop[data-dd-fallback-backdrop]')) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      backdrop.dataset.ddFallbackBackdrop = 'true';
+      document.body.appendChild(backdrop);
+    }
+  };
+
+  const closeModalFallback = modalEl => {
+    if (!modalEl) return;
+    modalEl.style.display = 'none';
+    modalEl.setAttribute('aria-hidden', 'true');
+    modalEl.removeAttribute('aria-modal');
+    modalEl.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    document.querySelector('.modal-backdrop[data-dd-fallback-backdrop]')?.remove();
+  };
+
+  document.querySelectorAll('[data-dd-open-article-generator]').forEach(button => {
+    button.addEventListener('click', () => {
+      window.setTimeout(() => {
+        if (generatorModal && !generatorModal.classList.contains('show')) {
+          if (window.bootstrap?.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(generatorModal).show();
+          } else {
+            openModalFallback(generatorModal);
+          }
+        }
+      }, 0);
+    });
+  });
 
   const setValue = (id, value) => {
     const field = document.getElementById(id);
@@ -169,6 +210,8 @@
     const modalEl = document.getElementById('ddGenerateArticleModal');
     if (modalEl && window.bootstrap) {
       window.bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    } else {
+      closeModalFallback(modalEl);
     }
   };
 

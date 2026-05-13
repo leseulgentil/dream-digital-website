@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('navigation_items')) {
+            return;
+        }
+
         Schema::create('navigation_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parent_id')->nullable()->constrained('navigation_items')->nullOnDelete();

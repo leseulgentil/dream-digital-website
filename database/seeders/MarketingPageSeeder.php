@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Page;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class MarketingPageSeeder extends Seeder
 {
@@ -24,6 +25,8 @@ class MarketingPageSeeder extends Seeder
         foreach ($pages as $slug => $cfg) {
             foreach (['fr', 'en'] as $locale) {
                 $title = $cfg['title'][$locale] ?? $cfg['title']['fr'] ?? $slug;
+                $lead = $cfg['lead'][$locale] ?? $cfg['lead']['fr'] ?? null;
+                $image = $this->imageFor($slug);
 
                 Page::updateOrCreate(
                     [
@@ -35,10 +38,16 @@ class MarketingPageSeeder extends Seeder
                     [
                         'title' => $title,
                         'meta_description' => $this->extractMetaDescription($cfg, $locale),
-                        'meta_image_path' => null,
+                        'meta_image_path' => $image['url'],
                         'content_blocks' => [
+                            'seo_title' => $this->seoTitle($title, $locale),
                             'eyebrow' => $cfg['eyebrow'][$locale] ?? $cfg['eyebrow']['fr'] ?? null,
-                            'lead' => $cfg['lead'][$locale] ?? $cfg['lead']['fr'] ?? null,
+                            'lead' => $lead,
+                            'image_alt' => $image['alt'][$locale] ?? $image['alt']['fr'],
+                            'image_credit' => $image['credit'],
+                            'image_source_url' => $image['source_url'],
+                            'seo_focus_keywords' => $this->focusKeywords($slug, $locale),
+                            'sections' => $this->sectionsFor($slug, $locale, $title, (string) $lead),
                         ],
                         'is_published' => true,
                         'published_at' => now(),
@@ -57,5 +66,145 @@ class MarketingPageSeeder extends Seeder
             return null;
         }
         return mb_substr($lead, 0, 280);
+    }
+
+    private function seoTitle(string $title, string $locale): string
+    {
+        $suffix = $locale === 'fr' ? ' | Dream Digital CPaaS' : ' | Dream Digital CPaaS';
+
+        return Str::limit($title . $suffix, 68, '');
+    }
+
+    private function imageFor(string $slug): array
+    {
+        $images = [
+            'products' => [
+                'url' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/person-using-macbook-pro-on-white-wooden-table-f06f85e504b3',
+                'credit' => 'Photo Unsplash / John Schnobrich',
+                'alt' => ['fr' => 'Catalogue de services telecom sur ordinateur', 'en' => 'Telecom services catalogue on a laptop'],
+            ],
+            'developers' => [
+                'url' => 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/turned-on-monitor-displaying-code-dccba630e2f6',
+                'credit' => 'Photo Unsplash / Ilya Pavlov',
+                'alt' => ['fr' => 'Code API telecom pour developpeurs', 'en' => 'Telecom API code for developers'],
+            ],
+            'solutions' => [
+                'url' => 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/people-sitting-down-near-table-with-assorted-laptop-computers-d307ca884978',
+                'credit' => 'Photo Unsplash / Campaign Creators',
+                'alt' => ['fr' => 'Equipe comparant des flux telecom metier', 'en' => 'Team comparing business telecom workflows'],
+            ],
+            'coverage' => [
+                'url' => 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/aerial-photography-of-road-beside-mountain-during-daytime-423995f22d0b',
+                'credit' => 'Photo Unsplash / CHUTTERSNAP',
+                'alt' => ['fr' => 'Carte et routes internationales', 'en' => 'Map and international routes'],
+            ],
+            'pricing' => [
+                'url' => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/person-writing-on-white-paper-6726b3ff858f',
+                'credit' => 'Photo Unsplash / Kelly Sikkema',
+                'alt' => ['fr' => 'Analyse tarifaire telecom et finance', 'en' => 'Telecom pricing and finance analysis'],
+            ],
+            'company' => [
+                'url' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/people-sitting-near-table-with-laptop-computer-f200968a6e72',
+                'credit' => 'Photo Unsplash / Annie Spratt',
+                'alt' => ['fr' => 'Equipe Dream Digital en environnement de travail', 'en' => 'Dream Digital team in a workspace'],
+            ],
+            'contact' => [
+                'url' => 'https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=1600&q=80',
+                'source_url' => 'https://unsplash.com/photos/woman-in-white-long-sleeve-shirt-sitting-beside-man-in-gray-suit-jacket-88b68371db39',
+                'credit' => 'Photo Unsplash / Arlington Research',
+                'alt' => ['fr' => 'Equipe support discutant avec un client telecom', 'en' => 'Support team discussing with a telecom customer'],
+            ],
+        ];
+
+        return $images[$slug] ?? $images['products'];
+    }
+
+    private function focusKeywords(string $slug, string $locale): array
+    {
+        $keywords = [
+            'products' => ['CPaaS', 'SMS A2P', 'Voice API', 'DID', 'eSIM'],
+            'developers' => ['API telecom', 'webhooks DLR', 'sandbox', 'integration CPaaS'],
+            'solutions' => ['fintech', 'retail', 'logistique', 'notifications client'],
+            'coverage' => ['couverture SMS', 'routes internationales', 'corridors telecom'],
+            'pricing' => ['pricing telecom', 'tarifs SMS', 'tarifs voix', 'SLA'],
+            'company' => ['operateur CPaaS', 'Afrique francophone', 'partenariats operateurs'],
+            'contact' => ['contact telecom', 'devis CPaaS', 'support integration'],
+        ];
+
+        $english = [
+            'API telecom' => 'telecom API',
+            'webhooks DLR' => 'DLR webhooks',
+            'integration CPaaS' => 'CPaaS integration',
+            'fintech' => 'fintech',
+            'retail' => 'retail',
+            'logistique' => 'logistics',
+            'notifications client' => 'customer notifications',
+            'couverture SMS' => 'SMS coverage',
+            'routes internationales' => 'international routes',
+            'corridors telecom' => 'telecom corridors',
+            'pricing telecom' => 'telecom pricing',
+            'tarifs SMS' => 'SMS rates',
+            'tarifs voix' => 'voice rates',
+            'operateur CPaaS' => 'CPaaS operator',
+            'Afrique francophone' => 'Francophone Africa',
+            'partenariats operateurs' => 'carrier partnerships',
+            'contact telecom' => 'telecom contact',
+            'devis CPaaS' => 'CPaaS quote',
+            'support integration' => 'integration support',
+        ];
+
+        return collect($keywords[$slug] ?? ['Dream Digital'])
+            ->map(fn (string $keyword) => $locale === 'en' ? ($english[$keyword] ?? $keyword) : $keyword)
+            ->values()
+            ->all();
+    }
+
+    private function sectionsFor(string $slug, string $locale, string $title, string $lead): array
+    {
+        $keywords = implode(', ', $this->focusKeywords($slug, $locale));
+
+        if ($locale === 'en') {
+            return [
+                [
+                    'heading' => 'What this page helps clarify',
+                    'body' => "{$title} gives buyers and technical teams a clear view of the Dream Digital approach. {$lead}",
+                    'body_html' => '<p>' . e($title) . ' gives buyers and technical teams a clear view of the Dream Digital approach.</p><p>' . e($lead) . '</p>',
+                ],
+                [
+                    'heading' => 'Useful SEO and business focus',
+                    'body' => "The page is optimized around the following business terms: {$keywords}. The goal is to attract qualified traffic without hiding the practical operational details.",
+                    'body_html' => '<p>The page is optimized around the following business terms: <strong>' . e($keywords) . '</strong>.</p><p>The goal is to attract qualified traffic without hiding the practical operational details.</p>',
+                ],
+                [
+                    'heading' => 'Suggested conversion path',
+                    'body' => 'Visitors should be able to move from discovery to action: compare the service, inspect coverage or pricing, then contact Dream Digital with route, volume and SLA context.',
+                    'body_html' => '<p>Visitors should be able to move from discovery to action:</p><ul><li>Compare the service</li><li>Inspect coverage or pricing</li><li>Contact Dream Digital with route, volume and SLA context</li></ul>',
+                ],
+            ];
+        }
+
+        return [
+            [
+                'heading' => 'Ce que cette page clarifie',
+                'body' => "{$title} donne aux acheteurs et aux equipes techniques une lecture claire de l approche Dream Digital. {$lead}",
+                'body_html' => '<p>' . e($title) . ' donne aux acheteurs et aux equipes techniques une lecture claire de l approche Dream Digital.</p><p>' . e($lead) . '</p>',
+            ],
+            [
+                'heading' => 'Focus SEO et business utile',
+                'body' => "La page est optimisee autour des termes metier suivants: {$keywords}. L objectif est d attirer un trafic qualifie sans cacher les details operationnels importants.",
+                'body_html' => '<p>La page est optimisee autour des termes metier suivants: <strong>' . e($keywords) . '</strong>.</p><p>L objectif est d attirer un trafic qualifie sans cacher les details operationnels importants.</p>',
+            ],
+            [
+                'heading' => 'Parcours de conversion recommande',
+                'body' => 'Le visiteur doit pouvoir passer de la decouverte a l action: comparer le service, consulter la couverture ou le pricing, puis contacter Dream Digital avec pays, volume et SLA.',
+                'body_html' => '<p>Le visiteur doit pouvoir passer de la decouverte a l action:</p><ul><li>Comparer le service</li><li>Consulter la couverture ou le pricing</li><li>Contacter Dream Digital avec pays, volume et SLA</li></ul>',
+            ],
+        ];
     }
 }

@@ -2,21 +2,279 @@
 
 namespace App\Services\Admin;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use RuntimeException;
+use Throwable;
 
 class ArticleGeneratorService
 {
     public function generate(array $input): array
     {
-        $locale = in_array($input['locale'] ?? 'fr', ['fr', 'en'], true) ? $input['locale'] : 'fr';
-        $idea = trim((string) $input['idea']);
-        $keywords = $this->keywords($input['keywords'] ?? '');
-        $guidelines = trim((string) ($input['guidelines'] ?? ''));
-        $variants = max(1, min(5, (int) ($input['variants'] ?? 3)));
+        $normalized = $this->normalizeInput($input);
+
+        if ($this->shouldUseOpenAi()) {
+            try {
+                return $this->generateWithOpenAi($normalized);
+            } catch (Throwable $exception) {
+                Log::warning('OpenAI article generation failed; using local fallback.', [
+                    'message' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        return $this->generateLocal($normalized);
+    }
+
+    private function generateLocal(array $input): array
+    {
+        $locale = $input['locale'];
+        $idea = $input['idea'];
+        $keywords = $input['keywords'];
+        $guidelines = $input['guidelines'];
+        $variants = $input['variants'];
 
         return collect(range(1, $variants))
             ->map(fn (int $index) => $this->variant($idea, $keywords, $guidelines, $locale, $index))
             ->all();
+    }
+
+    private function generateWithOpenAi(array $input): array
+    {
+        $response = Http::acceptJson()
+            ->withToken((string) config('services.openai.api_key'))
+            ->timeout((int) config('services.openai.timeout', 45))
+            ->post(rtrim((string) config('services.openai.base_url', 'https://api.openai.com/v1'), '/') . '/responses', $this->openAiPayload($input));
+
+        if ($response->failed()) {
+            throw new RuntimeException('OpenAI API returned HTTP ' . $response->status());
+        }
+
+        $decoded = json_decode($this->extractOutputText($response->json()), true, 512, JSON_THROW_ON_ERROR);
+        $articles = $decoded['articles'] ?? [];
+
+        if (! is_array($articles) || $articles === []) {
+            throw new RuntimeException('OpenAI API returned no article variants.');
+        }
+
+        return collect($articles)
+            ->take($input['variants'])
+            ->map(fn (array $article, int $index) => $this->normalizeArticle($article, $input, $index + 1))
+            ->values()
+            ->all();
+    }
+
+    private function shouldUseOpenAi(): bool
+    {
+        return config('services.openai.article_provider') === 'openai'
+            && filled(config('services.openai.api_key'));
+    }
+
+    private function normalizeInput(array $input): array
+    {
+        return [
+            'locale' => in_array($input['locale'] ?? 'fr', ['fr', 'en'], true) ? $input['locale'] : 'fr',
+            'idea' => trim((string) $input['idea']),
+            'keywords' => $this->keywords($input['keywords'] ?? ''),
+            'guidelines' => trim((string) ($input['guidelines'] ?? '')),
+            'variants' => max(1, min(5, (int) ($input['variants'] ?? 3))),
+        ];
+    }
+
+    private function openAiPayload(array $input): array
+    {
+        $localeLabel = $input['locale'] === 'fr' ? 'francais' : 'English';
+        $keywordLine = $input['keywords'] ? implode(', ', $input['keywords']) : 'CPaaS, SMS A2P, Voice API, telecom B2B';
+        $guidelines = $input['guidelines'] !== '' ? $input['guidelines'] : 'Ton expert, concret, commercial, utile pour des decideurs B2B.';
+
+        return [
+            'model' => config('services.openai.model', 'gpt-5-mini'),
+            'instructions' => "You are Dream Digital's senior SEO editor for programmable telecom, CPaaS, SMS A2P, Voice API, DID, eSIM, cloud and digital transformation. Return only valid JSON matching the schema.",
+            'input' => [[
+                'role' => 'user',
+                'content' => [[
+                    'type' => 'input_text',
+                    'text' => implode("\n", [
+                        "Generate {$input['variants']} complete SEO blog article variant(s) in {$localeLabel}.",
+                        "Main idea: {$input['idea']}",
+                        "Target keywords: {$keywordLine}",
+                        "Editorial guidelines: {$guidelines}",
+                        'Each article must be ready to paste into a Laravel CMS form.',
+                        'Use factual, non-hype language, practical examples, and HTML paragraphs/lists in body_html.',
+                        'Use real-looking Unsplash image URLs when useful, or leave image fields coherent with telecom/business imagery.',
+                    ]),
+                ]],
+            ]],
+            'text' => [
+                'format' => [
+                    'type' => 'json_schema',
+                    'name' => 'dream_digital_article_variants',
+                    'strict' => true,
+                    'schema' => $this->openAiSchema($input['locale']),
+                ],
+            ],
+            'max_output_tokens' => 9000,
+        ];
+    }
+
+    private function openAiSchema(string $locale): array
+    {
+        return [
+            'type' => 'object',
+            'additionalProperties' => false,
+            'required' => ['articles'],
+            'properties' => [
+                'articles' => [
+                    'type' => 'array',
+                    'minItems' => 1,
+                    'maxItems' => 5,
+                    'items' => [
+                        'type' => 'object',
+                        'additionalProperties' => false,
+                        'required' => [
+                            'title',
+                            'slug',
+                            'section',
+                            'locale',
+                            'seo_title',
+                            'meta_description',
+                            'eyebrow',
+                            'lead',
+                            'author',
+                            'reading_time',
+                            'tags',
+                            'meta_image_path',
+                            'image_alt',
+                            'image_credit',
+                            'image_source_url',
+                            'sections',
+                        ],
+                        'properties' => [
+                            'title' => ['type' => 'string'],
+                            'slug' => ['type' => 'string'],
+                            'section' => ['type' => 'string', 'enum' => ['blog']],
+                            'locale' => ['type' => 'string', 'enum' => [$locale]],
+                            'seo_title' => ['type' => 'string'],
+                            'meta_description' => ['type' => 'string'],
+                            'eyebrow' => ['type' => 'string'],
+                            'lead' => ['type' => 'string'],
+                            'author' => ['type' => 'string'],
+                            'reading_time' => ['type' => 'string'],
+                            'tags' => [
+                                'type' => 'array',
+                                'minItems' => 3,
+                                'maxItems' => 8,
+                                'items' => ['type' => 'string'],
+                            ],
+                            'meta_image_path' => ['type' => 'string'],
+                            'image_alt' => ['type' => 'string'],
+                            'image_credit' => ['type' => 'string'],
+                            'image_source_url' => ['type' => 'string'],
+                            'sections' => [
+                                'type' => 'array',
+                                'minItems' => 4,
+                                'maxItems' => 7,
+                                'items' => [
+                                    'type' => 'object',
+                                    'additionalProperties' => false,
+                                    'required' => ['heading', 'body', 'body_html'],
+                                    'properties' => [
+                                        'heading' => ['type' => 'string'],
+                                        'body' => ['type' => 'string'],
+                                        'body_html' => ['type' => 'string'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    private function extractOutputText(array $payload): string
+    {
+        $direct = data_get($payload, 'output_text');
+        if (is_string($direct) && trim($direct) !== '') {
+            return $direct;
+        }
+
+        foreach ((array) data_get($payload, 'output', []) as $output) {
+            foreach ((array) data_get($output, 'content', []) as $content) {
+                $text = data_get($content, 'text');
+                if (is_string($text) && trim($text) !== '') {
+                    return $text;
+                }
+            }
+        }
+
+        throw new RuntimeException('OpenAI API response did not contain output text.');
+    }
+
+    private function normalizeArticle(array $article, array $input, int $index): array
+    {
+        $title = trim((string) ($article['title'] ?? ''));
+        if ($title === '') {
+            $title = $this->title($input['idea'], $this->angle($input['locale'], $index), $input['locale'], $index);
+        }
+
+        $lead = trim((string) ($article['lead'] ?? ''));
+        if ($lead === '') {
+            $lead = $this->lead($title, implode(', ', $input['keywords']), $input['locale']);
+        }
+
+        $tags = collect($article['tags'] ?? $input['keywords'])
+            ->map(fn ($tag) => trim((string) $tag))
+            ->filter()
+            ->unique()
+            ->take(8)
+            ->values()
+            ->all();
+
+        $sections = collect($article['sections'] ?? [])
+            ->map(function ($section) {
+                $heading = trim((string) ($section['heading'] ?? ''));
+                $body = trim((string) ($section['body'] ?? ''));
+                $bodyHtml = trim((string) ($section['body_html'] ?? ''));
+
+                return [
+                    'heading' => $heading !== '' ? $heading : 'Section',
+                    'body' => $body,
+                    'body_html' => $bodyHtml !== '' ? $bodyHtml : $this->bodyToHtml($body),
+                ];
+            })
+            ->filter(fn (array $section) => $section['body'] !== '' || $section['body_html'] !== '')
+            ->values()
+            ->all();
+
+        if ($sections === []) {
+            $sections = $this->sections($input['idea'], $input['keywords'], $input['guidelines'], $input['locale'], $index);
+        }
+
+        $imageUrl = trim((string) ($article['meta_image_path'] ?? ''));
+        if (! Str::startsWith($imageUrl, ['http://', 'https://', '/'])) {
+            $imageUrl = $this->imageUrl($index);
+        }
+
+        return [
+            'title' => $title,
+            'slug' => Str::slug((string) ($article['slug'] ?? $title)),
+            'section' => 'blog',
+            'locale' => $input['locale'],
+            'seo_title' => Str::limit(trim((string) ($article['seo_title'] ?? $title)), 68, ''),
+            'meta_description' => Str::limit(trim((string) ($article['meta_description'] ?? $lead)), 155, ''),
+            'eyebrow' => trim((string) ($article['eyebrow'] ?? 'Blog')) ?: 'Blog',
+            'lead' => $lead,
+            'author' => trim((string) ($article['author'] ?? 'Dream Digital')) ?: 'Dream Digital',
+            'reading_time' => trim((string) ($article['reading_time'] ?? ($input['locale'] === 'fr' ? '6 min' : '6 min read'))),
+            'tags' => $tags ?: ($input['keywords'] ?: ['CPaaS', 'SMS A2P', 'Voice', 'B2B']),
+            'meta_image_path' => $imageUrl,
+            'image_alt' => trim((string) ($article['image_alt'] ?? $title)) ?: $title,
+            'image_credit' => trim((string) ($article['image_credit'] ?? 'Photo Unsplash')) ?: 'Photo Unsplash',
+            'image_source_url' => trim((string) ($article['image_source_url'] ?? 'https://unsplash.com/')) ?: 'https://unsplash.com/',
+            'sections' => $sections,
+        ];
     }
 
     private function variant(string $idea, array $keywords, string $guidelines, string $locale, int $index): array
@@ -157,6 +415,15 @@ class ArticleGeneratorService
             ->take(8)
             ->values()
             ->all();
+    }
+
+    private function bodyToHtml(string $body): string
+    {
+        return collect(preg_split('/\R{2,}/', $body) ?: [])
+            ->map(fn (string $paragraph) => trim($paragraph))
+            ->filter()
+            ->map(fn (string $paragraph) => '<p>' . e($paragraph) . '</p>')
+            ->implode('');
     }
 
     private function angle(string $locale, int $index): string

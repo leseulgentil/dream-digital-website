@@ -14,17 +14,37 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasTable('service_prices')) {
+            return;
+        }
+
         Schema::table('service_prices', function (Blueprint $table) {
-            $table->unsignedTinyInteger('quality')->default(3)->after('use_manual_local');
-            $table->string('status_fr', 100)->nullable()->after('quality');
-            $table->string('status_en', 100)->nullable()->after('status_fr');
+            if (! Schema::hasColumn('service_prices', 'quality')) {
+                $table->unsignedTinyInteger('quality')->default(3)->after('use_manual_local');
+            }
+            if (! Schema::hasColumn('service_prices', 'status_fr')) {
+                $table->string('status_fr', 100)->nullable()->after('quality');
+            }
+            if (! Schema::hasColumn('service_prices', 'status_en')) {
+                $table->string('status_en', 100)->nullable()->after('status_fr');
+            }
         });
     }
 
     public function down(): void
     {
+        if (! Schema::hasTable('service_prices')) {
+            return;
+        }
+
         Schema::table('service_prices', function (Blueprint $table) {
-            $table->dropColumn(['quality', 'status_fr', 'status_en']);
+            $columns = collect(['quality', 'status_fr', 'status_en'])
+                ->filter(fn (string $column) => Schema::hasColumn('service_prices', $column))
+                ->all();
+
+            if ($columns !== []) {
+                $table->dropColumn($columns);
+            }
         });
     }
 };

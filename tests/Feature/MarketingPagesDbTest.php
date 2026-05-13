@@ -31,6 +31,29 @@ class MarketingPagesDbTest extends TestCase
         }
     }
 
+    public function test_marketing_pages_have_custom_seo_images_and_editable_sections(): void
+    {
+        $this->seed(MarketingPageSeeder::class);
+
+        $page = Page::where('section', 'marketing')
+            ->where('slug', 'products')
+            ->where('locale', 'fr')
+            ->firstOrFail();
+
+        $blocks = $page->content_blocks ?? [];
+
+        $this->assertStringContainsString('Dream Digital CPaaS', $blocks['seo_title']);
+        $this->assertStringStartsWith('https://images.unsplash.com/', $page->meta_image_path);
+        $this->assertNotEmpty($blocks['seo_focus_keywords']);
+        $this->assertCount(3, $blocks['sections']);
+
+        $this->get('/fr/products')
+            ->assertOk()
+            ->assertSee($blocks['seo_title'], false)
+            ->assertSee($page->meta_description, false)
+            ->assertSee($page->meta_image_path);
+    }
+
     public function test_marketing_controller_prefers_db_over_config(): void
     {
         Page::create([

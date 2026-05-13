@@ -44,6 +44,25 @@ class BlogContentTest extends TestCase
             ->assertSee('Photo Unsplash / Markus Stickling');
     }
 
+    public function test_seeded_blog_articles_have_finalized_seo_images_and_rich_sections(): void
+    {
+        $this->seed(BlogContentSeeder::class);
+
+        Page::where('section', 'blog')->each(function (Page $page) {
+            $blocks = $page->content_blocks ?? [];
+
+            $this->assertNotEmpty($page->meta_description);
+            $this->assertStringStartsWith('https://images.unsplash.com/', $page->meta_image_path);
+            $this->assertGreaterThanOrEqual(5, count($blocks['sections'] ?? []));
+            $this->assertNotEmpty($blocks['seo_focus_keywords'] ?? []);
+
+            foreach ($blocks['sections'] ?? [] as $section) {
+                $this->assertNotEmpty($section['heading'] ?? null);
+                $this->assertNotEmpty($section['body_html'] ?? null);
+            }
+        });
+    }
+
     public function test_seeded_blog_article_is_editable_from_admin_pages(): void
     {
         $this->seed(BlogContentSeeder::class);

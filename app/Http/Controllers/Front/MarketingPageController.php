@@ -63,7 +63,14 @@ class MarketingPageController extends Controller
       return [
         'eyebrow' => $blocks['eyebrow'] ?? '',
         'title' => $dbPage->title,
+        'seo_title' => $blocks['seo_title'] ?? $dbPage->title,
+        'meta_description' => $dbPage->meta_description,
+        'meta_image_path' => $dbPage->meta_image_path,
         'lead' => $blocks['lead'] ?? '',
+        'image_alt' => $blocks['image_alt'] ?? $dbPage->title,
+        'image_credit' => $blocks['image_credit'] ?? null,
+        'image_source_url' => $blocks['image_source_url'] ?? null,
+        'sections' => $blocks['sections'] ?? [],
         'source' => 'db',
       ];
     }

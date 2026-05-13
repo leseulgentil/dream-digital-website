@@ -48,6 +48,10 @@ yarn-error.log
 # bash docs/audits/lighthouse-2026-05-12/run-lighthouse.sh
 /docs/audits/**/*.json
 
+# Playwright traces, screenshots and HTML report are local QA evidence.
+/test-results/
+/playwright-report/
+
 # Responsive matrix screenshots — 30 PNG pleine-page (~15 MB total).
 # AUDIT.md resume les resultats; regenerable via
 # node docs/audits/responsive-2026-05-12/run-responsive.cjs

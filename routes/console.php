@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Console\ClosureCommand;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 Artisan::command('inspire', function () {
@@ -39,15 +40,45 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     };
 
     $bool = fn (string $key): bool => filter_var(config("dream-digital.launch.{$key}", false), FILTER_VALIDATE_BOOLEAN);
+    $pendingMigrationNames = function (): array {
+        $migrationFiles = collect(glob(database_path('migrations/*.php')) ?: [])
+            ->map(fn (string $path) => basename($path, '.php'))
+            ->values();
+
+        $ran = Schema::hasTable('migrations')
+            ? DB::table('migrations')->pluck('migration')
+            : collect();
+
+        return $migrationFiles->diff($ran)->values()->all();
+    };
 
     $this->line('Dream Digital launch readiness check');
     $this->line($public ? 'Mode: public opening' : 'Mode: pre-launch');
 
+    $record(Schema::hasTable('migrations'), 'Migration repository exists');
     $record(Schema::hasTable('countries'), 'Database table `countries` exists');
     $record(Schema::hasTable('services'), 'Database table `services` exists');
     $record(Schema::hasTable('service_prices'), 'Database table `service_prices` exists');
     $record(Schema::hasTable('pages'), 'Database table `pages` exists');
     $record(Schema::hasTable('users'), 'Database table `users` exists');
+    $record(Schema::hasTable('cache'), 'Database table `cache` exists');
+    $record(Schema::hasTable('sessions'), 'Database table `sessions` exists');
+
+    if (config('queue.default') === 'database') {
+        $record(Schema::hasTable('jobs'), 'Database table `jobs` exists for database queue');
+    }
+
+    $pendingMigrations = $pendingMigrationNames();
+    $pendingSummary = implode(', ', array_slice($pendingMigrations, 0, 5));
+    if (count($pendingMigrations) > 5) {
+        $pendingSummary .= ' ... +' . (count($pendingMigrations) - 5) . ' more';
+    }
+    $record(
+        $pendingMigrations === [],
+        'No pending migrations',
+        $public,
+        'Pending migrations: ' . ($pendingSummary ?: 'migration repository missing')
+    );
 
     if (Schema::hasTable('countries')) {
         $record(Country::active()->count() >= 4, 'At least 4 active countries are seeded');
@@ -127,11 +158,15 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
         $record($bool('legal_validated'), 'Legal pages validation has been confirmed', true, 'Legal pages validation is not confirmed');
         $record($bool('public_basic_auth_disabled'), 'Public Basic Auth removal has been confirmed', true, 'Public Basic Auth removal is not confirmed');
         $record($bool('backups_configured'), 'VPS backups have been confirmed', true, 'VPS backups are not confirmed');
+        $record($bool('env_backed_up'), '.env backup has been confirmed', true, '.env backup is not confirmed');
+        $record($bool('deployment_runbook_reviewed'), 'Deployment runbook review has been confirmed', true, 'Deployment runbook review is not confirmed');
     } else {
         $record($bool('admin_password_rotated'), 'Admin password rotation has been confirmed', false, 'Admin password rotation confirmation is pending');
         $record($bool('legal_validated'), 'Legal validation has been confirmed', false, 'Legal validation confirmation is pending');
         $record($bool('public_basic_auth_disabled'), 'Public Basic Auth removal has been confirmed', false, 'Public Basic Auth removal confirmation is pending');
         $record($bool('backups_configured'), 'VPS backups have been confirmed', false, 'VPS backup confirmation is pending');
+        $record($bool('env_backed_up'), '.env backup has been confirmed', false, '.env backup confirmation is pending');
+        $record($bool('deployment_runbook_reviewed'), 'Deployment runbook review has been confirmed', false, 'Deployment runbook review confirmation is pending');
     }
 
     foreach ($passes as $message) {

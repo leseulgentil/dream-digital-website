@@ -35,7 +35,9 @@ class BlogContentSeeder extends Seeder
                             'image_credit' => $article['image']['credit'],
                             'image_source_url' => $article['image']['source_url'],
                             'tags' => $content['tags'],
-                            'sections' => $content['sections'],
+                            'seo_focus_keywords' => $content['tags'],
+                            'content_status' => 'final-draft',
+                            'sections' => $this->enrichSections($content['sections'], $content, $locale),
                         ],
                         'is_published' => true,
                         'published_at' => Carbon::parse($article['published_at']),
@@ -439,5 +441,57 @@ class BlogContentSeeder extends Seeder
                 ],
             ],
         ];
+    }
+
+    private function enrichSections(array $sections, array $content, string $locale): array
+    {
+        $sections = collect($sections)
+            ->map(fn (array $section) => array_merge($section, [
+                'body_html' => $section['body_html'] ?? $this->bodyToHtml($section['body'] ?? ''),
+            ]))
+            ->values()
+            ->all();
+
+        $tags = implode(', ', $content['tags'] ?? []);
+
+        $sections[] = $locale === 'fr'
+            ? [
+                'heading' => 'Checklist operationnelle avant de lancer',
+                'body' => "Avant la mise en production, validez le pays cible, le volume attendu, le SLA, les regles de fallback, les alertes support et les rapports attendus par le metier.\n\nCette checklist transforme un sujet telecom en plan d execution clair: un responsable, une date de test, des KPI et une decision de go/no-go documentee.",
+                'body_html' => '<p>Avant la mise en production, validez le pays cible, le volume attendu, le SLA, les regles de fallback, les alertes support et les rapports attendus par le metier.</p><ul><li>Responsable technique et business nommes</li><li>KPI et seuils d alerte definis</li><li>Scenario de fallback teste</li><li>Decision de go/no-go documentee</li></ul>',
+            ]
+            : [
+                'heading' => 'Operational checklist before launch',
+                'body' => "Before going live, validate the target country, expected volume, SLA, fallback rules, support alerts and reports expected by the business.\n\nThis checklist turns a telecom topic into a clear execution plan: one owner, a test date, KPIs and a documented go/no-go decision.",
+                'body_html' => '<p>Before going live, validate the target country, expected volume, SLA, fallback rules, support alerts and reports expected by the business.</p><ul><li>Technical and business owners assigned</li><li>KPIs and alert thresholds defined</li><li>Fallback scenario tested</li><li>Go/no-go decision documented</li></ul>',
+            ];
+
+        $sections[] = $locale === 'fr'
+            ? [
+                'heading' => 'Comment Dream Digital peut aider',
+                'body' => "Dream Digital peut cadrer le besoin, comparer les routes, preparer un test pilote et fournir les donnees de suivi utiles aux equipes produit, support et commerciales.\n\nPour accelerer l echange, partagez le canal concerne, les destinations prioritaires, les volumes mensuels et les mots cles metier: {$tags}.",
+                'body_html' => "<p>Dream Digital peut cadrer le besoin, comparer les routes, preparer un test pilote et fournir les donnees de suivi utiles aux equipes produit, support et commerciales.</p><p>Pour accelerer l echange, partagez le canal concerne, les destinations prioritaires, les volumes mensuels et les mots cles metier: <strong>{$this->escape($tags)}</strong>.</p>",
+            ]
+            : [
+                'heading' => 'How Dream Digital can help',
+                'body' => "Dream Digital can frame the requirement, compare routes, prepare a pilot test and provide monitoring data for product, support and sales teams.\n\nTo speed up the discussion, share the channel, priority destinations, monthly volumes and business keywords: {$tags}.",
+                'body_html' => "<p>Dream Digital can frame the requirement, compare routes, prepare a pilot test and provide monitoring data for product, support and sales teams.</p><p>To speed up the discussion, share the channel, priority destinations, monthly volumes and business keywords: <strong>{$this->escape($tags)}</strong>.</p>",
+            ];
+
+        return $sections;
+    }
+
+    private function bodyToHtml(string $body): string
+    {
+        return collect(preg_split('/\R{2,}/', $body) ?: [])
+            ->map(fn (string $paragraph) => trim($paragraph))
+            ->filter()
+            ->map(fn (string $paragraph) => '<p>' . $this->escape($paragraph) . '</p>')
+            ->implode('');
+    }
+
+    private function escape(string $value): string
+    {
+        return e($value);
     }
 }

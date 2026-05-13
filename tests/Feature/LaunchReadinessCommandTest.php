@@ -57,6 +57,8 @@ class LaunchReadinessCommandTest extends TestCase
         $this->assertStringContainsString('Legal pages validation', $output);
         $this->assertStringContainsString('Public Basic Auth removal', $output);
         $this->assertStringContainsString('VPS backups', $output);
+        $this->assertStringContainsString('.env backup', $output);
+        $this->assertStringContainsString('Deployment runbook review', $output);
     }
 
     public function test_public_launch_check_passes_when_required_data_and_flags_are_ready(): void
@@ -73,6 +75,8 @@ class LaunchReadinessCommandTest extends TestCase
             'dream-digital.launch.legal_validated' => true,
             'dream-digital.launch.public_basic_auth_disabled' => true,
             'dream-digital.launch.backups_configured' => true,
+            'dream-digital.launch.env_backed_up' => true,
+            'dream-digital.launch.deployment_runbook_reviewed' => true,
         ]);
 
         $exitCode = Artisan::call('dd:launch-check', ['--public' => true]);

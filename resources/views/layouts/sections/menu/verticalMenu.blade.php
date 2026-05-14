@@ -10,14 +10,14 @@ $configData = Helper::appClasses();
   <!-- ! Hide app brand if navbar-full -->
   @if (!isset($navbarFull))
   <div class="dd-app-brand demo">
-    <a href="{{ url('/') }}" class="dd-app-brand-link">
+    <a href="{{ route('admin.dashboard') }}" class="dd-app-brand-link">
       <span class="dd-app-brand-logo demo">@include('_partials.macros')</span>
       <span class="dd-app-brand-text demo dd-menu-text fw-bold ms-2">{{ config('variables.templateName') }}</span>
     </a>
 
-    <a href="javascript:void(0);" class="dd-layout-menu-toggle dd-menu-link text-large ms-auto">
+    <button type="button" class="dd-layout-menu-toggle dd-menu-link text-large ms-auto border-0 bg-transparent" aria-label="Fermer le menu admin">
       <i class="icon-base bx bx-chevron-left"></i>
-    </a>
+    </button>
   </div>
   @endif
 
@@ -33,28 +33,47 @@ $configData = Helper::appClasses();
       <span class="dd-menu-header-text">{{ __($menu->menuHeader) }}</span>
     </li>
     @else
+    @continue((isset($menu->hidden) && $menu->hidden) || (isset($menu->enabled) && ! $menu->enabled))
+    @continue(isset($menu->ability) && ! (auth()->user()?->{$menu->ability}() ?? false))
+
     {{-- active menu method --}}
     @php
     $activeClass = null;
     $currentRouteName = Route::currentRouteName();
+    $menuUrl = isset($menu->url) ? (string) $menu->url : '';
+    $menuUrlPath = trim((string) (parse_url($menuUrl, PHP_URL_PATH) ?? ''), '/');
+    $menuUrlQuery = (string) (parse_url($menuUrl, PHP_URL_QUERY) ?? '');
+    $menuQueryParams = [];
+    parse_str($menuUrlQuery, $menuQueryParams);
+    $menuHasQuery = $menuQueryParams !== [];
+    $menuQueryMatches = collect($menuQueryParams)->every(
+      fn ($value, $key) => (string) request()->query($key) === (string) $value
+    );
+    $currentPath = trim(request()->path(), '/');
+    $blogFilterIsActive = $currentPath === 'admin/pages' && request()->query('section') === 'blog';
+    $menuSlug = $menu->slug ?? null;
+    $routeName = (string) $currentRouteName;
+    $slugMatches = is_string($menuSlug) && (
+      $routeName === $menuSlug
+      || str_starts_with($routeName, $menuSlug . '.')
+    );
 
-    if ($currentRouteName === $menu->slug) {
-    $activeClass = 'active';
+    if ($menuHasQuery) {
+      if ($menuUrlPath === $currentPath && $menuQueryMatches) {
+        $activeClass = 'active';
+      }
+    } elseif (! $blogFilterIsActive && $slugMatches) {
+      $activeClass = 'active';
     } elseif (isset($menu->submenu)) {
-    if (gettype($menu->slug) === 'array') {
-    foreach ($menu->slug as $slug) {
-    if (str_contains($currentRouteName, $slug) and strpos($currentRouteName, $slug) === 0) {
-    $activeClass = 'active open';
-    }
-    }
-    } else {
-    if (
-    str_contains($currentRouteName, $menu->slug) and
-    strpos($currentRouteName, $menu->slug) === 0
-    ) {
-    $activeClass = 'active open';
-    }
-    }
+      if (is_array($menuSlug)) {
+        foreach ($menuSlug as $slug) {
+          if (str_starts_with($routeName, (string) $slug)) {
+            $activeClass = 'active open';
+          }
+        }
+      } elseif (is_string($menuSlug) && str_starts_with($routeName, $menuSlug)) {
+        $activeClass = 'active open';
+      }
     }
     @endphp
 

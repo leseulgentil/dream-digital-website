@@ -1,0 +1,12 @@
+[ok] /fr @ 375-mobile  overflow=false  375/375
+[ok] /fr @ 1024-tablet-landscape  overflow=false  1024/1024
+[ok] /fr @ 1440-desktop  overflow=false  1440/1440
+[ok] /fr/products/sms-a2p @ 375-mobile  overflow=false  375/375
+[ok] /fr/products/sms-a2p @ 1024-tablet-landscape  overflow=false  1024/1024
+[ok] /fr/products/sms-a2p @ 1440-desktop  overflow=false  1440/1440
+
+/fr/products/sms-a2p:
+  [requestfailed x2] http://127.0.0.1:8888/build/assets/iconify-DDZnTNbY.css -> net::ERR_CONNECTION_RESET
+  [error x2] Failed to load resource: net::ERR_CONNECTION_RESET
+
+Total unique console issues: 2

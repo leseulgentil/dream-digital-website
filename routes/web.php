@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GeoDetectController;
+use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\Sprint1TestController;
 use App\Http\Controllers\laravel_example\UserManagement;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\dashboard\Crm;
@@ -8,8 +11,6 @@ use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\layouts\CollapsedMenu;
 use App\Http\Controllers\layouts\ContentNavbar;
 use App\Http\Controllers\layouts\ContentNavSidebar;
-use App\Http\Controllers\layouts\NavbarFull;
-use App\Http\Controllers\layouts\NavbarFullSidebar;
 use App\Http\Controllers\layouts\Horizontal;
 use App\Http\Controllers\layouts\Vertical;
 use App\Http\Controllers\layouts\WithoutMenu;
@@ -23,6 +24,14 @@ use App\Http\Controllers\front_pages\Payment;
 use App\Http\Controllers\front_pages\Checkout;
 use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
+use App\Http\Controllers\Front\BlogController;
+use App\Http\Controllers\Front\MarketingPageController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\Admin\NavigationController as AdminNavigationController;
+use App\Http\Controllers\Admin\PagesController as AdminPagesController;
+use App\Http\Controllers\Admin\PricingController as AdminPricingController;
+use App\Http\Controllers\Admin\UsersController as AdminUsersController;
 use App\Http\Controllers\apps\Email;
 use App\Http\Controllers\apps\Chat;
 use App\Http\Controllers\apps\Calendar;
@@ -162,25 +171,141 @@ use App\Http\Controllers\maps\Leaflet;
 
 // Main Page Route — / renders the corporate landing (front-pages/landing view)
 // Dashboard remains accessible at /dashboard/analytics (and is the post-login destination)
-Route::get('/', [Landing::class, 'index'])->name('home');
-Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
-Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
+Route::get('/', [GeoDetectController::class, 'index'])->name('home');
+Route::get('/_reset-country', [GeoDetectController::class, 'resetToGlobal'])->name('reset-country');
+Route::get('/{locale}', [Landing::class, 'index'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('front.localized.home');
+Route::get('/{locale}/test', [Sprint1TestController::class, 'global'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('sprint1.global.test');
+
+Route::prefix('{country}/{locale}')
+  ->where(['country' => 'cd|cg|ci', 'locale' => 'fr|en'])
+  ->group(function () {
+    Route::get('/', [Sprint1TestController::class, 'country'])->name('sprint1.country');
+    Route::get('/test', [Sprint1TestController::class, 'test'])->name('sprint1.country.test');
+  });
+
+Route::get('/products/{service}', [MarketingPageController::class, 'product'])
+  ->name('front.product');
+Route::get('/{locale}/products/{service}', [MarketingPageController::class, 'localizedProduct'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('front.localized.product');
+
+Route::get('/blog', [BlogController::class, 'index'])->name('front.blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])
+  ->where('slug', '[a-z0-9-]+')
+  ->name('front.blog.show');
+Route::get('/{locale}/blog', [BlogController::class, 'localizedIndex'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->name('front.localized.blog.index');
+Route::get('/{locale}/blog/{slug}', [BlogController::class, 'localizedShow'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->where('slug', '[a-z0-9-]+')
+  ->name('front.localized.blog.show');
+
+Route::get('/{page}', [MarketingPageController::class, 'show'])
+  ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])
+  ->name('front.page');
+Route::get('/{locale}/{page}', [MarketingPageController::class, 'localized'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])
+  ->name('front.localized.page');
+
+// Pages legales (avant DD_PUBLIC_INDEXABLE=true)
+Route::get('/{locale}/legal/{slug}', [\App\Http\Controllers\Front\LegalController::class, 'show'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->whereIn('slug', ['mentions', 'cgu', 'rgpd'])
+  ->name('front.localized.legal');
+
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
+
+// Admin back-office : auth Laravel reelle (Breeze-derived) requise.
+// internal.demo n'est plus applique pour permettre l'acces en prod aux
+// utilisateurs authentifies. Les routes Sneat de demo (lignes plus bas)
+// restent sous internal.demo.
+Route::middleware(['auth', 'admin.access'])->group(function () {
+    Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+    Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+
+        Route::middleware('admin.role:owner,admin,editor')->group(function () {
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{pricing}/edit', 'edit')->name('edit');
+            Route::put('/{pricing}', 'update')->name('update');
+            Route::delete('/{pricing}', 'destroy')->name('destroy');
+        });
+    });
+
+    Route::prefix('admin/navigation')
+        ->name('admin.navigation.')
+        ->controller(AdminNavigationController::class)
+        ->middleware('admin.role:owner,admin,editor')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{navigation}/edit', 'edit')->name('edit');
+            Route::put('/{navigation}', 'update')->name('update');
+            Route::delete('/{navigation}', 'destroy')->name('destroy');
+        });
+
+    Route::prefix('admin/pages')->name('admin.pages.')->controller(AdminPagesController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+
+        Route::middleware('admin.role:owner,admin,editor')->group(function () {
+            Route::get('/create', 'create')->name('create');
+            Route::post('/generate-article', 'generateArticle')->name('generate-article');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{page}/preview', 'preview')->name('preview');
+            Route::post('/{page}/duplicate-locale', 'duplicateLocale')->name('duplicate-locale');
+            Route::get('/{page}/edit', 'edit')->name('edit');
+            Route::put('/{page}', 'update')->name('update');
+            Route::delete('/{page}', 'destroy')->name('destroy');
+        });
+    });
+
+    Route::get('/admin/media', [AdminMediaController::class, 'index'])
+        ->middleware('admin.role:owner,admin,editor')
+        ->name('admin.media.index');
+
+    Route::prefix('admin/users')
+        ->name('admin.users.')
+        ->controller(AdminUsersController::class)
+        ->middleware('admin.role:owner,admin')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{user}/edit', 'edit')->name('edit');
+            Route::put('/{user}', 'update')->name('update');
+            Route::delete('/{user}', 'destroy')->name('destroy');
+    });
+});
+
+Route::middleware('internal.demo')->group(function () {
+
+Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
+Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
 
 // layout
 Route::get('/layouts/collapsed-menu', [CollapsedMenu::class, 'index'])->name('layouts-collapsed-menu');
 Route::get('/layouts/content-navbar', [ContentNavbar::class, 'index'])->name('layouts-content-navbar');
 Route::get('/layouts/content-nav-sidebar', [ContentNavSidebar::class, 'index'])->name('layouts-content-nav-sidebar');
-Route::get('/layouts/navbar-full', [NavbarFull::class, 'index'])->name('layouts-navbar-full');
-Route::get('/layouts/navbar-full-sidebar', [NavbarFullSidebar::class, 'index'])->name('layouts-navbar-full-sidebar');
-Route::get('/layouts/horizontal', [Horizontal::class, 'index'])->name('dashboard-analytics');
-Route::get('/layouts/vertical', [Vertical::class, 'index'])->name('dashboard-analytics');
+Route::get('/layouts/horizontal', [Horizontal::class, 'index'])->name('layouts-horizontal');
+Route::get('/layouts/vertical', [Vertical::class, 'index'])->name('layouts-vertical');
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
 Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
 Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
 Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-container');
 Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
+
+// Sprint 1.5 — Design System Preview (internal dev page, remove before prod)
+Route::get('/preview/design-tokens', [PreviewController::class, 'designTokens'])->name('preview.design-tokens');
 
 // Front Pages
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
@@ -260,7 +385,7 @@ Route::get('/auth/verify-email-basic', [VerifyEmailBasic::class, 'index'])->name
 Route::get('/auth/verify-email-cover', [VerifyEmailCover::class, 'index'])->name('auth-verify-email-cover');
 Route::get('/auth/reset-password-basic', [ResetPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
 Route::get('/auth/reset-password-cover', [ResetPasswordCover::class, 'index'])->name('auth-reset-password-cover');
-Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
+Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-forgot-password-basic');
 Route::get('/auth/forgot-password-cover', [ForgotPasswordCover::class, 'index'])->name('auth-forgot-password-cover');
 Route::get('/auth/two-steps-basic', [TwoStepsBasic::class, 'index'])->name('auth-two-steps-basic');
 Route::get('/auth/two-steps-cover', [TwoStepsCover::class, 'index'])->name('auth-two-steps-cover');
@@ -359,3 +484,15 @@ Route::get('/maps/leaflet', [Leaflet::class, 'index'])->name('maps-leaflet');
 // laravel example
 Route::get('/laravel/user-management', [UserManagement::class, 'UserManagement'])->name('laravel-example-user-management');
 Route::resource('/user-list', UserManagement::class);
+});
+
+// SEO public routes (robots.txt + sitemap.xml dynamiques selon
+// DD_PUBLIC_INDEXABLE). DOIVENT etre accessibles en prod sans auth ni
+// internal.demo pour que les crawlers les lisent quand le site sera
+// public.
+Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots'])->name('seo.robots');
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('seo.sitemap');
+
+// Auth (login/logout) -- routes publiques (le login DOIT etre accessible
+// meme hors local/staging sinon impossible de se connecter en prod)
+require __DIR__.'/auth.php';

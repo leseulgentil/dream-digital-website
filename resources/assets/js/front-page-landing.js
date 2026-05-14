@@ -1,146 +1,110 @@
-/**
- * Main - Front Pages
- */
 'use strict';
 
 (function () {
-  const nav = document.querySelector('.dd-layout-navbar'),
-    heroAnimation = document.getElementById('hero-animation'),
-    animationImg = document.querySelectorAll('.hero-dashboard-img'),
-    animationElements = document.querySelectorAll('.hero-elements-img'),
-    swiperLogos = document.getElementById('swiper-clients-logos'),
-    swiperReviews = document.getElementById('swiper-reviews'),
-    ReviewsPreviousBtn = document.getElementById('reviews-previous-btn'),
-    ReviewsNextBtn = document.getElementById('reviews-next-btn'),
-    ReviewsSliderPrev = document.querySelector('.swiper-button-prev'),
-    ReviewsSliderNext = document.querySelector('.swiper-button-next'),
-    priceDurationToggler = document.querySelector('.price-duration-toggler'),
-    priceMonthlyList = [].slice.call(document.querySelectorAll('.price-monthly')),
-    priceYearlyList = [].slice.call(document.querySelectorAll('.price-yearly'));
+  const heroSlider = document.querySelector('.dd-hero-slider');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Hero
-  const mediaQueryXL = '1200';
-  const width = screen.width;
-  if (width >= mediaQueryXL && heroAnimation) {
-    heroAnimation.addEventListener('mousemove', function parallax(e) {
-      animationElements.forEach(layer => {
-        layer.style.transform = 'translateZ(1rem)';
-      });
-      animationImg.forEach(layer => {
-        let x = (window.innerWidth - e.pageX * 2) / 100;
-        let y = (window.innerHeight - e.pageY * 2) / 100;
-        layer.style.transform = `perspective(1200px) rotateX(${y}deg) rotateY(${x}deg) scale3d(1, 1, 1)`;
-      });
-    });
-    nav.addEventListener('mousemove', function parallax(e) {
-      animationElements.forEach(layer => {
-        layer.style.transform = 'translateZ(1rem)';
-      });
-      animationImg.forEach(layer => {
-        let x = (window.innerWidth - e.pageX * 2) / 100;
-        let y = (window.innerHeight - e.pageY * 2) / 100;
-        layer.style.transform = `perspective(1200px) rotateX(${y}deg) rotateY(${x}deg) scale3d(1, 1, 1)`;
-      });
-    });
-
-    heroAnimation.addEventListener('mouseout', function () {
-      animationElements.forEach(layer => {
-        layer.style.transform = 'translateZ(0)';
-      });
-      animationImg.forEach(layer => {
-        layer.style.transform = 'perspective(1200px) scale(1) rotateX(0) rotateY(0)';
-      });
-    });
-  }
-
-  // swiper carousel
-  // Customers reviews
-  // -----------------------------------
-  if (swiperReviews) {
-    new Swiper(swiperReviews, {
-      slidesPerView: 1,
-      spaceBetween: 5,
-      grabCursor: true,
-      autoplay: {
-        delay: 3000,
-        disableOnInteraction: false
-      },
+  if (heroSlider && window.Swiper) {
+    new Swiper(heroSlider, {
       loop: true,
-      loopAdditionalSlides: 1,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev'
-      },
-      breakpoints: {
-        1200: {
-          slidesPerView: 3,
-          spaceBetween: 26
-        },
-        992: {
-          slidesPerView: 2,
-          spaceBetween: 20
-        }
+      effect: 'fade',
+      fadeEffect: { crossFade: true },
+      speed: reducedMotion ? 0 : 700,
+      autoplay: reducedMotion
+        ? false
+        : {
+            delay: 6000,
+            pauseOnMouseEnter: true,
+            disableOnInteraction: false
+          },
+      pagination: {
+        el: '.dd-hero-pagination',
+        clickable: true
       }
     });
   }
 
-  // Reviews slider next and previous
-  // -----------------------------------
-  // Add click event listener to next button
-  ReviewsNextBtn.addEventListener('click', function () {
-    ReviewsSliderNext.click();
-  });
-  ReviewsPreviousBtn.addEventListener('click', function () {
-    ReviewsSliderPrev.click();
-  });
-
-  // Review client logo
-  // -----------------------------------
-  if (swiperLogos) {
-    new Swiper(swiperLogos, {
-      slidesPerView: 2,
-      autoplay: {
-        delay: 3000,
-        disableOnInteraction: false
-      },
-      breakpoints: {
-        992: {
-          slidesPerView: 5
-        },
-        768: {
-          slidesPerView: 3
-        }
-      }
-    });
-  }
-
-  // Pricing Plans
-  // -----------------------------------
-  document.addEventListener('DOMContentLoaded', function (event) {
-    function togglePrice() {
-      if (priceDurationToggler.checked) {
-        // If checked
-        priceYearlyList.map(function (yearEl) {
-          yearEl.classList.remove('d-none');
-        });
-        priceMonthlyList.map(function (monthEl) {
-          monthEl.classList.add('d-none');
-        });
-      } else {
-        // If not checked
-        priceYearlyList.map(function (yearEl) {
-          yearEl.classList.add('d-none');
-        });
-        priceMonthlyList.map(function (monthEl) {
-          monthEl.classList.remove('d-none');
-        });
-      }
+  const typeInto = (el, fullCode, delay) => {
+    if (reducedMotion) {
+      el.textContent = fullCode;
+      return;
     }
-    // togglePrice Event Listener
-    togglePrice();
 
-    priceDurationToggler.onchange = function () {
-      togglePrice();
+    let index = 0;
+    const tick = function () {
+      el.textContent = fullCode.slice(0, index);
+      index += 1;
+      if (index <= fullCode.length) window.setTimeout(tick, delay);
     };
-  });
+    tick();
+  };
+
+  const terminalCode = document.getElementById('dd-terminal-code');
+  if (terminalCode) {
+    typeInto(
+      terminalCode,
+      '$ curl -X POST \\\n' +
+        '    https://api.dream-digital.info/v1/sms/send \\\n' +
+        '    -H "Authorization: Bearer dd_live..." \\\n' +
+        '    -d \'{\n' +
+        '      "to": "+243990000000",\n' +
+        '      "from": "DreamDigital",\n' +
+        '      "text": "Bienvenue !"\n' +
+        '    }\'\n\n' +
+        'HTTP/1.1 200 OK\n' +
+        '{\n' +
+        '  "id": "sms_a2b3c4d5",\n' +
+        '  "status": "delivered",\n' +
+        '  "cost": 0.0089\n' +
+        '}',
+      18
+    );
+  }
+
+  const previewBlocks = document.querySelectorAll('[data-code-preview]');
+  if (previewBlocks.length && !reducedMotion) {
+    const codeObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const fullCode = el.dataset.fullCode || el.textContent;
+          el.dataset.fullCode = fullCode;
+          el.textContent = '';
+          typeInto(el, fullCode, 10);
+          codeObserver.unobserve(el);
+        });
+      },
+      { threshold: 0.35 }
+    );
+
+    previewBlocks.forEach(block => codeObserver.observe(block));
+  }
+
+  const counters = document.querySelectorAll('[data-dd-count]');
+  if (!counters.length || reducedMotion) return;
+
+  const animateCounter = entry => {
+    const el = entry.target;
+    const target = Number(el.dataset.ddCount || 0);
+    const suffix = el.dataset.ddSuffix || '';
+    let current = 0;
+    const step = Math.max(1, Math.ceil(target / 48));
+    const update = () => {
+      current = Math.min(target, current + step);
+      el.textContent = current + suffix;
+      if (current < target) window.requestAnimationFrame(update);
+    };
+    update();
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      animateCounter(entry);
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.35 });
+
+  counters.forEach(counter => observer.observe(counter));
 })();

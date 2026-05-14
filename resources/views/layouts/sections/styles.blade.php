@@ -14,8 +14,7 @@
 'resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.scss'])
 
 <!-- Vendor Styles -->
-@vite(['resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.scss',
-'resources/assets/vendor/libs/typeahead-js/typeahead.scss'])
+@vite(['resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.scss'])
 @yield('vendor-style')
 
 <!-- Page Styles -->

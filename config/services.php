@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'model' => env('OPENAI_MODEL', 'gpt-5-mini'),
+        'timeout' => (int) env('OPENAI_TIMEOUT', 45),
+        'max_output_tokens' => (int) env('OPENAI_MAX_OUTPUT_TOKENS', 9000),
+        'fallback_on_failure' => filter_var(env('OPENAI_FALLBACK_ON_FAILURE', true), FILTER_VALIDATE_BOOLEAN),
+        'article_provider' => env('DD_ARTICLE_GENERATOR_PROVIDER', 'local'),
+    ],
+
 ];

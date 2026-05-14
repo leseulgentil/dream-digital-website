@@ -3,7 +3,12 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\EnsureAdminAccess;
+use App\Http\Middleware\EnsureAdminRole;
+use App\Http\Middleware\InternalDemoGuard;
 use App\Http\Middleware\LocaleMiddleware;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetCountryAndLocale;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +17,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(LocaleMiddleware::class);
+        $middleware->web(append: [
+            SecurityHeaders::class,
+            LocaleMiddleware::class,
+            SetCountryAndLocale::class,
+        ]);
+        $middleware->alias([
+            'admin.access' => EnsureAdminAccess::class,
+            'admin.role' => EnsureAdminRole::class,
+            'internal.demo' => InternalDemoGuard::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -614,8 +614,11 @@ function initializeAutocomplete() {
 // Initialize search shortcut
 document.addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+    const searchButton = document.querySelector('.aa-DetachedSearchButton');
+    if (!searchButton) return;
+
     event.preventDefault();
-    document.querySelector('.aa-DetachedSearchButton').click();
+    searchButton.click();
   }
 });
 

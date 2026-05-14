@@ -19,8 +19,7 @@ These values are wired into `config/variables.php` and consumed by Blade layouts
 ## Design tokens — where they live
 
 - **Brand Kit (specification)** : `BRAND_KIT_DREAM_DIGITAL.md` at the repository root
-- **SCSS source (ready-to-use)** : `_dream-digital-tokens.scss` at the repository root
-- **In-Sneat copy (integrated in S3)** : `resources/assets/vendor/scss/_custom-variables/_dream-digital.scss`, imported at the top of `_bootstrap-extended.scss`
+- **Active SCSS source** : `resources/assets/vendor/scss/_custom-variables/_dream-digital.scss`, imported at the top of `_bootstrap-extended.scss` (integrated in S3, extended in Sprint 1.5 with keyframes + reduced-motion guard)
 
 All Sass variables are prefixed `$dd-*`.
 

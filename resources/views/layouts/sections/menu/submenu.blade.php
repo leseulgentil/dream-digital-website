@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 <ul class="dd-menu-sub">
   @if (isset($menu))
     @foreach ($menu as $submenu)
+    @continue((isset($submenu->hidden) && $submenu->hidden) || (isset($submenu->enabled) && ! $submenu->enabled))
 
     {{-- active menu method --}}
     @php

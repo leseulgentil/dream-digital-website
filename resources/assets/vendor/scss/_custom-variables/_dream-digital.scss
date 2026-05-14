@@ -9,6 +9,11 @@
 // ============================================================================
 
 // ----------------------------------------------------------------------------
+// Imports modulaires (Sprint 1.5 — Option B incrémentale, jurisprudence Q21)
+// ----------------------------------------------------------------------------
+@import "../dream-digital/dd-code-blocks";
+
+// ----------------------------------------------------------------------------
 // 1. PRIMARY — Petrol Teal (#335F5F) — usage ~30%
 // ----------------------------------------------------------------------------
 // Marque, branding, identité, sidebar admin, headings de marque, icônes
@@ -232,6 +237,11 @@ $dd-shadow-xl:   0 24px 48px rgba(14, 18, 28, 0.10), 0 8px 16px rgba(14, 18, 28,
 // Focus ring tertiary cyan pour accessibilité
 $dd-shadow-focus: 0 0 0 3px rgba(20, 184, 166, 0.25);
 
+// Glow effect tertiary cyan pour cards/CTAs featured (hover spotlight)
+// Composé : ring 1px solid + diffuse 24px (signature Direction A carrier-grade)
+// Utilise rgba du Tertiary Cyan #14B8A6, PAS le #00D9FF obsolète.
+$dd-shadow-glow: 0 0 0 1px rgba(20, 184, 166, 0.4), 0 0 24px rgba(20, 184, 166, 0.25);
+
 // ----------------------------------------------------------------------------
 // 11. TRANSITIONS
 // ----------------------------------------------------------------------------
@@ -260,6 +270,61 @@ $dd-z-modal:     1040;
 $dd-z-popover:   1050;
 $dd-z-tooltip:   1060;
 $dd-z-toast:     1070;
+
+// ----------------------------------------------------------------------------
+// 13. KEYFRAMES NOMMÉS (Sprint 1.5 — composants signature)
+// ----------------------------------------------------------------------------
+// Animations réutilisables nommées avec préfixe dd- pour éviter collisions
+// avec keyframes Sneat/Bootstrap natifs. Disponibles globalement après import.
+
+// dd-pulse — pour signal-indicator (live status dots, brief Section 4.2.a)
+// Cercle qui pulse en s'agrandissant et en s'estompant simultanément
+@keyframes dd-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+// dd-fade-up — pour stagger animations au scroll (Intersection Observer)
+// Translation verticale subtile + fade-in, signature Direction A
+@keyframes dd-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 14. PREFERS-REDUCED-MOTION GUARD (WCAG 2.1 SC 2.2.2)
+// ----------------------------------------------------------------------------
+// Neutralise les animations dd-* et dtp-* pour utilisateurs ayant activé la
+// préférence système "reduce motion". Variante ciblée par préfixe pour
+// éviter d'impacter les animations Bootstrap/Sneat natives.
+// Defense-in-depth — les vues consommatrices (landing-page, design-tokens
+// demo) ont déjà des guards spécifiques au niveau usage. Cette règle au
+// niveau token sécurise tout futur usage des keyframes dd-pulse / dd-fade-up.
+// Per paulrberg review finding HIGH-2.
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="dd-"],
+  [class*="dd-"]::before,
+  [class*="dd-"]::after,
+  [class*="dtp-"],
+  [class*="dtp-"]::before,
+  [class*="dtp-"]::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
 
 // ============================================================================
 // FIN — Dream Digital Design Tokens v1.2 FINAL

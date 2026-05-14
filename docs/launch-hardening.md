@@ -14,6 +14,7 @@ npm run build
 npm run build:public
 php artisan dd:backup-db
 php artisan dd:launch-check --public
+npm run audit:prod
 ```
 
 Le check public doit rester rouge tant que les confirmations operateur ne sont pas posees dans `.env`.
@@ -27,10 +28,13 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://dream-digital.info
 DD_PUBLIC_INDEXABLE=true
+LOG_LEVEL=info
 SESSION_ENCRYPT=true
 SESSION_SECURE_COOKIE=true
 SESSION_HTTP_ONLY=true
 SESSION_SAME_SITE=lax
+DD_CSP_ENABLED=true
+DD_CSP_REPORT_ONLY=true
 DD_ADMIN_PASSWORD_ROTATED=true
 DD_LEGAL_VALIDATED=true
 DD_PUBLIC_BASIC_AUTH_DISABLED=true
@@ -83,14 +87,19 @@ navigateur/proxy des surfaces authentifiees.
 
 ## 5. Healthcheck
 
-Endpoint public minimal pour reverse proxy ou monitoring:
+Endpoints publics minimaux pour reverse proxy ou monitoring:
 
 ```text
 GET /healthz
+GET /readyz
 ```
 
-Il renvoie `{"status":"ok"}` si Laravel repond et si la connexion DB accepte
-`select 1`, sinon `503`.
+`/healthz` renvoie `{"status":"ok"}` si Laravel repond et si la connexion DB
+accepte `select 1`, sinon `503`. `/readyz` verifie aussi que la table
+`migrations` existe et qu'aucune migration disque n'est en attente.
+
+Chaque reponse porte `X-Request-Id`; les requetes lentes au-dessus de
+`DD_SLOW_REQUEST_MS` sont loggees avec cet identifiant.
 
 ## 6. CMS et IA
 
@@ -121,3 +130,13 @@ Un script Linux de reference existe dans `scripts/deploy-production.sh`.
 Il met le site en maintenance, cree un backup DB, pull `master`, installe les
 dependances, build les assets, migre, seed, cache Laravel, lance le readiness
 public puis remet le site en ligne.
+
+Le workflow GitHub Actions `Deploy production` permet un dry-run SSH manuel
+avant de lancer ce script. Secrets attendus : `DD_PROD_HOST`, `DD_PROD_USER`,
+`DD_PROD_SSH_KEY`, `DD_PROD_PORT`, `DD_PROD_APP_DIR`.
+
+## 9. Bundle production
+
+`npm run build` compile uniquement le perimetre deploye : front public,
+auth, admin Dream Digital et CMS. Les anciennes surfaces de demonstration
+restent compilables via `npm run build:full` si necessaire en local/staging.

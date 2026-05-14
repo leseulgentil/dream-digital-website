@@ -20,7 +20,7 @@ git pull --ff-only origin "$BRANCH"
 
 composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 npm ci
-npm run build:public
+npm run build
 
 php artisan migrate --force
 php artisan db:seed --force

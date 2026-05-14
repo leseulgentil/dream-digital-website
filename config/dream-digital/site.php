@@ -87,6 +87,8 @@ return [
     'contact' => [
         'email_sales'   => env('DD_SALES_EMAIL', 'sales@dream-digital.info'),
         'email_support' => env('DD_SUPPORT_EMAIL'),  // a fournir par PO avant ouverture publique
+        'email_security' => env('DD_SECURITY_EMAIL', env('DD_SUPPORT_EMAIL', 'security@dream-digital.info')),
+        'email_privacy' => env('DD_PRIVACY_EMAIL', env('DD_SUPPORT_EMAIL')),
         'phone'         => env('DD_PUBLIC_PHONE'),  // a fournir par PO avant ouverture publique
     ],
 

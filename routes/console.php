@@ -217,6 +217,18 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
 
     $record(app()->configurationIsCached(), 'Configuration is cached', false, 'Configuration is not cached');
     $record(app()->routesAreCached(), 'Routes are cached', false, 'Routes are not cached');
+    $record(
+        filter_var(config('dream-digital.security.csp.enabled', true), FILTER_VALIDATE_BOOLEAN),
+        'Content Security Policy header is configured',
+        false,
+        'Content Security Policy header is disabled'
+    );
+    $record(
+        filled(config('dream-digital.security.security_txt.contact')),
+        'Security contact is configured',
+        false,
+        'Security contact is missing'
+    );
 
     $backupRequired = filter_var(config('dream-digital.launch.backups.require_recent_database_backup', true), FILTER_VALIDATE_BOOLEAN);
     $latestBackup = $recentBackupPath();
@@ -234,6 +246,8 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
         $record(config('app.debug') === false, 'APP_DEBUG is false', true, 'APP_DEBUG is not false');
         $record(str_starts_with((string) config('app.url'), 'https://'), 'APP_URL uses HTTPS', true, 'APP_URL does not use HTTPS');
         $record($indexable, 'DD_PUBLIC_INDEXABLE is true', true, 'DD_PUBLIC_INDEXABLE is not true');
+        $logLevel = strtolower((string) config('logging.channels.single.level', env('LOG_LEVEL', 'debug')));
+        $record($logLevel !== 'debug', 'LOG_LEVEL is not debug', true, 'LOG_LEVEL must not be debug in production');
         $record($configBool('session.secure'), 'Session secure cookie is enabled', true, 'SESSION_SECURE_COOKIE is not true');
         $record($configBool('session.http_only'), 'Session HTTP-only cookie is enabled', true, 'SESSION_HTTP_ONLY is not true');
         $record($configBool('session.encrypt'), 'Session encryption is enabled', true, 'SESSION_ENCRYPT is not true');

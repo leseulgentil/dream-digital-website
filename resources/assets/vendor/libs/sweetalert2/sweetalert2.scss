@@ -32,7 +32,7 @@
     .swal2-title {
       line-height: $line-height-base;
       margin-block: 1.875rem 1rem;
-      max-inline-size: $swal2-width * .5;
+      max-inline-size: min(100%, 16em);
     }
     .swal2-actions {
       margin-block-start: 1rem;

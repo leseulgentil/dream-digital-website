@@ -1,0 +1,46 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Git branch to deploy
+        default: master
+        required: true
+      dry_run:
+        description: Run remote checks without deploying
+        default: 'true'
+        required: true
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Remote preflight or deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DD_PROD_HOST }}
+          username: ${{ secrets.DD_PROD_USER }}
+          key: ${{ secrets.DD_PROD_SSH_KEY }}
+          port: ${{ secrets.DD_PROD_PORT || 22 }}
+          script: |
+            set -e
+            cd "${{ secrets.DD_PROD_APP_DIR }}"
+            git fetch origin "${{ inputs.branch }}"
+            git checkout "${{ inputs.branch }}"
+            git pull --ff-only origin "${{ inputs.branch }}"
+            if [ "${{ inputs.dry_run }}" = "true" ]; then
+              composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+              npm ci
+              npm run build
+              php artisan migrate:status
+              php artisan dd:launch-check --public
+            else
+              APP_DIR="${{ secrets.DD_PROD_APP_DIR }}" BRANCH="${{ inputs.branch }}" bash scripts/deploy-production.sh
+            fi

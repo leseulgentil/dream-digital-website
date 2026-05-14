@@ -7,6 +7,7 @@ use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\InternalDemoGuard;
 use App\Http\Middleware\LocaleMiddleware;
+use App\Http\Middleware\RequestId;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetCountryAndLocale;
 
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
+            RequestId::class,
             SecurityHeaders::class,
             LocaleMiddleware::class,
             SetCountryAndLocale::class,

@@ -21,6 +21,7 @@ class LaunchReadinessCommandTest extends TestCase
     protected function tearDown(): void
     {
         putenv('DD_PUBLIC_INDEXABLE=false');
+        putenv('LOG_LEVEL=debug');
 
         parent::tearDown();
     }
@@ -43,6 +44,7 @@ class LaunchReadinessCommandTest extends TestCase
         $this->seedLaunchData();
         $this->setBusinessConfig();
         putenv('DD_PUBLIC_INDEXABLE=true');
+        putenv('LOG_LEVEL=info');
 
         config([
             'app.debug' => false,
@@ -76,6 +78,7 @@ class LaunchReadinessCommandTest extends TestCase
             'session.http_only' => true,
             'session.encrypt' => true,
             'session.same_site' => 'lax',
+            'logging.channels.single.level' => 'info',
             'dream-digital.launch.admin_password_rotated' => true,
             'dream-digital.launch.legal_validated' => true,
             'dream-digital.launch.public_basic_auth_disabled' => true,

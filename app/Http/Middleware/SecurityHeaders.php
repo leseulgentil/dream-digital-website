@@ -24,10 +24,42 @@ class SecurityHeaders
             $response->headers->set('Pragma', 'no-cache');
         }
 
+        if (filter_var(config('dream-digital.security.csp.enabled', true), FILTER_VALIDATE_BOOLEAN)) {
+            $response->headers->set(
+                filter_var(config('dream-digital.security.csp.report_only', true), FILTER_VALIDATE_BOOLEAN)
+                    ? 'Content-Security-Policy-Report-Only'
+                    : 'Content-Security-Policy',
+                $this->contentSecurityPolicy()
+            );
+        }
+
         if ($request->secure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
         return $response;
+    }
+
+    private function contentSecurityPolicy(): string
+    {
+        $directives = [
+            "default-src 'self'",
+            "base-uri 'self'",
+            "object-src 'none'",
+            "frame-ancestors 'self'",
+            "img-src 'self' data: https:",
+            "font-src 'self' data: https://fonts.gstatic.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "script-src 'self' 'unsafe-inline'",
+            "connect-src 'self'",
+            "form-action 'self'",
+            'upgrade-insecure-requests',
+        ];
+
+        if ($reportUri = config('dream-digital.security.csp.report_uri')) {
+            $directives[] = 'report-uri ' . $reportUri;
+        }
+
+        return implode('; ', $directives);
     }
 }

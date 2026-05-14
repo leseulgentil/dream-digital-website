@@ -35,6 +35,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Audit production dependencies
+        run: npm run audit:prod
+
       - name: Prepare app
         run: |
           cp .env.example .env
@@ -42,8 +45,8 @@ jobs:
           php artisan key:generate --ansi
           php artisan migrate --force
 
-      - name: Run feature tests
-        run: php artisan test
-
       - name: Build assets
         run: npm run build
+
+      - name: Run feature tests
+        run: php artisan test

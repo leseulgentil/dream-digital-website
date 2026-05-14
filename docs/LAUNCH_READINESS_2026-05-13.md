@@ -26,10 +26,13 @@ php artisan dd:launch-check --public
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://dream-digital.info
+LOG_LEVEL=info
 SESSION_ENCRYPT=true
 SESSION_SECURE_COOKIE=true
 SESSION_HTTP_ONLY=true
 SESSION_SAME_SITE=lax
+DD_CSP_ENABLED=true
+DD_CSP_REPORT_ONLY=true
 
 DD_ADMIN_EMAIL=admin@dream-digital.info
 DD_ADMIN_NAME="Admin Dream Digital"
@@ -37,6 +40,8 @@ DD_ADMIN_PASSWORD="mot-de-passe-temporaire-puis-rotation"
 
 DD_SALES_EMAIL=sales@dream-digital.info
 DD_SUPPORT_EMAIL=support@dream-digital.info
+DD_SECURITY_EMAIL=security@dream-digital.info
+DD_PRIVACY_EMAIL=privacy@dream-digital.info
 DD_PUBLIC_PHONE="+243..."
 DD_COMPANY_LEGAL_NAME="Dream Digital ..."
 DD_OG_IMAGE=/img/og/dream-digital-launch.png
@@ -70,4 +75,6 @@ Ne pas activer `DD_PUBLIC_INDEXABLE=true` tant que :
 - le mot de passe admin initial n'a pas ete change ;
 - la protection Basic Auth publique a ete retiree volontairement ;
 - les backups VPS sont confirmes et `php artisan dd:backup-db` a produit un dump recent ;
+- `GET /healthz`, `GET /readyz` et `/.well-known/security.txt` repondent en 200 ;
+- `npm run audit:prod` passe sans vulnerabilite production connue ;
 - le test `php artisan dd:launch-check --public` sort `Launch check OK`.

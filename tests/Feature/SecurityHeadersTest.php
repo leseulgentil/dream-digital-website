@@ -18,7 +18,9 @@ class SecurityHeadersTest extends TestCase
             ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
             ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
             ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()')
-            ->assertHeader('X-Permitted-Cross-Domain-Policies', 'none');
+            ->assertHeader('X-Permitted-Cross-Domain-Policies', 'none')
+            ->assertHeader('Content-Security-Policy-Report-Only')
+            ->assertHeader('X-Request-Id');
     }
 
     public function test_admin_routes_are_not_cached_by_browser_or_proxy(): void

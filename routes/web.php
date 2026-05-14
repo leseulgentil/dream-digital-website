@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeoDetectController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\SecurityTxtController;
 use App\Http\Controllers\Sprint1TestController;
 use App\Http\Controllers\laravel_example\UserManagement;
 use App\Http\Controllers\dashboard\Analytics;
@@ -174,6 +175,8 @@ use App\Http\Controllers\maps\Leaflet;
 // Dashboard remains accessible at /dashboard/analytics (and is the post-login destination)
 Route::get('/', [GeoDetectController::class, 'index'])->name('home');
 Route::get('/healthz', HealthController::class)->name('healthz');
+Route::get('/readyz', [HealthController::class, 'ready'])->name('readyz');
+Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security.txt');
 Route::get('/_reset-country', [GeoDetectController::class, 'resetToGlobal'])->name('reset-country');
 Route::get('/{locale}', [Landing::class, 'index'])
   ->whereIn('locale', ['fr', 'en'])

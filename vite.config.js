@@ -35,6 +35,7 @@ const FontsScssFiles = GetFilesArray('resources/assets/vendor/fonts/!(_)*.scss')
 const FontsJsFiles = GetFilesArray('resources/assets/vendor/fonts/**/!(_)*.js');
 const FontsCssFiles = GetFilesArray('resources/assets/vendor/fonts/**/!(_)*.css');
 const publicOnlyBuild = process.env.DD_BUILD_PUBLIC_ONLY === 'true';
+const fullTemplateBuild = process.env.DD_BUILD_FULL === 'true';
 
 const publicFrontInputs = [
   'resources/assets/vendor/fonts/iconify/iconify.css',
@@ -53,6 +54,42 @@ const publicFrontInputs = [
   'resources/assets/js/dd-cookie-consent.js',
   'resources/assets/js/front-page-landing.js'
 ];
+
+const productionInputs = [
+  ...publicFrontInputs,
+  'resources/css/app.css',
+  'resources/js/app.js',
+  'resources/assets/vendor/scss/core.scss',
+  'resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.scss',
+  'resources/assets/vendor/scss/pages/page-auth.scss',
+  'resources/assets/vendor/libs/jquery/jquery.js',
+  'resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
+  'resources/assets/vendor/libs/hammer/hammer.js',
+  'resources/assets/vendor/js/menu.js',
+  'resources/assets/js/config.js',
+  'resources/assets/js/main.js',
+  'resources/assets/vendor/libs/quill/typography.scss',
+  'resources/assets/vendor/libs/quill/editor.scss',
+  'resources/assets/js/dd-admin-pages.js'
+];
+
+const fullTemplateInputs = [
+  'resources/css/app.css',
+  'resources/assets/css/demo.css',
+  'resources/js/app.js',
+  ...pageJsFiles,
+  ...vendorJsFiles,
+  ...LibsJsFiles,
+  'resources/js/laravel-user-management.js',
+  ...CoreScssFiles,
+  ...LibsScssFiles,
+  ...LibsCssFiles,
+  ...FontsScssFiles,
+  ...FontsJsFiles,
+  ...FontsCssFiles
+];
+
+const uniqueInputs = inputs => [...new Set(inputs)];
 
 // Processing Window Assignment for Libs like jKanban, pdfMake
 function libsWindowAssignment() {
@@ -74,21 +111,7 @@ export default defineConfig({
     laravel({
       input: publicOnlyBuild
         ? publicFrontInputs
-        : [
-            'resources/css/app.css',
-            'resources/assets/css/demo.css',
-            'resources/js/app.js',
-            ...pageJsFiles,
-            ...vendorJsFiles,
-            ...LibsJsFiles,
-            'resources/js/laravel-user-management.js', // Processing Laravel User Management CRUD JS File
-            ...CoreScssFiles,
-            ...LibsScssFiles,
-            ...LibsCssFiles,
-            ...FontsScssFiles,
-            ...FontsJsFiles,
-            ...FontsCssFiles
-          ],
+        : uniqueInputs(fullTemplateBuild ? fullTemplateInputs : productionInputs),
       refresh: true
     }),
     html(),

@@ -18,4 +18,22 @@ return [
     'backups_configured' => env('DD_BACKUPS_CONFIGURED', false),
     'env_backed_up' => env('DD_ENV_BACKED_UP', false),
     'deployment_runbook_reviewed' => env('DD_DEPLOYMENT_RUNBOOK_REVIEWED', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database backup guard
+    |--------------------------------------------------------------------------
+    |
+    | `dd:backup-db` writes database dumps here before a deploy. The public
+    | launch check requires a recent backup by default so migrations are never
+    | pushed without an immediately restorable point.
+    |
+    */
+
+    'backups' => [
+        'path' => env('DD_DB_BACKUP_PATH') ?: storage_path('app/private/backups/database'),
+        'mysqldump_binary' => env('DD_MYSQLDUMP_BINARY', 'mysqldump'),
+        'max_age_hours' => (int) env('DD_DB_BACKUP_MAX_AGE_HOURS', 24),
+        'require_recent_database_backup' => env('DD_REQUIRE_RECENT_DB_BACKUP', true),
+    ],
 ];

@@ -12,6 +12,7 @@ php artisan db:seed --force
 php artisan test
 npm run build
 npm run build:public
+php artisan dd:backup-db
 php artisan dd:launch-check --public
 ```
 
@@ -26,6 +27,10 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://dream-digital.info
 DD_PUBLIC_INDEXABLE=true
+SESSION_ENCRYPT=true
+SESSION_SECURE_COOKIE=true
+SESSION_HTTP_ONLY=true
+SESSION_SAME_SITE=lax
 DD_ADMIN_PASSWORD_ROTATED=true
 DD_LEGAL_VALIDATED=true
 DD_PUBLIC_BASIC_AUTH_DISABLED=true
@@ -43,7 +48,18 @@ Minimum attendu avant ouverture:
 - snapshot VPS ou backup fournisseur active;
 - procedure de restauration testee sur un environnement local/staging.
 
-Commandes indicatives:
+Commande projet:
+
+```bash
+php artisan dd:backup-db
+```
+
+Cette commande ecrit un dump horodate dans `storage/app/private/backups/database`
+par defaut. Pour MySQL/MariaDB, elle utilise `mysqldump`; pour SQLite local,
+elle copie le fichier de base. Le check public exige un backup recent
+(`DD_DB_BACKUP_MAX_AGE_HOURS=24` par defaut).
+
+Commandes indicatives si backup manuel necessaire:
 
 ```bash
 php artisan down --render="errors::503"
@@ -57,11 +73,26 @@ Avant ouverture:
 
 - creer au moins un compte owner/admin actif;
 - remplacer tout mot de passe provisoire;
+- activer les cookies de session securises (`SESSION_ENCRYPT`, `SESSION_SECURE_COOKIE`, `SESSION_HTTP_ONLY`);
 - verifier les roles owner/admin/editor;
 - confirmer que les menus admin inutiles restent caches ou non relies aux workflows publics;
 - verifier les headers de securite dans le navigateur.
 
-## 5. CMS et IA
+Les pages `/admin*` renvoient `Cache-Control: no-store` pour eviter le cache
+navigateur/proxy des surfaces authentifiees.
+
+## 5. Healthcheck
+
+Endpoint public minimal pour reverse proxy ou monitoring:
+
+```text
+GET /healthz
+```
+
+Il renvoie `{"status":"ok"}` si Laravel repond et si la connexion DB accepte
+`select 1`, sinon `503`.
+
+## 6. CMS et IA
 
 Le generateur d articles reste configurable:
 
@@ -73,7 +104,7 @@ OPENAI_MODEL=gpt-5-mini
 
 Sans cle API, le CMS retombe sur le generateur local deterministic pour ne pas bloquer les editeurs.
 
-## 6. QA navigateur
+## 7. QA navigateur
 
 Smoke test local:
 
@@ -83,3 +114,10 @@ npx playwright test tests/Browser/dream-digital-qa.spec.js --browser=chromium --
 ```
 
 Ce test couvre le menu public desktop/mobile, l admin navigation, le modal Generate Article et le WYSIWYG en vrais clics.
+
+## 8. Deploy script
+
+Un script Linux de reference existe dans `scripts/deploy-production.sh`.
+Il met le site en maintenance, cree un backup DB, pull `master`, installe les
+dependances, build les assets, migre, seed, cache Laravel, lance le readiness
+public puis remet le site en ligne.

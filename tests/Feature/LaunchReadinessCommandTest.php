@@ -11,6 +11,7 @@ use Database\Seeders\ServicePriceSeeder;
 use Database\Seeders\ServiceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class LaunchReadinessCommandTest extends TestCase
@@ -71,18 +72,54 @@ class LaunchReadinessCommandTest extends TestCase
             'app.debug' => false,
             'app.env' => 'production',
             'app.url' => 'https://dream-digital.info',
+            'session.secure' => true,
+            'session.http_only' => true,
+            'session.encrypt' => true,
+            'session.same_site' => 'lax',
             'dream-digital.launch.admin_password_rotated' => true,
             'dream-digital.launch.legal_validated' => true,
             'dream-digital.launch.public_basic_auth_disabled' => true,
             'dream-digital.launch.backups_configured' => true,
             'dream-digital.launch.env_backed_up' => true,
             'dream-digital.launch.deployment_runbook_reviewed' => true,
+            'dream-digital.launch.backups.path' => storage_path('framework/testing/backups'),
+            'dream-digital.launch.backups.require_recent_database_backup' => true,
         ]);
+        File::ensureDirectoryExists(storage_path('framework/testing/backups'));
+        File::put(storage_path('framework/testing/backups/dream-digital-test.sql'), '-- test backup');
 
         $exitCode = Artisan::call('dd:launch-check', ['--public' => true]);
 
         $this->assertSame(0, $exitCode);
         $this->assertStringContainsString('Launch check OK', Artisan::output());
+    }
+
+    public function test_backup_command_copies_sqlite_database_file(): void
+    {
+        $source = storage_path('framework/testing/source.sqlite');
+        $target = storage_path('framework/testing/backups-command');
+
+        File::ensureDirectoryExists(dirname($source));
+        File::ensureDirectoryExists($target);
+        File::put($source, 'sqlite content');
+
+        config([
+            'database.connections.backup_test' => [
+                'driver' => 'sqlite',
+                'database' => $source,
+                'prefix' => '',
+                'foreign_key_constraints' => true,
+            ],
+        ]);
+
+        $exitCode = Artisan::call('dd:backup-db', [
+            '--connection' => 'backup_test',
+            '--path' => $target,
+        ]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('Database backup created:', Artisan::output());
+        $this->assertNotEmpty(File::glob($target . DIRECTORY_SEPARATOR . '*.sqlite'));
     }
 
     private function seedLaunchData(): void

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeoDetectController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\Sprint1TestController;
 use App\Http\Controllers\laravel_example\UserManagement;
@@ -172,6 +173,7 @@ use App\Http\Controllers\maps\Leaflet;
 // Main Page Route — / renders the corporate landing (front-pages/landing view)
 // Dashboard remains accessible at /dashboard/analytics (and is the post-login destination)
 Route::get('/', [GeoDetectController::class, 'index'])->name('home');
+Route::get('/healthz', HealthController::class)->name('healthz');
 Route::get('/_reset-country', [GeoDetectController::class, 'resetToGlobal'])->name('reset-country');
 Route::get('/{locale}', [Landing::class, 'index'])
   ->whereIn('locale', ['fr', 'en'])
@@ -226,7 +228,7 @@ Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 // internal.demo n'est plus applique pour permettre l'acces en prod aux
 // utilisateurs authentifies. Les routes Sneat de demo (lignes plus bas)
 // restent sous internal.demo.
-Route::middleware(['auth', 'admin.access'])->group(function () {
+Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
@@ -259,7 +261,7 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
         Route::middleware('admin.role:owner,admin,editor')->group(function () {
             Route::get('/create', 'create')->name('create');
-            Route::post('/generate-article', 'generateArticle')->name('generate-article');
+            Route::post('/generate-article', 'generateArticle')->middleware('throttle:6,1')->name('generate-article');
             Route::post('/', 'store')->name('store');
             Route::get('/{page}/preview', 'preview')->name('preview');
             Route::post('/{page}/duplicate-locale', 'duplicateLocale')->name('duplicate-locale');

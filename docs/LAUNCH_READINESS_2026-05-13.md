@@ -8,6 +8,7 @@ Ce document garde le bloc **Ouverture publique readiness** actionnable pour Code
 php artisan migrate --force
 php artisan db:seed --force
 php artisan db:seed --class=AdminUserSeeder --force
+php artisan dd:backup-db
 php artisan config:cache
 php artisan route:cache
 php artisan dd:launch-check
@@ -25,6 +26,10 @@ php artisan dd:launch-check --public
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://dream-digital.info
+SESSION_ENCRYPT=true
+SESSION_SECURE_COOKIE=true
+SESSION_HTTP_ONLY=true
+SESSION_SAME_SITE=lax
 
 DD_ADMIN_EMAIL=admin@dream-digital.info
 DD_ADMIN_NAME="Admin Dream Digital"
@@ -49,7 +54,12 @@ DD_ADMIN_PASSWORD_ROTATED=true
 DD_LEGAL_VALIDATED=true
 DD_PUBLIC_BASIC_AUTH_DISABLED=true
 DD_BACKUPS_CONFIGURED=true
+DD_ENV_BACKED_UP=true
+DD_DEPLOYMENT_RUNBOOK_REVIEWED=true
 DD_PUBLIC_INDEXABLE=true
+
+DD_DB_BACKUP_MAX_AGE_HOURS=24
+DD_REQUIRE_RECENT_DB_BACKUP=true
 ```
 
 ## Garde-fou
@@ -59,5 +69,5 @@ Ne pas activer `DD_PUBLIC_INDEXABLE=true` tant que :
 - les mentions legales, CGU et RGPD FR/EN n'ont pas ete validees ;
 - le mot de passe admin initial n'a pas ete change ;
 - la protection Basic Auth publique a ete retiree volontairement ;
-- les backups VPS sont confirmes ;
+- les backups VPS sont confirmes et `php artisan dd:backup-db` a produit un dump recent ;
 - le test `php artisan dd:launch-check --public` sort `Launch check OK`.

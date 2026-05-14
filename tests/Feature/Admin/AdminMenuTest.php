@@ -66,6 +66,31 @@ class AdminMenuTest extends TestCase
         ], collect($menu['menu'])->map(fn (array $item) => $item['menuHeader'] ?? $item['name'])->all());
     }
 
+    public function test_pages_and_blog_menu_items_have_distinct_active_state(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $pagesMenuHtml = $this->extractVerticalMenu($this->get(route('admin.pages.index'))->assertOk()->getContent());
+        $blogMenuHtml = $this->extractVerticalMenu($this->get(route('admin.pages.index', ['section' => 'blog']))->assertOk()->getContent());
+
+        $this->assertSame(['Pages'], $this->activeMenuLabels($pagesMenuHtml));
+        $this->assertSame(['Blog'], $this->activeMenuLabels($blogMenuHtml));
+    }
+
+    public function test_admin_chrome_does_not_expose_unused_template_widgets(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $html = $this->get(route('admin.dashboard'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('Backoffice interne', $html);
+        $this->assertStringContainsString('Voir le site', $html);
+
+        foreach (['Search [CTRL', 'Notifications', 'Shortcuts', 'Admin Templates', 'Documentation', 'License', 'Invoice App'] as $legacyLabel) {
+            $this->assertStringNotContainsString($legacyLabel, $html);
+        }
+    }
+
     private function extractVerticalMenu(string $html): string
     {
         preg_match('/<aside id="dd-layout-menu".*?<\/aside>/s', $html, $matches);
@@ -73,5 +98,19 @@ class AdminMenuTest extends TestCase
         $this->assertNotEmpty($matches[0] ?? null, 'Le menu vertical admin doit etre present.');
 
         return $matches[0];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function activeMenuLabels(string $menuHtml): array
+    {
+        preg_match_all('/<li class="dd-menu-item\s+[^"]*\bactive\b[^"]*">.*?<div>(.*?)<\/div>/s', $menuHtml, $matches);
+
+        return collect($matches[1])
+            ->map(fn (string $label): string => trim(html_entity_decode(strip_tags($label))))
+            ->filter()
+            ->values()
+            ->all();
     }
 }

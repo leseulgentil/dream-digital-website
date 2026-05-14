@@ -9,6 +9,7 @@
   const jsonField = document.getElementById('sections_json');
   const editorTarget = document.getElementById('sections_rich_editor');
   let editor = null;
+  let fallbackRoot = null;
 
   const escapeHtml = value =>
     String(value || '')
@@ -59,12 +60,14 @@
       .trim();
 
   const editorToSections = () => {
-    if (!editor) return parseSectionsJson();
+    const richRoot = editor?.root || fallbackRoot;
+
+    if (!richRoot) return parseSectionsJson();
 
     const sections = [];
     let current = null;
 
-    Array.from(editor.root.children).forEach(node => {
+    Array.from(richRoot.children).forEach(node => {
       const tag = node.tagName ? node.tagName.toLowerCase() : '';
       const text = (node.innerText || node.textContent || '').trim();
       const html = normalizeHtml(node.outerHTML || '');
@@ -99,17 +102,42 @@
   };
 
   const syncJsonFromEditor = () => {
-    if (!jsonField || !editor) return;
+    if (!jsonField || (!editor && !fallbackRoot)) return;
     jsonField.value = JSON.stringify(editorToSections(), null, 2);
   };
 
   const hydrateEditorFromJson = () => {
-    if (!editor) return;
-    editor.clipboard.dangerouslyPasteHTML(sectionsToHtml(parseSectionsJson()));
+    if (editor) {
+      editor.clipboard.dangerouslyPasteHTML(sectionsToHtml(parseSectionsJson()));
+      return;
+    }
+
+    if (fallbackRoot) {
+      fallbackRoot.innerHTML = sectionsToHtml(parseSectionsJson());
+    }
   };
 
-  if (editorTarget && jsonField && window.Quill) {
-    editor = new window.Quill(editorTarget, {
+  const bindEditorSync = () => {
+    jsonField.addEventListener('blur', hydrateEditorFromJson);
+    form?.addEventListener('submit', syncJsonFromEditor);
+  };
+
+  const bootFallbackEditor = () => {
+    fallbackRoot = document.createElement('div');
+    fallbackRoot.className = 'ql-editor';
+    fallbackRoot.contentEditable = 'true';
+    fallbackRoot.dataset.placeholder = 'Redigez le contenu riche ici...';
+    editorTarget.classList.add('ql-container', 'ql-snow');
+    editorTarget.innerHTML = '';
+    editorTarget.appendChild(fallbackRoot);
+
+    hydrateEditorFromJson();
+    fallbackRoot.addEventListener('input', syncJsonFromEditor);
+    bindEditorSync();
+  };
+
+  const bootQuillEditor = QuillEditor => {
+    editor = new QuillEditor(editorTarget, {
       bounds: editorTarget,
       placeholder: 'Redigez le contenu riche ici...',
       modules: {
@@ -126,8 +154,29 @@
 
     hydrateEditorFromJson();
     editor.on('text-change', syncJsonFromEditor);
-    jsonField.addEventListener('blur', hydrateEditorFromJson);
-    form?.addEventListener('submit', syncJsonFromEditor);
+    bindEditorSync();
+  };
+
+  const resolveQuillEditor = async () => {
+    if (window.Quill) return window.Quill;
+
+    try {
+      const quillModule = await import('quill/dist/quill');
+
+      return quillModule.default || quillModule.Quill || null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  if (editorTarget && jsonField) {
+    resolveQuillEditor().then(QuillEditor => {
+      if (QuillEditor) {
+        bootQuillEditor(QuillEditor);
+      } else {
+        bootFallbackEditor();
+      }
+    });
   }
 
   const generatorButton = document.getElementById('article_generator_submit');

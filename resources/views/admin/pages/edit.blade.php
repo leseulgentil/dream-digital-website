@@ -6,10 +6,6 @@
   @vite(['resources/assets/vendor/libs/quill/typography.scss', 'resources/assets/vendor/libs/quill/editor.scss'])
 @endsection
 
-@section('vendor-script')
-  @vite(['resources/assets/vendor/libs/quill/quill.js'])
-@endsection
-
 @section('page-script')
   @vite(['resources/assets/js/dd-admin-pages.js'])
 @endsection

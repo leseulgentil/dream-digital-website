@@ -70,7 +70,7 @@ class MarketingPageSeeder extends Seeder
 
     private function seoTitle(string $title, string $locale): string
     {
-        $suffix = $locale === 'fr' ? ' | Dream Digital CPaaS' : ' | Dream Digital CPaaS';
+        $suffix = $locale === 'fr' ? ' - CPaaS telecom B2B' : ' - B2B telecom CPaaS';
 
         return Str::limit($title . $suffix, 68, '');
     }

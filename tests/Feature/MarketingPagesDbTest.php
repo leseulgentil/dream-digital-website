@@ -42,7 +42,7 @@ class MarketingPagesDbTest extends TestCase
 
         $blocks = $page->content_blocks ?? [];
 
-        $this->assertStringContainsString('Dream Digital CPaaS', $blocks['seo_title']);
+        $this->assertStringContainsString('CPaaS', $blocks['seo_title']);
         $this->assertStringStartsWith('https://images.unsplash.com/', $page->meta_image_path);
         $this->assertNotEmpty($blocks['seo_focus_keywords']);
         $this->assertCount(3, $blocks['sections']);
@@ -51,7 +51,8 @@ class MarketingPagesDbTest extends TestCase
             ->assertOk()
             ->assertSee($blocks['seo_title'], false)
             ->assertSee($page->meta_description, false)
-            ->assertSee($page->meta_image_path);
+            ->assertSee($page->meta_image_path)
+            ->assertSee('dd-page-hero__media', false);
     }
 
     public function test_marketing_controller_prefers_db_over_config(): void

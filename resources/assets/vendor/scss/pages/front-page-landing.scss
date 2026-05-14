@@ -4,6 +4,7 @@
   background: #f7faf9;
   color: #0e121c;
   font-family: "Inter", system-ui, -apple-system, sans-serif;
+  overflow-x: clip;
 }
 
 nav.dd-front-navbar {
@@ -36,8 +37,11 @@ nav.dd-front-navbar {
   gap: .5rem;
   justify-content: center;
   min-block-size: 2.9rem;
+  max-inline-size: 100%;
   padding: .8rem 1.15rem;
+  text-align: center;
   transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
+  white-space: normal;
 
   &:hover {
     transform: translateY(-2px);
@@ -1626,6 +1630,54 @@ nav.dd-front-navbar {
   }
 }
 
+.dd-page-hero__media {
+  aspect-ratio: 4 / 3;
+  border: 1px solid rgba(14, 18, 28, .08);
+  border-radius: 8px;
+  box-shadow: 0 24px 60px rgba(14, 18, 28, .16);
+  color: #fff;
+  margin: 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    block-size: 100%;
+    display: block;
+    inline-size: 100%;
+    object-fit: cover;
+  }
+
+  &::after {
+    background: linear-gradient(180deg, transparent 35%, rgba(7, 11, 20, .72));
+    content: "";
+    inset: 0;
+    position: absolute;
+  }
+
+  figcaption {
+    align-items: center;
+    background: rgba(7, 11, 20, .72);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 8px;
+    display: flex;
+    gap: .85rem;
+    inset-block-end: 1rem;
+    inset-inline: 1rem;
+    justify-content: space-between;
+    padding: .8rem .9rem;
+    position: absolute;
+    z-index: 1;
+  }
+
+  strong {
+    color: #14b8a6;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: .85rem;
+    letter-spacing: .08em;
+  }
+}
+
 .dd-page-hero--banner {
   background:
     radial-gradient(circle at 82% 22%, rgba(20, 184, 166, .22), transparent 24rem),
@@ -1906,6 +1958,10 @@ nav.dd-front-navbar {
     max-inline-size: 420px;
   }
 
+  .dd-page-hero__media {
+    max-inline-size: 520px;
+  }
+
   .dd-dashboard-card__metrics,
   .dd-stats-strip__grid,
   .dd-corridors__grid,
@@ -1941,6 +1997,38 @@ nav.dd-front-navbar {
   .dd-office-grid {
     block-size: auto;
     min-block-size: 560px;
+  }
+
+  .dd-page-hero {
+    padding-block: 4rem 3rem;
+  }
+
+  .dd-page-hero__media {
+    aspect-ratio: 16 / 11;
+    max-inline-size: none;
+
+    figcaption {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: .45rem;
+    }
+  }
+
+  .dd-cta {
+    overflow: hidden;
+  }
+
+  .dd-cta__box {
+    gap: 1.5rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .dd-cta__actions {
+    inline-size: 100%;
+
+    .dd-button {
+      inline-size: 100%;
+    }
   }
 
   .dd-dashboard-card__metrics,
@@ -2117,6 +2205,18 @@ nav.dd-front-navbar {
     linear-gradient(135deg, rgba(9, 20, 34, .96), rgba(10, 36, 48, .94)),
     #091422;
   color: #fff;
+
+  h1 {
+    color: #fff;
+  }
+
+  p:not(.dd-eyebrow) {
+    color: rgba(255, 255, 255, .74);
+  }
+
+  .dd-page-hero__panel {
+    background: rgba(10, 18, 32, .72);
+  }
 }
 
 .dd-blog-featured {
@@ -2464,5 +2564,44 @@ nav.dd-front-navbar {
     &:hover {
       transform: none;
     }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .dd-cookie-banner {
+    padding: .55rem .75rem calc(.55rem + env(safe-area-inset-bottom));
+  }
+
+  .dd-cookie-banner__inner {
+    align-items: center;
+    gap: .5rem .75rem;
+    inline-size: min(100% - .5rem, 390px);
+  }
+
+  .dd-cookie-banner__body {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    flex-basis: 100%;
+    font-size: .76rem;
+    line-height: 1.35;
+    min-inline-size: 0;
+    overflow: hidden;
+  }
+
+  .dd-cookie-banner__actions {
+    gap: .75rem;
+    inline-size: 100%;
+    justify-content: space-between;
+  }
+
+  .dd-cookie-banner__link {
+    font-size: .78rem;
+  }
+
+  .dd-cookie-banner__cta {
+    border-radius: .45rem;
+    min-block-size: 2.25rem;
+    padding: .55rem .9rem;
   }
 }

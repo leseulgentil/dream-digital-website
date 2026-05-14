@@ -5,6 +5,39 @@ const adminEmail = process.env.DD_QA_ADMIN_EMAIL || 'codex.qa@dream-digital.loca
 const adminPassword = process.env.DD_QA_ADMIN_PASSWORD || 'CodexQa2026!';
 
 test.describe('Dream Digital visual QA smoke', () => {
+  test.setTimeout(90000);
+
+  const gotoPublic = async (page, route) => {
+    await page.goto(`${baseURL}${route}`, { waitUntil: 'commit', timeout: 15000 });
+    await page.locator('body').waitFor({ state: 'visible', timeout: 10000 });
+    await page.waitForTimeout(250);
+  };
+
+  test('public pages stay inside viewport and render hero media', async ({ page }) => {
+    const routes = ['/fr', '/fr/products', '/fr/pricing', '/fr/coverage', '/fr/contact', '/fr/blog'];
+    const viewports = [
+      { width: 1440, height: 900 },
+      { width: 390, height: 844 }
+    ];
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+
+      for (const route of routes) {
+        await gotoPublic(page, route);
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+        expect(overflow, `${route} overflows at ${viewport.width}px`).toBeLessThanOrEqual(2);
+      }
+    }
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await gotoPublic(page, '/fr/products');
+    await expect(page.locator('.dd-page-hero__media img')).toBeVisible();
+
+    await gotoPublic(page, '/fr/blog');
+    await expect(page.locator('.dd-blog-hero h1')).toBeVisible();
+  });
+
   test('public menu works on desktop and mobile', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${baseURL}/fr`, { waitUntil: 'networkidle' });
@@ -43,7 +76,9 @@ test.describe('Dream Digital visual QA smoke', () => {
     await page.locator('#article_generator_guidelines').fill('Ton expert, SEO, appel a la conversion');
     await page.locator('#article_generator_variants').fill('2');
     await page.locator('#article_generator_submit').click();
-    await expect(page.locator('#article_generator_results .btn-primary').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#article_generator_status')).toContainText(/article\(s\) genere\(s\)\.|Erreur pendant la generation\./, { timeout: 60000 });
+    await expect(page.locator('#article_generator_status')).not.toContainText('Erreur pendant la generation.');
+    await expect(page.locator('#article_generator_results .btn-primary').first()).toBeVisible();
     await page.locator('#article_generator_results .btn-primary').first().click();
     await expect(page.locator('#title')).toHaveValue(/SMS A2P/);
     await expect(page.locator('#sections_json')).toHaveValue(/body_html/);

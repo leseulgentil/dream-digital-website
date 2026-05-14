@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use RuntimeException;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -92,7 +93,7 @@ class PagesController extends Controller
 
     public function update(PageRequest $request, Page $page): RedirectResponse
     {
-        $page->update($this->payload($request));
+        $page->update($this->payload($request, $page));
         $this->recordRevision($page, 'updated');
 
         return redirect()->route('admin.pages.index')
@@ -192,15 +193,24 @@ class PagesController extends Controller
             'variants' => ['required', 'integer', 'min:1', 'max:5'],
         ]);
 
-        return response()->json([
-            'articles' => $this->articleGenerator->generate($validated),
-        ]);
+        try {
+            return response()->json($this->articleGenerator->generateWithMetadata($validated));
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => 'La generation OpenAI est indisponible pour le moment.',
+                'error' => $exception->getMessage(),
+                'provider' => 'openai',
+                'fallback_used' => false,
+            ], 502);
+        }
     }
 
-    private function payload(PageRequest $request): array
+    private function payload(PageRequest $request, ?Page $page = null): array
     {
         $validated = $request->validated();
+        $existingBlocks = $page?->content_blocks ?? [];
         $sectionsArray = $request->decodedSections() ?? [];
+        $faqArray = $request->decodedFaq();
         $uploadedImagePath = $this->uploadedImagePath($request, $validated);
 
         return [
@@ -211,7 +221,7 @@ class PagesController extends Controller
             'title' => $validated['title'],
             'meta_description' => $validated['meta_description'] ?? null,
             'meta_image_path' => $uploadedImagePath ?? ($validated['meta_image_path'] ?? null),
-            'content_blocks' => [
+            'content_blocks' => array_merge($existingBlocks, [
                 'seo_title' => $validated['seo_title'] ?? null,
                 'eyebrow' => $validated['eyebrow'] ?? null,
                 'lead' => $validated['lead'] ?? null,
@@ -222,8 +232,9 @@ class PagesController extends Controller
                 'image_source_url' => $validated['image_source_url'] ?? null,
                 'tags' => $request->decodedTags(),
                 'last_updated' => $validated['last_updated'] ?? null,
+                'faq' => $faqArray ?? ($existingBlocks['faq'] ?? []),
                 'sections' => $sectionsArray,
-            ],
+            ]),
             'is_published' => $validated['is_published'] ?? false,
             'published_at' => ($validated['is_published'] ?? false) ? now() : null,
         ];
@@ -283,6 +294,8 @@ class PagesController extends Controller
             'image_credit' => $blocks['image_credit'] ?? null,
             'image_source_url' => $blocks['image_source_url'] ?? null,
             'tags' => $blocks['tags'] ?? [],
+            'seo_focus_keywords' => $blocks['seo_focus_keywords'] ?? ($blocks['tags'] ?? []),
+            'faq' => $blocks['faq'] ?? [],
             'sections' => $blocks['sections'] ?? [],
             'published_at' => $page->published_at ?? $page->created_at,
             'updated_at' => $page->updated_at,

@@ -11,6 +11,12 @@
   $ogDescription = $t($pageData['meta_description'] ?? '') ?: ($pageLead !== '' ? mb_substr($pageLead, 0, 280) : ($t(config('dream-digital.site.meta.description_default', '')) ?: ''));
   $imagePath = $pageData['meta_image_path'] ?? null;
   $ogImage = blank($imagePath) ? null : (Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset(ltrim($imagePath, '/')));
+  $pageSections = collect($pageData['sections'] ?? [])
+    ->filter(fn ($section) => filled($section['heading'] ?? null) || filled($section['body_html'] ?? null) || filled($section['body'] ?? null))
+    ->values();
+  $faqItems = collect($pageData['faq'] ?? [])
+    ->filter(fn ($item) => filled($item['question'] ?? null) && filled($item['answer'] ?? null))
+    ->values();
 @endphp
 
 @section('title', $seoTitle . ' | Dream Digital')
@@ -34,8 +40,40 @@
     $crumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $displayTitle, 'item' => "{$crumbBase}/{$page}"];
   }
   $crumbPayload = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $crumbItems];
+  $pageUrl = $page === 'product' && !empty($service)
+    ? "{$crumbBase}/products/" . ($service['slug'] ?? $service['id'] ?? '')
+    : "{$crumbBase}/{$page}";
+  $webPagePayload = [
+    '@type' => 'WebPage',
+    'name' => $displayTitle,
+    'description' => $ogDescription,
+    'url' => $pageUrl,
+    'isPartOf' => [
+      '@type' => 'WebSite',
+      'name' => 'Dream Digital',
+      'url' => rtrim(config('app.url'), '/'),
+    ],
+  ];
+  if (!empty($pageData['seo_focus_keywords'])) {
+    $webPagePayload['keywords'] = implode(', ', $pageData['seo_focus_keywords']);
+  }
+  $jsonLdGraph = [$webPagePayload];
+  if ($faqItems->isNotEmpty()) {
+    $jsonLdGraph[] = [
+      '@type' => 'FAQPage',
+      'mainEntity' => $faqItems->map(fn ($item) => [
+        '@type' => 'Question',
+        'name' => $item['question'],
+        'acceptedAnswer' => [
+          '@type' => 'Answer',
+          'text' => $item['answer'],
+        ],
+      ])->all(),
+    ];
+  }
 @endphp
 @section('jsonld-breadcrumb'){!! json_encode($crumbPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
+@section('jsonld-extra'){!! json_encode(['@context' => 'https://schema.org', '@graph' => $jsonLdGraph], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
 
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])
@@ -47,6 +85,15 @@
       @include('front.components.hero-banner', ['pageData' => $pageData, 'locale' => $locale])
     @else
       @include('front.components.hero-simple', ['pageData' => $pageData, 'locale' => $locale])
+    @endif
+
+    @if($pageSections->isNotEmpty())
+      @include('front.components.cms-sections', [
+        'sections' => $pageSections->all(),
+        'locale' => $locale,
+        'keywords' => $pageData['seo_focus_keywords'] ?? [],
+        'links' => $pageData['internal_links'] ?? [],
+      ])
     @endif
 
     @switch($page)
@@ -87,7 +134,6 @@
             </div>
           </div>
         </section>
-        @include('front.components.faq-accordion', ['items' => $home['faq'] ?? [], 'locale' => $locale])
         @break
 
       @case('solutions')
@@ -129,7 +175,6 @@
             </div>
           </div>
         </section>
-        @include('front.components.faq-accordion', ['items' => $home['faq'] ?? [], 'locale' => $locale])
         @break
 
       @case('company')
@@ -161,5 +206,11 @@
         </section>
         @break
     @endswitch
+
+    @if($faqItems->isNotEmpty())
+      @include('front.components.faq-accordion', ['items' => $faqItems->all(), 'locale' => $locale])
+    @elseif(in_array($page, ['developers', 'pricing'], true))
+      @include('front.components.faq-accordion', ['items' => $home['faq'] ?? [], 'locale' => $locale])
+    @endif
   </main>
 @endsection

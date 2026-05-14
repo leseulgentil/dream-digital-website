@@ -14,6 +14,9 @@
   };
   $canonicalUrl = $article['url'];
   $ogImage = $imageUrl($article['meta_image_path'] ?? null);
+  $faqItems = collect($article['faq'] ?? [])
+    ->filter(fn ($item) => filled($item['question'] ?? null) && filled($item['answer'] ?? null))
+    ->values();
 @endphp
 
 @section('title', $title . ' | Dream Digital')
@@ -49,11 +52,27 @@
       'name' => config('dream-digital.site.company.name', 'Dream Digital'),
       'logo' => ['@type' => 'ImageObject', 'url' => asset('img/brand/logo-dd-icon.png')],
     ],
+    'keywords' => implode(', ', $article['seo_focus_keywords'] ?? $article['tags'] ?? []),
     'mainEntityOfPage' => $canonicalUrl,
   ];
+  $jsonLdGraph = [$articlePayload];
+
+  if ($faqItems->isNotEmpty()) {
+    $jsonLdGraph[] = [
+      '@type' => 'FAQPage',
+      'mainEntity' => $faqItems->map(fn ($item) => [
+        '@type' => 'Question',
+        'name' => $item['question'],
+        'acceptedAnswer' => [
+          '@type' => 'Answer',
+          'text' => $item['answer'],
+        ],
+      ])->all(),
+    ];
+  }
 @endphp
 @section('jsonld-breadcrumb'){!! json_encode($crumbPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
-@section('jsonld-extra'){!! json_encode($articlePayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
+@section('jsonld-extra'){!! json_encode(['@context' => 'https://schema.org', '@graph' => $jsonLdGraph], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}@endsection
 
 @section('page-style')
   @vite(['resources/assets/vendor/scss/pages/front-page-landing.scss'])
@@ -111,6 +130,10 @@
         </div>
       </section>
     </article>
+
+    @if($faqItems->isNotEmpty())
+      @include('front.components.faq-accordion', ['items' => $faqItems->all(), 'locale' => $locale])
+    @endif
 
     @if($related->isNotEmpty())
       <section class="dd-section dd-blog-list dd-blog-related">

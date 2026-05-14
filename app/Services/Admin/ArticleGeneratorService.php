@@ -12,19 +12,47 @@ class ArticleGeneratorService
 {
     public function generate(array $input): array
     {
-        $normalized = $this->normalizeInput($input);
+        return $this->generateWithMetadata($input)['articles'];
+    }
 
-        if ($this->shouldUseOpenAi()) {
+    public function generateWithMetadata(array $input): array
+    {
+        $normalized = $this->normalizeInput($input);
+        $provider = $this->provider();
+
+        if ($provider === 'openai' && blank(config('services.openai.api_key'))) {
+            return $this->fallbackResult($normalized, 'missing_api_key');
+        }
+
+        if ($provider === 'openai') {
             try {
-                return $this->generateWithOpenAi($normalized);
+                return [
+                    'articles' => $this->generateWithOpenAi($normalized),
+                    'provider' => 'openai',
+                    'model' => $this->model(),
+                    'fallback_used' => false,
+                    'fallback_reason' => null,
+                ];
             } catch (Throwable $exception) {
+                if (! $this->fallbackOnFailure()) {
+                    throw new RuntimeException('Generation OpenAI indisponible: ' . $exception->getMessage(), previous: $exception);
+                }
+
                 Log::warning('OpenAI article generation failed; using local fallback.', [
                     'message' => $exception->getMessage(),
                 ]);
+
+                return $this->fallbackResult($normalized, 'openai_error');
             }
         }
 
-        return $this->generateLocal($normalized);
+        return [
+            'articles' => $this->generateLocal($normalized),
+            'provider' => 'local',
+            'model' => null,
+            'fallback_used' => false,
+            'fallback_reason' => null,
+        ];
     }
 
     private function generateLocal(array $input): array
@@ -65,10 +93,38 @@ class ArticleGeneratorService
             ->all();
     }
 
-    private function shouldUseOpenAi(): bool
+    private function provider(): string
     {
-        return config('services.openai.article_provider') === 'openai'
-            && filled(config('services.openai.api_key'));
+        $provider = strtolower((string) config('services.openai.article_provider', 'local'));
+
+        return in_array($provider, ['local', 'openai'], true)
+            ? $provider
+            : 'local';
+    }
+
+    private function model(): string
+    {
+        return (string) config('services.openai.model', 'gpt-5-mini');
+    }
+
+    private function fallbackOnFailure(): bool
+    {
+        return (bool) config('services.openai.fallback_on_failure', true);
+    }
+
+    private function fallbackResult(array $input, string $reason): array
+    {
+        if (! $this->fallbackOnFailure()) {
+            throw new RuntimeException("Generation OpenAI indisponible ({$reason}).");
+        }
+
+        return [
+            'articles' => $this->generateLocal($input),
+            'provider' => 'local',
+            'model' => null,
+            'fallback_used' => true,
+            'fallback_reason' => $reason,
+        ];
     }
 
     private function normalizeInput(array $input): array
@@ -89,7 +145,7 @@ class ArticleGeneratorService
         $guidelines = $input['guidelines'] !== '' ? $input['guidelines'] : 'Ton expert, concret, commercial, utile pour des decideurs B2B.';
 
         return [
-            'model' => config('services.openai.model', 'gpt-5-mini'),
+            'model' => $this->model(),
             'instructions' => "You are Dream Digital's senior SEO editor for programmable telecom, CPaaS, SMS A2P, Voice API, DID, eSIM, cloud and digital transformation. Return only valid JSON matching the schema.",
             'input' => [[
                 'role' => 'user',
@@ -102,6 +158,7 @@ class ArticleGeneratorService
                         "Editorial guidelines: {$guidelines}",
                         'Each article must be ready to paste into a Laravel CMS form.',
                         'Use factual, non-hype language, practical examples, and HTML paragraphs/lists in body_html.',
+                        'Include 2 to 4 concise FAQ entries that answer buyer/search-intent questions.',
                         'Use real-looking Unsplash image URLs when useful, or leave image fields coherent with telecom/business imagery.',
                     ]),
                 ]],
@@ -114,7 +171,7 @@ class ArticleGeneratorService
                     'schema' => $this->openAiSchema($input['locale']),
                 ],
             ],
-            'max_output_tokens' => 9000,
+            'max_output_tokens' => (int) config('services.openai.max_output_tokens', 9000),
         ];
     }
 
@@ -148,6 +205,7 @@ class ArticleGeneratorService
                             'image_alt',
                             'image_credit',
                             'image_source_url',
+                            'faq',
                             'sections',
                         ],
                         'properties' => [
@@ -171,6 +229,20 @@ class ArticleGeneratorService
                             'image_alt' => ['type' => 'string'],
                             'image_credit' => ['type' => 'string'],
                             'image_source_url' => ['type' => 'string'],
+                            'faq' => [
+                                'type' => 'array',
+                                'minItems' => 2,
+                                'maxItems' => 4,
+                                'items' => [
+                                    'type' => 'object',
+                                    'additionalProperties' => false,
+                                    'required' => ['question', 'answer'],
+                                    'properties' => [
+                                        'question' => ['type' => 'string'],
+                                        'answer' => ['type' => 'string'],
+                                    ],
+                                ],
+                            ],
                             'sections' => [
                                 'type' => 'array',
                                 'minItems' => 4,
@@ -195,6 +267,10 @@ class ArticleGeneratorService
 
     private function extractOutputText(array $payload): string
     {
+        if (data_get($payload, 'status') === 'incomplete') {
+            throw new RuntimeException('OpenAI API response was incomplete.');
+        }
+
         $direct = data_get($payload, 'output_text');
         if (is_string($direct) && trim($direct) !== '') {
             return $direct;
@@ -202,6 +278,11 @@ class ArticleGeneratorService
 
         foreach ((array) data_get($payload, 'output', []) as $output) {
             foreach ((array) data_get($output, 'content', []) as $content) {
+                $refusal = data_get($content, 'refusal');
+                if (is_string($refusal) && trim($refusal) !== '') {
+                    throw new RuntimeException('OpenAI API refused the article generation request.');
+                }
+
                 $text = data_get($content, 'text');
                 if (is_string($text) && trim($text) !== '') {
                     return $text;
@@ -252,6 +333,8 @@ class ArticleGeneratorService
             $sections = $this->sections($input['idea'], $input['keywords'], $input['guidelines'], $input['locale'], $index);
         }
 
+        $faq = $this->normalizeFaq($article['faq'] ?? [], $input['idea'], $input['locale']);
+
         $imageUrl = trim((string) ($article['meta_image_path'] ?? ''));
         if (! Str::startsWith($imageUrl, ['http://', 'https://', '/'])) {
             $imageUrl = $this->imageUrl($index);
@@ -273,6 +356,7 @@ class ArticleGeneratorService
             'image_alt' => trim((string) ($article['image_alt'] ?? $title)) ?: $title,
             'image_credit' => trim((string) ($article['image_credit'] ?? 'Photo Unsplash')) ?: 'Photo Unsplash',
             'image_source_url' => trim((string) ($article['image_source_url'] ?? 'https://unsplash.com/')) ?: 'https://unsplash.com/',
+            'faq' => $faq,
             'sections' => $sections,
         ];
     }
@@ -303,6 +387,7 @@ class ArticleGeneratorService
                 : "Telecom team reviewing {$idea}",
             'image_credit' => 'Photo Unsplash',
             'image_source_url' => 'https://unsplash.com/',
+            'faq' => $this->faq($idea, $locale),
             'sections' => $sections,
         ];
     }
@@ -415,6 +500,48 @@ class ArticleGeneratorService
             ->take(8)
             ->values()
             ->all();
+    }
+
+    private function normalizeFaq(array $items, string $idea, string $locale): array
+    {
+        $faq = collect($items)
+            ->map(fn ($item) => [
+                'question' => trim((string) data_get($item, 'question')),
+                'answer' => trim((string) data_get($item, 'answer')),
+            ])
+            ->filter(fn (array $item) => $item['question'] !== '' && $item['answer'] !== '')
+            ->take(4)
+            ->values()
+            ->all();
+
+        return count($faq) >= 2 ? $faq : $this->faq($idea, $locale);
+    }
+
+    private function faq(string $idea, string $locale): array
+    {
+        if ($locale === 'en') {
+            return [
+                [
+                    'question' => "When should a company prioritize {$idea}?",
+                    'answer' => "Prioritize {$idea} when the flow has a direct impact on conversion, support load, fraud risk or customer experience. Start with one measurable use case and compare results before scaling.",
+                ],
+                [
+                    'question' => 'What data should be prepared before contacting Dream Digital?',
+                    'answer' => 'Share the target countries, expected monthly volume, traffic type, SLA expectations and any current delivery or routing issues. This helps the team recommend the right corridor and operating model.',
+                ],
+            ];
+        }
+
+        return [
+            [
+                'question' => "Quand prioriser {$idea} ?",
+                'answer' => "{$idea} devient prioritaire quand le flux influence directement la conversion, le support, le risque fraude ou l'experience client. Le plus efficace est de commencer par un cas d'usage mesurable, puis de comparer les resultats avant de scaler.",
+            ],
+            [
+                'question' => 'Quelles donnees preparer avant de contacter Dream Digital ?',
+                'answer' => 'Preparez les pays cibles, le volume mensuel attendu, le type de trafic, les attentes SLA et les problemes actuels de livraison ou de routage. Ces elements permettent de recommander le bon corridor et le bon modele operationnel.',
+            ],
+        ];
     }
 
     private function bodyToHtml(string $body): string

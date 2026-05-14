@@ -250,6 +250,7 @@
     setValue('image_alt', article.image_alt);
     setValue('image_credit', article.image_credit);
     setValue('image_source_url', article.image_source_url);
+    setValue('faq_json', JSON.stringify(article.faq || [], null, 2));
 
     if (jsonField) {
       jsonField.value = JSON.stringify(article.sections || [], null, 2);
@@ -317,7 +318,10 @@
 
       const payload = await response.json();
       renderResults(payload.articles || []);
-      generatorStatus.textContent = `${(payload.articles || []).length} article(s) genere(s).`;
+      const providerLabel = payload.provider === 'openai'
+        ? `Source: OpenAI${payload.model ? ` (${payload.model})` : ''}.`
+        : (payload.fallback_used ? 'Source: fallback local.' : 'Source: local.');
+      generatorStatus.textContent = `${(payload.articles || []).length} article(s) genere(s). ${providerLabel}`;
     } catch (error) {
       generatorStatus.textContent = 'Erreur pendant la generation.';
     } finally {

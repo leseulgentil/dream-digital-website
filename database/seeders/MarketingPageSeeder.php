@@ -47,6 +47,8 @@ class MarketingPageSeeder extends Seeder
                             'image_credit' => $image['credit'],
                             'image_source_url' => $image['source_url'],
                             'seo_focus_keywords' => $this->focusKeywords($slug, $locale),
+                            'faq' => $this->faqFor($slug, $locale),
+                            'internal_links' => $this->internalLinksFor($slug, $locale),
                             'sections' => $this->sectionsFor($slug, $locale, $title, (string) $lead),
                         ],
                         'is_published' => true,
@@ -206,5 +208,76 @@ class MarketingPageSeeder extends Seeder
                 'body_html' => '<p>Le visiteur doit pouvoir passer de la decouverte a l action:</p><ul><li>Comparer le service</li><li>Consulter la couverture ou le pricing</li><li>Contacter Dream Digital avec pays, volume et SLA</li></ul>',
             ],
         ];
+    }
+
+    private function faqFor(string $slug, string $locale): array
+    {
+        $keywords = implode(', ', $this->focusKeywords($slug, $locale));
+        $topic = [
+            'products' => ['fr' => 'le catalogue CPaaS', 'en' => 'the CPaaS catalogue'],
+            'developers' => ['fr' => 'les APIs telecom', 'en' => 'telecom APIs'],
+            'solutions' => ['fr' => 'les solutions metier', 'en' => 'business solutions'],
+            'coverage' => ['fr' => 'la couverture internationale', 'en' => 'international coverage'],
+            'pricing' => ['fr' => 'le pricing telecom', 'en' => 'telecom pricing'],
+            'company' => ['fr' => 'Dream Digital', 'en' => 'Dream Digital'],
+            'contact' => ['fr' => 'la prise de contact', 'en' => 'the contact process'],
+        ][$slug][$locale] ?? 'Dream Digital';
+
+        if ($locale === 'en') {
+            return [
+                [
+                    'question' => "What should teams check before choosing {$topic}?",
+                    'answer' => "They should clarify target countries, channels, monthly volumes, quality expectations and operational ownership. This makes the discussion concrete and keeps the recommendation aligned with {$keywords}.",
+                ],
+                [
+                    'question' => 'Can Dream Digital support both technical and business teams?',
+                    'answer' => 'Yes. The project can be framed for technical integration, routing quality, pricing visibility and commercial decision-making so that product, support and sales teams work from the same facts.',
+                ],
+            ];
+        }
+
+        return [
+            [
+                'question' => "Que verifier avant de choisir {$topic} ?",
+                'answer' => "Il faut clarifier les pays cibles, les canaux, les volumes mensuels, les attentes qualite et les responsables operationnels. Cela rend l echange concret et aligne la recommandation avec {$keywords}.",
+            ],
+            [
+                'question' => 'Dream Digital peut-il accompagner les equipes techniques et business ?',
+                'answer' => 'Oui. Le projet peut etre cadre autour de l integration technique, de la qualite de routage, de la visibilite pricing et de la decision commerciale pour aligner produit, support et sales.',
+            ],
+        ];
+    }
+
+    private function internalLinksFor(string $slug, string $locale): array
+    {
+        $prefix = "/{$locale}";
+
+        return match ($slug) {
+            'products' => [
+                ['label' => 'SMS A2P', 'url' => "{$prefix}/products/sms-a2p"],
+                ['label' => 'Voice API', 'url' => "{$prefix}/products/voice"],
+                ['label' => 'Pricing', 'url' => "{$prefix}/pricing"],
+            ],
+            'developers' => [
+                ['label' => 'API guides', 'url' => "{$prefix}/blog/webhooks-dlr-monitoring-temps-reel"],
+                ['label' => 'Contact integration', 'url' => "{$prefix}/contact"],
+            ],
+            'solutions' => [
+                ['label' => 'Fintech CPaaS', 'url' => "{$prefix}/blog/cpaas-fintech-banques-otp"],
+                ['label' => 'Coverage', 'url' => "{$prefix}/coverage"],
+            ],
+            'coverage' => [
+                ['label' => 'Pricing corridors', 'url' => "{$prefix}/pricing"],
+                ['label' => 'Contact routes', 'url' => "{$prefix}/contact"],
+            ],
+            'pricing' => [
+                ['label' => 'Coverage', 'url' => "{$prefix}/coverage"],
+                ['label' => 'Contact sales', 'url' => "{$prefix}/contact"],
+            ],
+            default => [
+                ['label' => 'Products', 'url' => "{$prefix}/products"],
+                ['label' => 'Contact', 'url' => "{$prefix}/contact"],
+            ],
+        };
     }
 }

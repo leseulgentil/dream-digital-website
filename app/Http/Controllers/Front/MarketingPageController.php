@@ -70,6 +70,9 @@ class MarketingPageController extends Controller
         'image_alt' => $blocks['image_alt'] ?? $dbPage->title,
         'image_credit' => $blocks['image_credit'] ?? null,
         'image_source_url' => $blocks['image_source_url'] ?? null,
+        'seo_focus_keywords' => $blocks['seo_focus_keywords'] ?? [],
+        'faq' => $blocks['faq'] ?? [],
+        'internal_links' => $blocks['internal_links'] ?? [],
         'sections' => $blocks['sections'] ?? [],
         'source' => 'db',
       ];

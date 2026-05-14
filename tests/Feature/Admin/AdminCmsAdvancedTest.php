@@ -122,6 +122,8 @@ class AdminCmsAdvancedTest extends TestCase
             ->assertJsonCount(3, 'articles')
             ->assertJsonPath('articles.0.section', 'blog')
             ->assertJsonPath('articles.0.locale', 'fr')
+            ->assertJsonPath('provider', 'local')
+            ->assertJsonPath('fallback_used', false)
             ->assertJsonStructure([
                 'articles' => [[
                     'title',
@@ -131,6 +133,7 @@ class AdminCmsAdvancedTest extends TestCase
                     'meta_image_path',
                     'lead',
                     'tags',
+                    'faq',
                     'sections',
                 ]],
             ]);
@@ -164,6 +167,16 @@ class AdminCmsAdvancedTest extends TestCase
                         'image_alt' => 'Equipe analysant des flux SMS bancaires',
                         'image_credit' => 'Photo Unsplash',
                         'image_source_url' => 'https://unsplash.com/',
+                        'faq' => [
+                            [
+                                'question' => 'Pourquoi surveiller les OTP bancaires ?',
+                                'answer' => 'Parce que les OTP influencent directement conversion, support et securite.',
+                            ],
+                            [
+                                'question' => 'Quels KPI suivre ?',
+                                'answer' => 'Suivez delivrabilite, latence, erreurs operateur et taux de conversion.',
+                            ],
+                        ],
                         'sections' => [
                             [
                                 'heading' => 'Prioriser les flux critiques',
@@ -201,11 +214,65 @@ class AdminCmsAdvancedTest extends TestCase
             ->assertOk()
             ->assertJsonCount(1, 'articles')
             ->assertJsonPath('articles.0.title', 'SMS A2P bancaire: guide operationnel')
-            ->assertJsonPath('articles.0.section', 'blog');
+            ->assertJsonPath('articles.0.section', 'blog')
+            ->assertJsonPath('articles.0.faq.0.question', 'Pourquoi surveiller les OTP bancaires ?')
+            ->assertJsonPath('provider', 'openai')
+            ->assertJsonPath('model', 'gpt-5-mini')
+            ->assertJsonPath('fallback_used', false);
 
         Http::assertSent(fn ($request) => $request->url() === 'https://api.openai.test/v1/responses'
             && $request->hasHeader('Authorization', 'Bearer test-openai-key')
             && data_get($request->data(), 'text.format.type') === 'json_schema'
             && data_get($request->data(), 'text.format.strict') === true);
+    }
+
+    public function test_article_generator_reports_local_fallback_when_openai_fails(): void
+    {
+        config([
+            'services.openai.article_provider' => 'openai',
+            'services.openai.api_key' => 'test-openai-key',
+            'services.openai.base_url' => 'https://api.openai.test/v1',
+            'services.openai.fallback_on_failure' => true,
+        ]);
+
+        Http::fake([
+            'api.openai.test/v1/responses' => Http::response(['error' => ['message' => 'rate limited']], 429),
+        ]);
+
+        $this->postJson(route('admin.pages.generate-article'), [
+            'idea' => 'SMS A2P pour banques africaines',
+            'keywords' => 'SMS A2P, OTP, banking',
+            'locale' => 'fr',
+            'variants' => 1,
+        ])
+            ->assertOk()
+            ->assertJsonCount(1, 'articles')
+            ->assertJsonPath('provider', 'local')
+            ->assertJsonPath('fallback_used', true)
+            ->assertJsonPath('fallback_reason', 'openai_error');
+    }
+
+    public function test_article_generator_can_fail_fast_when_openai_fallback_is_disabled(): void
+    {
+        config([
+            'services.openai.article_provider' => 'openai',
+            'services.openai.api_key' => 'test-openai-key',
+            'services.openai.base_url' => 'https://api.openai.test/v1',
+            'services.openai.fallback_on_failure' => false,
+        ]);
+
+        Http::fake([
+            'api.openai.test/v1/responses' => Http::response(['error' => ['message' => 'rate limited']], 429),
+        ]);
+
+        $this->postJson(route('admin.pages.generate-article'), [
+            'idea' => 'SMS A2P pour banques africaines',
+            'keywords' => 'SMS A2P, OTP, banking',
+            'locale' => 'fr',
+            'variants' => 1,
+        ])
+            ->assertStatus(502)
+            ->assertJsonPath('provider', 'openai')
+            ->assertJsonPath('fallback_used', false);
     }
 }

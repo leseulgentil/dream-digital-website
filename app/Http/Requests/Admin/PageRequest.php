@@ -37,6 +37,7 @@ class PageRequest extends FormRequest
             'tags' => ['nullable', 'string', 'max:500'],
             'last_updated' => ['nullable', 'string', 'max:30'],
             'sections_json' => ['nullable', 'string'],
+            'faq_json' => ['nullable', 'string'],
             'is_published' => ['sometimes', 'boolean'],
         ];
     }
@@ -82,12 +83,38 @@ class PageRequest extends FormRequest
         return is_array($decoded) ? $decoded : null;
     }
 
+    public function decodedFaq(): ?array
+    {
+        $raw = $this->input('faq_json');
+        if (empty($raw)) {
+            return null;
+        }
+        $decoded = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+            return null;
+        }
+
+        return collect($decoded)
+            ->map(fn ($item) => [
+                'question' => trim((string) data_get($item, 'question')),
+                'answer' => trim((string) data_get($item, 'answer')),
+            ])
+            ->filter(fn (array $item) => $item['question'] !== '' && $item['answer'] !== '')
+            ->values()
+            ->all();
+    }
+
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             $raw = $this->input('sections_json');
             if (!empty($raw) && $this->decodedSections() === null) {
                 $validator->errors()->add('sections_json', 'Le champ "Sections (JSON)" doit etre un JSON valide (tableau).');
+            }
+
+            $faqRaw = $this->input('faq_json');
+            if (!empty($faqRaw) && $this->decodedFaq() === null) {
+                $validator->errors()->add('faq_json', 'Le champ "FAQ SEO (JSON)" doit etre un JSON valide (tableau).');
             }
         });
     }

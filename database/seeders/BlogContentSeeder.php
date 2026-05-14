@@ -37,6 +37,7 @@ class BlogContentSeeder extends Seeder
                             'tags' => $content['tags'],
                             'seo_focus_keywords' => $content['tags'],
                             'content_status' => 'final-draft',
+                            'faq' => $this->faqFor($content, $locale),
                             'sections' => $this->enrichSections($content['sections'], $content, $locale),
                         ],
                         'is_published' => true,
@@ -479,6 +480,36 @@ class BlogContentSeeder extends Seeder
             ];
 
         return $sections;
+    }
+
+    private function faqFor(array $content, string $locale): array
+    {
+        $topic = $content['eyebrow'] ?? 'CPaaS';
+        $keywords = implode(', ', $content['tags'] ?? []);
+
+        if ($locale === 'en') {
+            return [
+                [
+                    'question' => "How does {$topic} help a B2B telecom or digital team?",
+                    'answer' => "{$topic} helps teams connect operational quality with business outcomes: delivery, routing, customer experience, margin and support visibility. The practical starting point is to define one measurable flow and monitor it before scaling.",
+                ],
+                [
+                    'question' => 'What should be prepared before requesting a Dream Digital recommendation?',
+                    'answer' => "Prepare target countries, channels, monthly volumes, current pain points and SLA expectations. Useful keywords for this topic include {$keywords}.",
+                ],
+            ];
+        }
+
+        return [
+            [
+                'question' => "Comment {$topic} aide une equipe telecom ou digitale B2B ?",
+                'answer' => "{$topic} relie la qualite operationnelle aux resultats business : livraison, routage, experience client, marge et visibilite support. Le bon point de depart consiste a cadrer un flux mesurable puis a le suivre avant de scaler.",
+            ],
+            [
+                'question' => 'Que preparer avant de demander une recommandation Dream Digital ?',
+                'answer' => "Preparez les pays cibles, les canaux, les volumes mensuels, les irritants actuels et les attentes SLA. Les mots cles utiles pour ce sujet sont {$keywords}.",
+            ],
+        ];
     }
 
     private function bodyToHtml(string $body): string

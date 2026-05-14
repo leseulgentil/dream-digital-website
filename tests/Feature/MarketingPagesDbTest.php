@@ -45,6 +45,8 @@ class MarketingPagesDbTest extends TestCase
         $this->assertStringContainsString('CPaaS', $blocks['seo_title']);
         $this->assertStringStartsWith('https://images.unsplash.com/', $page->meta_image_path);
         $this->assertNotEmpty($blocks['seo_focus_keywords']);
+        $this->assertGreaterThanOrEqual(2, count($blocks['faq'] ?? []));
+        $this->assertNotEmpty($blocks['internal_links'] ?? []);
         $this->assertCount(3, $blocks['sections']);
 
         $this->get('/fr/products')
@@ -52,7 +54,10 @@ class MarketingPagesDbTest extends TestCase
             ->assertSee($blocks['seo_title'], false)
             ->assertSee($page->meta_description, false)
             ->assertSee($page->meta_image_path)
-            ->assertSee('dd-page-hero__media', false);
+            ->assertSee('dd-page-hero__media', false)
+            ->assertSee('Focus SEO et business utile')
+            ->assertSee('"@type":"FAQPage"', false)
+            ->assertSee('SMS A2P');
     }
 
     public function test_marketing_controller_prefers_db_over_config(): void

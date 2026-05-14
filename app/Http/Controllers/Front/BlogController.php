@@ -110,6 +110,8 @@ class BlogController extends Controller
             'image_credit' => $blocks['image_credit'] ?? null,
             'image_source_url' => $blocks['image_source_url'] ?? null,
             'tags' => $blocks['tags'] ?? [],
+            'seo_focus_keywords' => $blocks['seo_focus_keywords'] ?? ($blocks['tags'] ?? []),
+            'faq' => $blocks['faq'] ?? [],
             'sections' => $blocks['sections'] ?? [],
             'published_at' => $page->published_at ?? $page->created_at,
             'updated_at' => $page->updated_at,

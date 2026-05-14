@@ -2425,6 +2425,18 @@ nav.dd-front-navbar {
   padding: .35rem .65rem;
 }
 
+.dd-article-tags a {
+  border-block-end: 1px solid rgba(15, 118, 110, .35);
+  color: #0f766e;
+  font-size: .9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dd-article-tags a:hover {
+  color: #115e59;
+}
+
 .dd-article-content {
   color: #2d3645;
   font-size: 1.03rem;

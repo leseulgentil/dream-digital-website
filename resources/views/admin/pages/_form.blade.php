@@ -3,6 +3,7 @@
   $formAction = $isEdit ? route('admin.pages.update', $page) : route('admin.pages.store');
   $blocks = $page->content_blocks ?? [];
   $schema = ($cmsSchemas ?? [])[old('section', $page->section)] ?? null;
+  $faqJson = old('faq_json', json_encode($blocks['faq'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 @endphp
 
 <form method="POST" action="{{ $formAction }}" id="dd-cms-page-form" class="card-body row g-4" enctype="multipart/form-data" data-generate-article-url="{{ route('admin.pages.generate-article') }}" data-csrf-token="{{ csrf_token() }}" novalidate>
@@ -78,7 +79,10 @@
   <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center">
     <div>
       <h5 class="mb-1">Assistant Blog SEO</h5>
-      <p class="text-muted mb-0">Genere un article complet puis remplis le formulaire apres validation.</p>
+      <p class="text-muted mb-0">
+        Genere un article complet puis remplis le formulaire apres validation.
+        Source: {{ config('services.openai.article_provider') === 'openai' ? 'OpenAI / ' . config('services.openai.model') : 'local' }}.
+      </p>
     </div>
     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ddGenerateArticleModal" data-dd-open-article-generator>
       <i class="bx bx-bot me-1"></i> Generate Article
@@ -188,6 +192,18 @@
         <textarea id="sections_json" name="sections_json" rows="8" class="form-control font-monospace small @error('sections_json') is-invalid @enderror">{{ old('sections_json', $sectionsJson) }}</textarea>
         @error('sections_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
         <small class="text-muted">Format attendu : <code>[{"heading":"Titre section","body":"Paragraphe 1.\n\nParagraphe 2.","body_html":"&lt;p&gt;...&lt;/p&gt;"}, ...]</code>.</small>
+      </div>
+    </details>
+  </div>
+
+  <div class="col-12">
+    <details>
+      <summary class="fw-medium">FAQ SEO (JSON avance)</summary>
+      <div class="mt-3">
+        <label class="form-label" for="faq_json">FAQ SEO (JSON) <small class="text-muted">tableau d'objets {question, answer}</small></label>
+        <textarea id="faq_json" name="faq_json" rows="5" class="form-control font-monospace small @error('faq_json') is-invalid @enderror">{{ $faqJson }}</textarea>
+        @error('faq_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <small class="text-muted">Ces questions peuvent alimenter le rendu public et les donnees structurees SEO.</small>
       </div>
     </details>
   </div>

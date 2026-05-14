@@ -41,6 +41,8 @@ class BlogContentTest extends TestCase
             ->assertSee('SMS A2P et OTP en Afrique francophone')
             ->assertSee('Guide SEO Dream Digital sur la delivrabilite SMS A2P', false)
             ->assertSee('<meta property="og:type" content="article"', false)
+            ->assertSee('"@type":"FAQPage"', false)
+            ->assertSee('Questions frequentes')
             ->assertSee('Photo Unsplash / Markus Stickling');
     }
 
@@ -55,6 +57,7 @@ class BlogContentTest extends TestCase
             $this->assertStringStartsWith('https://images.unsplash.com/', $page->meta_image_path);
             $this->assertGreaterThanOrEqual(5, count($blocks['sections'] ?? []));
             $this->assertNotEmpty($blocks['seo_focus_keywords'] ?? []);
+            $this->assertGreaterThanOrEqual(2, count($blocks['faq'] ?? []));
 
             foreach ($blocks['sections'] ?? [] as $section) {
                 $this->assertNotEmpty($section['heading'] ?? null);
@@ -140,6 +143,7 @@ class BlogContentTest extends TestCase
             'image_alt' => $blocks['image_alt'] ?? '',
             'image_credit' => $blocks['image_credit'] ?? '',
             'image_source_url' => $blocks['image_source_url'] ?? '',
+            'faq_json' => json_encode($blocks['faq'] ?? []),
             'lead' => $blocks['lead'] ?? '',
             'last_updated' => $blocks['last_updated'] ?? '',
             'sections_json' => json_encode($blocks['sections'] ?? []),

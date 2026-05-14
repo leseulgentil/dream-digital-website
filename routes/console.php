@@ -5,6 +5,7 @@ use App\Models\Page;
 use App\Models\Service;
 use App\Models\ServicePrice;
 use App\Models\User;
+use App\Services\CompanyProfileService;
 use App\Support\DatabaseBackup;
 use Illuminate\Foundation\Console\ClosureCommand;
 use Illuminate\Foundation\Inspiring;
@@ -39,6 +40,8 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
 
         $warnings[] = $message;
     };
+
+    app(CompanyProfileService::class)->applyToConfig('fr');
 
     $bool = fn (string $key): bool => filter_var(config("dream-digital.launch.{$key}", false), FILTER_VALIDATE_BOOLEAN);
     $configBool = fn (string $key): bool => filter_var(config($key, false), FILTER_VALIDATE_BOOLEAN);
@@ -114,6 +117,7 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     $record(Schema::hasTable('services'), 'Database table `services` exists');
     $record(Schema::hasTable('service_prices'), 'Database table `service_prices` exists');
     $record(Schema::hasTable('pages'), 'Database table `pages` exists');
+    $record(Schema::hasTable('company_profiles'), 'Database table `company_profiles` exists');
     $record(Schema::hasTable('users'), 'Database table `users` exists');
     $record(Schema::hasTable('cache'), 'Database table `cache` exists');
     $record(Schema::hasTable('sessions'), 'Database table `sessions` exists');

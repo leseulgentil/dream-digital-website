@@ -22,6 +22,13 @@
       "slug": "admin.navigation"
     },
     {
+      "url": "admin/company-profile",
+      "name": "Company Profile",
+      "icon": "dd-menu-icon icon-base bx bx-buildings",
+      "slug": "admin.company-profile",
+      "ability": "canManageUsers"
+    },
+    {
       "url": "admin/pages?section=blog",
       "name": "Blog",
       "icon": "dd-menu-icon icon-base bx bx-news",

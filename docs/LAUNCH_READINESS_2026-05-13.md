@@ -43,7 +43,7 @@ DD_SUPPORT_EMAIL=support@dream-digital.info
 DD_SECURITY_EMAIL=security@dream-digital.info
 DD_PRIVACY_EMAIL=privacy@dream-digital.info
 DD_PUBLIC_PHONE="+243..."
-DD_COMPANY_LEGAL_NAME="Dream Digital ..."
+DD_COMPANY_LEGAL_NAME="DREAM DIGITAL"
 DD_OG_IMAGE=/img/og/dream-digital-launch.png
 DD_SOCIAL_LINKEDIN=
 DD_SOCIAL_TWITTER=
@@ -66,6 +66,8 @@ DD_PUBLIC_INDEXABLE=true
 DD_DB_BACKUP_MAX_AGE_HOURS=24
 DD_REQUIRE_RECENT_DB_BACKUP=true
 ```
+
+Depuis le sprint admin, `DD_PUBLIC_PHONE`, `DD_COMPANY_LEGAL_NAME`, les URLs sociales, l'image OG et les confirmations `DD_ADMIN_PASSWORD_ROTATED` / `DD_LEGAL_VALIDATED` peuvent aussi etre geres depuis `/admin/company-profile` en FR et EN. Les variables `.env` restent utiles comme fallback ou seed initial.
 
 ## Garde-fou
 

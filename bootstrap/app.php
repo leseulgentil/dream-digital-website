@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureAdminRole;
+use App\Http\Middleware\ApplyCompanyProfile;
 use App\Http\Middleware\InternalDemoGuard;
 use App\Http\Middleware\LocaleMiddleware;
 use App\Http\Middleware\RequestId;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             RequestId::class,
             SecurityHeaders::class,
             LocaleMiddleware::class,
+            ApplyCompanyProfile::class,
             SetCountryAndLocale::class,
         ]);
         $middleware->alias([

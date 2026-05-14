@@ -17,7 +17,7 @@ php artisan dd:launch-check --public
 npm run audit:prod
 ```
 
-Le check public doit rester rouge tant que les confirmations operateur ne sont pas posees dans `.env`.
+Le check public doit rester rouge tant que les confirmations operateur ne sont pas posees. Les champs business et les confirmations `legal/admin password` sont pilotables depuis `/admin/company-profile`; les variables `.env` correspondantes restent des fallbacks/valeurs de seed.
 
 ## 2. Flags de readiness
 
@@ -35,13 +35,20 @@ SESSION_HTTP_ONLY=true
 SESSION_SAME_SITE=lax
 DD_CSP_ENABLED=true
 DD_CSP_REPORT_ONLY=true
-DD_ADMIN_PASSWORD_ROTATED=true
-DD_LEGAL_VALIDATED=true
 DD_PUBLIC_BASIC_AUTH_DISABLED=true
 DD_BACKUPS_CONFIGURED=true
 DD_ENV_BACKED_UP=true
 DD_DEPLOYMENT_RUNBOOK_REVIEWED=true
 ```
+
+Completer aussi `/admin/company-profile` pour les profils `FR` et `EN` :
+
+- raison sociale (`DREAM DIGITAL` si valide juridiquement);
+- telephone public;
+- emails sales/support/security/privacy;
+- URLs sociales;
+- image OpenGraph par defaut;
+- confirmations `Legal valide` et `Admin password rotate`.
 
 ## 3. Backups
 
@@ -77,6 +84,7 @@ Avant ouverture:
 
 - creer au moins un compte owner/admin actif;
 - remplacer tout mot de passe provisoire;
+- completer `/admin/company-profile` pour FR et EN;
 - activer les cookies de session securises (`SESSION_ENCRYPT`, `SESSION_SECURE_COOKIE`, `SESSION_HTTP_ONLY`);
 - verifier les roles owner/admin/editor;
 - confirmer que les menus admin inutiles restent caches ou non relies aux workflows publics;

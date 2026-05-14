@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\CompanyProfile;
 use App\Models\User;
 use Database\Seeders\BlogContentSeeder;
 use Database\Seeders\CountrySeeder;
@@ -95,6 +96,35 @@ class LaunchReadinessCommandTest extends TestCase
 
         $this->assertSame(0, $exitCode);
         $this->assertStringContainsString('Launch check OK', Artisan::output());
+    }
+
+    public function test_launch_check_reads_business_fields_from_company_profile(): void
+    {
+        $this->seedLaunchData();
+        CompanyProfile::create([
+            'locale' => 'fr',
+            'company_name' => 'Dream Digital',
+            'legal_name' => 'DREAM DIGITAL',
+            'public_phone' => '+243000000000',
+            'email_sales' => 'sales@dream-digital.info',
+            'email_support' => 'support@dream-digital.info',
+            'email_security' => 'security@dream-digital.info',
+            'email_privacy' => 'privacy@dream-digital.info',
+            'social_linkedin' => 'https://www.linkedin.com/company/dream-digital',
+            'social_twitter' => 'https://x.com/dreamdigital',
+            'social_github' => 'https://github.com/dream-digital',
+            'og_image_path' => '/img/brand/logo-dd-horizontal.png',
+            'legal_validated' => true,
+            'admin_password_rotated' => true,
+        ]);
+
+        $exitCode = Artisan::call('dd:launch-check');
+        $output = Artisan::output();
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('Business field `dream-digital.site.company.legal_name` is filled', $output);
+        $this->assertStringContainsString('Admin password rotation has been confirmed', $output);
+        $this->assertStringContainsString('Legal validation has been confirmed', $output);
     }
 
     public function test_backup_command_copies_sqlite_database_file(): void

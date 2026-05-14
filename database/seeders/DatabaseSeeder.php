@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             MarketingPageSeeder::class,
             BlogContentSeeder::class,
             NavigationItemSeeder::class,
+            CompanyProfileSeeder::class,
             AdminUserSeeder::class,
         ]);
     }

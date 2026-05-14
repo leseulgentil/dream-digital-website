@@ -20,6 +20,8 @@
 | Certaines clés ci-dessous sont volontairement à `null` (ex.
 | `contact.email_support`, `contact.phone`, `social.*`,
 | `company.legal_name`, `meta.og_image`). Elles attendent un input PO.
+| En production, la table `company_profiles` geree par `/admin/company-profile`
+| surcharge ces valeurs pour les locales FR/EN.
 |
 | RÈGLE BLADE — TOUJOURS utiliser le null-coalescing (`??`) ou un `@if`
 | en garde lors du rendu, pour éviter du markup cassé silencieux.

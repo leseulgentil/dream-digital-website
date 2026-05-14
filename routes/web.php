@@ -28,6 +28,7 @@ use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
 use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\MarketingPageController;
+use App\Http\Controllers\Admin\CompanyProfileController as AdminCompanyProfileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NavigationController as AdminNavigationController;
@@ -233,6 +234,13 @@ Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 // restent sous internal.demo.
 Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+    Route::get('/admin/company-profile', [AdminCompanyProfileController::class, 'edit'])
+        ->middleware('admin.role:owner,admin')
+        ->name('admin.company-profile.edit');
+    Route::put('/admin/company-profile', [AdminCompanyProfileController::class, 'update'])
+        ->middleware('admin.role:owner,admin')
+        ->name('admin.company-profile.update');
 
     Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
         Route::get('/', 'index')->name('index');

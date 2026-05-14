@@ -20,6 +20,7 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('Dashboard', $menuHtml);
         $this->assertStringContainsString('Pages', $menuHtml);
         $this->assertStringContainsString('Navigation', $menuHtml);
+        $this->assertStringContainsString('Company Profile', $menuHtml);
         $this->assertStringContainsString('Blog', $menuHtml);
         $this->assertStringContainsString('Media CMS', $menuHtml);
         $this->assertStringContainsString('Pricing', $menuHtml);
@@ -27,6 +28,7 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('Voir le site', $menuHtml);
         $this->assertStringContainsString('/admin/pages', $menuHtml);
         $this->assertStringContainsString('/admin/navigation', $menuHtml);
+        $this->assertStringContainsString('/admin/company-profile', $menuHtml);
         $this->assertStringContainsString('/admin/pages?section=blog', $menuHtml);
         $this->assertStringContainsString('/admin/media', $menuHtml);
         $this->assertStringContainsString('/admin/pricing', $menuHtml);
@@ -46,6 +48,8 @@ class AdminMenuTest extends TestCase
 
         $this->assertStringNotContainsString('Utilisateurs', $menuHtml);
         $this->assertStringNotContainsString('/admin/users', $menuHtml);
+        $this->assertStringNotContainsString('Company Profile', $menuHtml);
+        $this->assertStringNotContainsString('/admin/company-profile', $menuHtml);
     }
 
     public function test_vertical_menu_config_stays_compact(): void
@@ -57,6 +61,7 @@ class AdminMenuTest extends TestCase
             'Dashboard',
             'Pages',
             'Navigation',
+            'Company Profile',
             'Blog',
             'Media CMS',
             'Pricing',

@@ -9,12 +9,12 @@
 5. Lancer un dry-run GitHub Actions `Deploy production` avec `dry_run=true`.
 6. Verifier `GET /healthz`, `GET /readyz`, `/robots.txt`, `/sitemap.xml` et une connexion `/admin`.
 
-## B. Inputs PO requis
+## B. Company Profile admin
 
-Ces valeurs restent a confirmer par le PO avant `DD_PUBLIC_INDEXABLE=true` :
+Ces valeurs sont maintenant pilotees depuis `/admin/company-profile` en FR et EN. Les variables `.env` ci-dessous restent des valeurs de fallback/seed uniquement, utiles avant le premier passage en admin :
 
 ```dotenv
-DD_COMPANY_LEGAL_NAME=
+DD_COMPANY_LEGAL_NAME=DREAM DIGITAL
 DD_PUBLIC_PHONE=
 DD_SOCIAL_LINKEDIN=
 DD_SOCIAL_TWITTER=
@@ -23,7 +23,7 @@ DD_LEGAL_VALIDATED=true
 DD_ADMIN_PASSWORD_ROTATED=true
 ```
 
-Les emails proposes par defaut sont `support@`, `security@` et `privacy@dream-digital.info`.
+Avant `DD_PUBLIC_INDEXABLE=true`, verifier dans l'admin que les deux profils `FR` et `EN` contiennent la raison sociale, le telephone public, les emails support/security/privacy, l'image OpenGraph par defaut et les confirmations legal/admin.
 
 ## C. Performance bundle
 

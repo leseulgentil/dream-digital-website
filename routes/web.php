@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\AiChatSettingsController as AdminAiChatSettingsCo
 use App\Http\Controllers\Admin\AiConversationsController as AdminAiConversationsController;
 use App\Http\Controllers\Admin\AiImportController as AdminAiImportController;
 use App\Http\Controllers\Admin\AiKnowledgeController as AdminAiKnowledgeController;
+use App\Http\Controllers\Admin\AiWebSourcesController as AdminAiWebSourcesController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NavigationController as AdminNavigationController;
@@ -339,6 +340,15 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
             Route::post('/import', [AdminAiImportController::class, 'store'])
                 ->middleware('admin.permission:ai_knowledge.manage')
                 ->name('import.store');
+            Route::post('/web-sources', [AdminAiWebSourcesController::class, 'store'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('web-sources.store');
+            Route::post('/web-sources/{webSource}/sync', [AdminAiWebSourcesController::class, 'sync'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('web-sources.sync');
+            Route::delete('/web-sources/{webSource}', [AdminAiWebSourcesController::class, 'destroy'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('web-sources.destroy');
         });
 
     Route::prefix('admin/media')

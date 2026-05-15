@@ -2,16 +2,19 @@
 
 use App\Models\Country;
 use App\Models\CompanyProfile;
+use App\Models\AiKnowledgeWebSource;
 use App\Models\Page;
 use App\Models\Service;
 use App\Models\ServicePrice;
 use App\Models\User;
+use App\Services\Ai\AiWebKnowledgeImporter;
 use App\Services\CompanyProfileService;
 use App\Support\DatabaseBackup;
 use Illuminate\Foundation\Console\ClosureCommand;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Schema;
 
 Artisan::command('inspire', function () {
@@ -344,3 +347,30 @@ Artisan::command('dd:backup-db {--connection= : Database connection name} {--pat
 
     return 0;
 })->purpose('Create a timestamped database backup before deploy');
+
+Artisan::command('dd:sync-ai-web-sources', function (AiWebKnowledgeImporter $importer) {
+    /** @var ClosureCommand $this */
+    $syncedSources = 0;
+    $createdChunks = 0;
+
+    AiKnowledgeWebSource::query()
+        ->due()
+        ->each(function (AiKnowledgeWebSource $webSource) use ($importer, &$syncedSources, &$createdChunks): void {
+            try {
+                $createdChunks += $importer->sync($webSource);
+                $syncedSources++;
+            } catch (Throwable $exception) {
+                $webSource->forceFill([
+                    'last_error' => $exception->getMessage(),
+                ])->save();
+
+                $this->warn("Source {$webSource->id} failed: {$exception->getMessage()}");
+            }
+        });
+
+    $this->info("Synced {$syncedSources} web source(s), {$createdChunks} segment(s) created or updated.");
+
+    return 0;
+})->purpose('Synchronize due AI knowledge web sources');
+
+Schedule::command('dd:sync-ai-web-sources')->dailyAt('03:20');

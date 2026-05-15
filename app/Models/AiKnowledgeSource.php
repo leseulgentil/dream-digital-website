@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,12 +17,20 @@ class AiKnowledgeSource extends Model
 
     public const TYPE_PDF = 'pdf';
 
+    public const TYPE_WEB_URL = 'web_url';
+
+    public const TYPE_WEB_SITEMAP = 'web_sitemap';
+
     protected $fillable = [
+        'ai_knowledge_web_source_id',
         'type',
         'title',
         'original_filename',
         'stored_path',
         'mime_type',
+        'source_url',
+        'content_hash',
+        'fetched_at',
         'locale',
         'country_code',
         'status',
@@ -32,6 +41,7 @@ class AiKnowledgeSource extends Model
     protected function casts(): array
     {
         return [
+            'fetched_at' => 'datetime',
             'metadata' => 'array',
         ];
     }
@@ -48,5 +58,10 @@ class AiKnowledgeSource extends Model
     public function chunks(): HasMany
     {
         return $this->hasMany(AiKnowledgeChunk::class);
+    }
+
+    public function webSource(): BelongsTo
+    {
+        return $this->belongsTo(AiKnowledgeWebSource::class, 'ai_knowledge_web_source_id');
     }
 }

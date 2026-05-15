@@ -1930,6 +1930,122 @@ nav.dd-front-navbar {
   }
 }
 
+.dd-contact-alert {
+  background: rgba(20, 184, 166, .12);
+  border: 1px solid rgba(20, 184, 166, .28);
+  border-radius: .7rem;
+  color: #0f766e;
+  font-weight: 800;
+  margin-block-end: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.dd-contact-form-card {
+  grid-row: span 2;
+}
+
+.dd-contact-form {
+  display: grid;
+  gap: 1rem;
+  margin-block-start: 1.25rem;
+
+  label {
+    display: grid;
+    gap: .35rem;
+  }
+
+  span {
+    color: #4b5563;
+    font-size: .82rem;
+    font-weight: 800;
+  }
+
+  input,
+  select,
+  textarea {
+    background: #fff;
+    border: 1px solid var(--dd-line);
+    border-radius: .45rem;
+    color: var(--dd-ink);
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+    padding: .75rem .85rem;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.dd-contact-form__grid {
+  display: grid;
+  gap: .85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+input.dd-contact-form__trap {
+  block-size: 1px;
+  inline-size: 1px;
+  min-block-size: 1px;
+  opacity: 0;
+  position: absolute;
+  right: auto;
+  z-index: -1;
+}
+
+.dd-contact-entities {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-block-start: 1rem;
+}
+
+.dd-contact-entity {
+  background: #fff;
+  border: 1px solid var(--dd-line);
+  border-radius: .7rem;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+
+  span {
+    color: var(--dd-cyan);
+    display: block;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: .78rem;
+    font-weight: 850;
+    margin-block-end: .35rem;
+  }
+
+  h3 {
+    font-size: 1.08rem;
+    margin: 0;
+  }
+
+  p {
+    color: #586273;
+    margin: .55rem 0 0;
+  }
+
+  dl {
+    display: grid;
+    gap: .55rem;
+    margin: 0;
+  }
+
+  dt {
+    color: #6b7280;
+    font-size: .76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
 @media (max-width: 1199.98px) {
   .dd-hero__grid,
   .dd-page-hero__grid,
@@ -1967,7 +2083,8 @@ nav.dd-front-navbar {
   .dd-corridors__grid,
   .dd-product-proof__grid,
   .dd-product-workflow__steps,
-  .dd-blog-teaser__grid {
+  .dd-blog-teaser__grid,
+  .dd-contact-entities {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -2037,7 +2154,9 @@ nav.dd-front-navbar {
   .dd-product-proof__grid,
   .dd-product-workflow__steps,
   .dd-blog-teaser__grid,
-  .dd-contact-page__grid {
+  .dd-contact-page__grid,
+  .dd-contact-entities,
+  .dd-contact-form__grid {
     grid-template-columns: 1fr;
   }
 

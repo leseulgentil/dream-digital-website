@@ -7,12 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 class CompanyProfile extends Model
 {
     public const LOCALES = ['fr', 'en'];
+    public const ENTITY_COUNTRIES = [
+        'cd' => ['label' => 'RDC', 'city' => 'Kinshasa'],
+        'ci' => ['label' => 'Cote d Ivoire', 'city' => 'Abidjan'],
+        'cg' => ['label' => 'Congo', 'city' => 'Brazzaville'],
+    ];
 
     protected $fillable = [
+        'country_code',
         'locale',
         'company_name',
         'legal_name',
         'public_phone',
+        'whatsapp_number',
+        'address_line',
+        'city',
+        'country_label',
+        'registration_number',
+        'tax_id',
+        'support_hours',
+        'latitude',
+        'longitude',
         'email_sales',
         'email_support',
         'email_security',

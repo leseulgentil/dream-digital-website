@@ -9,25 +9,42 @@ class CompanyProfileSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (CompanyProfile::LOCALES as $locale) {
-            CompanyProfile::updateOrCreate(
-                ['locale' => $locale],
-                [
-                    'company_name' => 'Dream Digital',
-                    'legal_name' => env('DD_COMPANY_LEGAL_NAME', 'DREAM DIGITAL'),
-                    'public_phone' => env('DD_PUBLIC_PHONE') ?: null,
-                    'email_sales' => env('DD_SALES_EMAIL', 'sales@dream-digital.info'),
-                    'email_support' => env('DD_SUPPORT_EMAIL', 'support@dream-digital.info'),
-                    'email_security' => env('DD_SECURITY_EMAIL', 'security@dream-digital.info'),
-                    'email_privacy' => env('DD_PRIVACY_EMAIL', 'privacy@dream-digital.info'),
-                    'social_linkedin' => env('DD_SOCIAL_LINKEDIN') ?: null,
-                    'social_twitter' => env('DD_SOCIAL_TWITTER') ?: null,
-                    'social_github' => env('DD_SOCIAL_GITHUB') ?: null,
-                    'og_image_path' => env('DD_OG_IMAGE', '/img/brand/logo-dd-horizontal.png'),
-                    'legal_validated' => filter_var(env('DD_LEGAL_VALIDATED', true), FILTER_VALIDATE_BOOLEAN),
-                    'admin_password_rotated' => filter_var(env('DD_ADMIN_PASSWORD_ROTATED', true), FILTER_VALIDATE_BOOLEAN),
-                ],
-            );
+        $entities = [
+            'cd' => ['city' => 'Kinshasa', 'country_fr' => 'RDC', 'country_en' => 'DRC', 'lat' => '-4.3250', 'lng' => '15.3222'],
+            'ci' => ['city' => 'Abidjan', 'country_fr' => 'Cote d Ivoire', 'country_en' => 'Ivory Coast', 'lat' => '5.3599', 'lng' => '-4.0083'],
+            'cg' => ['city' => 'Brazzaville', 'country_fr' => 'Congo', 'country_en' => 'Congo', 'lat' => '-4.2634', 'lng' => '15.2429'],
+        ];
+
+        foreach ($entities as $countryCode => $entity) {
+            foreach (CompanyProfile::LOCALES as $locale) {
+                CompanyProfile::updateOrCreate(
+                    ['country_code' => $countryCode, 'locale' => $locale],
+                    [
+                        'company_name' => 'Dream Digital',
+                        'legal_name' => 'DREAM DIGITAL',
+                        'public_phone' => null,
+                        'whatsapp_number' => null,
+                        'address_line' => null,
+                        'city' => $entity['city'],
+                        'country_label' => $locale === 'fr' ? $entity['country_fr'] : $entity['country_en'],
+                        'registration_number' => null,
+                        'tax_id' => null,
+                        'support_hours' => null,
+                        'latitude' => $entity['lat'],
+                        'longitude' => $entity['lng'],
+                        'email_sales' => 'sales@dream-digital.info',
+                        'email_support' => 'support@dream-digital.info',
+                        'email_security' => 'security@dream-digital.info',
+                        'email_privacy' => 'privacy@dream-digital.info',
+                        'social_linkedin' => null,
+                        'social_twitter' => null,
+                        'social_github' => null,
+                        'og_image_path' => '/img/brand/logo-dd-horizontal.png',
+                        'legal_validated' => filter_var(env('DD_LEGAL_VALIDATED', true), FILTER_VALIDATE_BOOLEAN),
+                        'admin_password_rotated' => filter_var(env('DD_ADMIN_PASSWORD_ROTATED', true), FILTER_VALIDATE_BOOLEAN),
+                    ],
+                );
+            }
         }
     }
 }

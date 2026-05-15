@@ -38,11 +38,32 @@ class LaunchReadinessCommandTest extends TestCase
         $this->assertStringContainsString('company.legal_name', $output);
         $this->assertStringContainsString('contact.email_support', $output);
         $this->assertStringContainsString('contact.phone', $output);
+        $this->assertStringContainsString('contact.whatsapp', $output);
+    }
+
+    public function test_testing_launch_check_allows_missing_phone_and_whatsapp_for_remote_qa(): void
+    {
+        $this->seedLaunchData();
+        $this->seedCompanyProfiles();
+
+        CompanyProfile::query()->update([
+            'public_phone' => null,
+            'whatsapp_number' => null,
+        ]);
+
+        $exitCode = Artisan::call('dd:launch-check', ['--testing' => true]);
+        $output = Artisan::output();
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('Mode: remote testing', $output);
+        $this->assertStringContainsString('Business field `dream-digital.site.contact.phone` is missing', $output);
+        $this->assertStringContainsString('Business field `dream-digital.site.contact.whatsapp` is missing', $output);
     }
 
     public function test_public_launch_check_fails_when_operator_confirmations_are_missing(): void
     {
         $this->seedLaunchData();
+        $this->seedCompanyProfiles();
         $this->setBusinessConfig();
         putenv('DD_PUBLIC_INDEXABLE=true');
         putenv('LOG_LEVEL=info');
@@ -68,6 +89,7 @@ class LaunchReadinessCommandTest extends TestCase
     public function test_public_launch_check_passes_when_required_data_and_flags_are_ready(): void
     {
         $this->seedLaunchData();
+        $this->seedCompanyProfiles();
         $this->setBusinessConfig();
         putenv('DD_PUBLIC_INDEXABLE=true');
 
@@ -101,22 +123,7 @@ class LaunchReadinessCommandTest extends TestCase
     public function test_launch_check_reads_business_fields_from_company_profile(): void
     {
         $this->seedLaunchData();
-        CompanyProfile::create([
-            'locale' => 'fr',
-            'company_name' => 'Dream Digital',
-            'legal_name' => 'DREAM DIGITAL',
-            'public_phone' => '+243000000000',
-            'email_sales' => 'sales@dream-digital.info',
-            'email_support' => 'support@dream-digital.info',
-            'email_security' => 'security@dream-digital.info',
-            'email_privacy' => 'privacy@dream-digital.info',
-            'social_linkedin' => 'https://www.linkedin.com/company/dream-digital',
-            'social_twitter' => 'https://x.com/dreamdigital',
-            'social_github' => 'https://github.com/dream-digital',
-            'og_image_path' => '/img/brand/logo-dd-horizontal.png',
-            'legal_validated' => true,
-            'admin_password_rotated' => true,
-        ]);
+        $this->seedCompanyProfiles();
 
         $exitCode = Artisan::call('dd:launch-check');
         $output = Artisan::output();
@@ -173,12 +180,52 @@ class LaunchReadinessCommandTest extends TestCase
     {
         config([
             'dream-digital.site.company.legal_name' => 'Dream Digital SARL',
+            'dream-digital.site.company.geo.latitude' => '-4.3250',
+            'dream-digital.site.company.geo.longitude' => '15.3222',
+            'dream-digital.site.company.entities' => [
+                ['country_code' => 'cd', 'latitude' => '-4.3250', 'longitude' => '15.3222'],
+                ['country_code' => 'ci', 'latitude' => '5.3599', 'longitude' => '-4.0083'],
+                ['country_code' => 'cg', 'latitude' => '-4.2634', 'longitude' => '15.2429'],
+            ],
             'dream-digital.site.contact.email_support' => 'support@dream-digital.info',
             'dream-digital.site.contact.phone' => '+243000000000',
+            'dream-digital.site.contact.whatsapp' => '+243999999999',
             'dream-digital.site.social.linkedin' => 'https://www.linkedin.com/company/dream-digital',
             'dream-digital.site.social.twitter' => 'https://x.com/dreamdigital',
             'dream-digital.site.social.github' => 'https://github.com/dream-digital',
             'dream-digital.site.meta.og_image' => '/img/og/dream-digital-launch.png',
         ]);
+    }
+
+    private function seedCompanyProfiles(): void
+    {
+        foreach ([
+            'cd' => ['city' => 'Kinshasa', 'country' => 'RDC', 'lat' => '-4.3250', 'lng' => '15.3222'],
+            'ci' => ['city' => 'Abidjan', 'country' => 'Cote d Ivoire', 'lat' => '5.3599', 'lng' => '-4.0083'],
+            'cg' => ['city' => 'Brazzaville', 'country' => 'Congo', 'lat' => '-4.2634', 'lng' => '15.2429'],
+        ] as $countryCode => $entity) {
+            CompanyProfile::create([
+                'country_code' => $countryCode,
+                'locale' => 'fr',
+                'company_name' => 'Dream Digital',
+                'legal_name' => 'DREAM DIGITAL',
+                'public_phone' => $countryCode === 'cd' ? '+243000000000' : null,
+                'whatsapp_number' => $countryCode === 'cd' ? '+243999999999' : null,
+                'city' => $entity['city'],
+                'country_label' => $entity['country'],
+                'latitude' => $entity['lat'],
+                'longitude' => $entity['lng'],
+                'email_sales' => 'sales@dream-digital.info',
+                'email_support' => 'support@dream-digital.info',
+                'email_security' => 'security@dream-digital.info',
+                'email_privacy' => 'privacy@dream-digital.info',
+                'social_linkedin' => 'https://www.linkedin.com/company/dream-digital',
+                'social_twitter' => 'https://x.com/dreamdigital',
+                'social_github' => 'https://github.com/dream-digital',
+                'og_image_path' => '/img/brand/logo-dd-horizontal.png',
+                'legal_validated' => true,
+                'admin_password_rotated' => true,
+            ]);
+        }
     }
 }

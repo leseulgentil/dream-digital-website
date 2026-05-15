@@ -47,6 +47,12 @@
       "slug": "admin.pricing"
     },
     {
+      "url": "admin/contact-leads",
+      "name": "Leads",
+      "icon": "dd-menu-icon icon-base bx bx-envelope",
+      "slug": "admin.contact-leads"
+    },
+    {
       "url": "admin/users",
       "name": "Utilisateurs",
       "icon": "dd-menu-icon icon-base bx bx-user",

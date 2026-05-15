@@ -24,6 +24,7 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('Blog', $menuHtml);
         $this->assertStringContainsString('Media CMS', $menuHtml);
         $this->assertStringContainsString('Pricing', $menuHtml);
+        $this->assertStringContainsString('Leads', $menuHtml);
         $this->assertStringContainsString('Utilisateurs', $menuHtml);
         $this->assertStringContainsString('Voir le site', $menuHtml);
         $this->assertStringContainsString('/admin/pages', $menuHtml);
@@ -32,6 +33,7 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('/admin/pages?section=blog', $menuHtml);
         $this->assertStringContainsString('/admin/media', $menuHtml);
         $this->assertStringContainsString('/admin/pricing', $menuHtml);
+        $this->assertStringContainsString('/admin/contact-leads', $menuHtml);
         $this->assertStringContainsString('/admin/users', $menuHtml);
 
         foreach (['eCommerce', 'Layouts', 'Academy', 'Form Elements', 'Datatables', 'Roles', 'Email', 'Discuter', 'Calendrier', 'Commerce', 'Logistique', 'Facture', 'Authentification', 'Laravel Example', 'Premi'] as $legacyLabel) {
@@ -65,6 +67,7 @@ class AdminMenuTest extends TestCase
             'Blog',
             'Media CMS',
             'Pricing',
+            'Leads',
             'Utilisateurs',
             'Public',
             'Voir le site',

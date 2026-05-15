@@ -23,8 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             RequestId::class,
             SecurityHeaders::class,
             LocaleMiddleware::class,
-            ApplyCompanyProfile::class,
             SetCountryAndLocale::class,
+            ApplyCompanyProfile::class,
         ]);
         $middleware->alias([
             'admin.access' => EnsureAdminAccess::class,

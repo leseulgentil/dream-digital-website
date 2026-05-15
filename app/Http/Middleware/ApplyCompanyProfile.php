@@ -18,10 +18,14 @@ class ApplyCompanyProfile
 
     private function localeFrom(Request $request): string
     {
-        $segment = $request->segment(1);
+        foreach ([$request->segment(1), $request->segment(2)] as $segment) {
+            if (in_array($segment, ['fr', 'en'], true)) {
+                return $segment;
+            }
+        }
 
-        if (in_array($segment, ['fr', 'en'], true)) {
-            return $segment;
+        if (app()->bound('current_locale') && in_array(app('current_locale'), ['fr', 'en'], true)) {
+            return app('current_locale');
         }
 
         $sessionLocale = $request->hasSession() ? $request->session()->get('locale') : null;

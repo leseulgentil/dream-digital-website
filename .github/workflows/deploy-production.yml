@@ -15,6 +15,14 @@ on:
         options:
           - 'true'
           - 'false'
+      deploy_mode:
+        description: Launch check mode to use on the VPS
+        default: public
+        required: true
+        type: choice
+        options:
+          - public
+          - testing
 
 jobs:
   deploy:
@@ -35,12 +43,24 @@ jobs:
             git fetch origin "${{ inputs.branch }}"
             git checkout "${{ inputs.branch }}"
             git pull --ff-only origin "${{ inputs.branch }}"
+            case "${{ inputs.deploy_mode }}" in
+              public)
+                LAUNCH_CHECK_ARGS="--public"
+                ;;
+              testing)
+                LAUNCH_CHECK_ARGS="--testing"
+                ;;
+              *)
+                echo "Unknown deploy_mode: ${{ inputs.deploy_mode }}" >&2
+                exit 1
+                ;;
+            esac
             if [ "${{ inputs.dry_run }}" = "true" ]; then
               composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
               npm ci
               npm run build
               php artisan migrate:status
-              php artisan dd:launch-check --public
+              php artisan dd:launch-check "$LAUNCH_CHECK_ARGS"
             else
-              APP_DIR="${{ secrets.DD_PROD_APP_DIR }}" BRANCH="${{ inputs.branch }}" bash scripts/deploy-production.sh
+              DD_DEPLOY_MODE="${{ inputs.deploy_mode }}" APP_DIR="${{ secrets.DD_PROD_APP_DIR }}" BRANCH="${{ inputs.branch }}" bash scripts/deploy-production.sh
             fi

@@ -188,13 +188,58 @@
         @break
 
       @case('contact')
+        @php($entities = collect(data_get($site, 'company.entities', []))->filter(fn ($entity) => filled(data_get($entity, 'city')) || filled(data_get($entity, 'latitude'))))
         <section class="dd-section dd-contact-page">
+          @if(session('status'))
+            <div class="dd-front-container">
+              <div class="dd-contact-alert">{{ session('status') }}</div>
+            </div>
+          @endif
           <div class="dd-front-container dd-contact-page__grid">
-            <article>
+            <article class="dd-contact-form-card">
               <i class="bx bx-envelope" aria-hidden="true"></i>
               <h2>Sales</h2>
               <p>{{ $locale === 'fr' ? 'Pour pricing, routes, volume, SMS, voice ou eSIM.' : 'For pricing, routes, volume, SMS, voice or eSIM.' }}</p>
-              <a class="dd-button dd-button--primary" href="mailto:{{ $site['contact']['email_sales'] ?? 'sales@dream-digital.info' }}">sales@dream-digital.info</a>
+              <form method="POST" action="{{ route('front.contact-leads.store', ['locale' => $locale]) }}" class="dd-contact-form">
+                @csrf
+                <input type="text" name="website" tabindex="-1" autocomplete="off" class="dd-contact-form__trap" aria-hidden="true">
+                <div class="dd-contact-form__grid">
+                  <label>
+                    <span>{{ $locale === 'fr' ? 'Nom' : 'Name' }}</span>
+                    <input type="text" name="full_name" value="{{ old('full_name') }}" required maxlength="160">
+                  </label>
+                  <label>
+                    <span>{{ $locale === 'fr' ? 'Societe' : 'Company' }}</span>
+                    <input type="text" name="company_name" value="{{ old('company_name') }}" maxlength="190">
+                  </label>
+                  <label>
+                    <span>Email</span>
+                    <input type="email" name="email" value="{{ old('email') }}" required maxlength="190">
+                  </label>
+                  <label>
+                    <span>{{ $locale === 'fr' ? 'Telephone' : 'Phone' }}</span>
+                    <input type="text" name="phone" value="{{ old('phone') }}" maxlength="80">
+                  </label>
+                  <label>
+                    <span>Service</span>
+                    <select name="service_interest">
+                      <option value="">{{ $locale === 'fr' ? 'Choisir' : 'Select' }}</option>
+                      @foreach(['sms' => 'SMS', 'voice' => 'Voice', 'esim' => 'eSIM', 'did' => 'DID', 'sip' => 'SIP', 'dialo' => 'Dialo', 'other' => 'Other'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('service_interest') === $value)>{{ $label }}</option>
+                      @endforeach
+                    </select>
+                  </label>
+                  <label>
+                    <span>{{ $locale === 'fr' ? 'Volume mensuel' : 'Monthly volume' }}</span>
+                    <input type="text" name="monthly_volume" value="{{ old('monthly_volume') }}" maxlength="80" placeholder="100k-500k">
+                  </label>
+                </div>
+                <label>
+                  <span>Message</span>
+                  <textarea name="message" rows="5" required maxlength="3000">{{ old('message') }}</textarea>
+                </label>
+                <button type="submit" class="dd-button dd-button--primary">{{ $locale === 'fr' ? 'Envoyer la demande' : 'Send request' }}</button>
+              </form>
             </article>
             <article>
               <i class="bx bx-buildings" aria-hidden="true"></i>
@@ -203,6 +248,42 @@
               @include('front.components.signal-indicator', ['label' => $locale === 'fr' ? 'Equipe disponible' : 'Team available'])
             </article>
           </div>
+          @if($entities->isNotEmpty())
+            <div class="dd-front-container dd-contact-entities">
+              @foreach($entities as $entity)
+                @php($mapUrl = filled(data_get($entity, 'latitude')) && filled(data_get($entity, 'longitude')) ? 'https://www.google.com/maps?q=' . data_get($entity, 'latitude') . ',' . data_get($entity, 'longitude') : null)
+                <article class="dd-contact-entity">
+                  <div>
+                    <span>{{ strtoupper(data_get($entity, 'country_code', '')) }}</span>
+                    <h3>{{ data_get($entity, 'city') }}{{ filled(data_get($entity, 'country_label')) ? ' - ' . data_get($entity, 'country_label') : '' }}</h3>
+                    @if(filled(data_get($entity, 'address_line')))
+                      <p>{{ data_get($entity, 'address_line') }}</p>
+                    @endif
+                  </div>
+                  <dl>
+                    @if(filled(data_get($entity, 'public_phone')))
+                      <div>
+                        <dt>{{ $locale === 'fr' ? 'Telephone' : 'Phone' }}</dt>
+                        <dd><a href="tel:{{ data_get($entity, 'public_phone') }}">{{ data_get($entity, 'public_phone') }}</a></dd>
+                      </div>
+                    @endif
+                    @if(filled(data_get($entity, 'whatsapp_number')))
+                      <div>
+                        <dt>WhatsApp</dt>
+                        <dd>{{ data_get($entity, 'whatsapp_number') }}</dd>
+                      </div>
+                    @endif
+                    @if($mapUrl)
+                      <div>
+                        <dt>GPS</dt>
+                        <dd><a href="{{ $mapUrl }}" target="_blank" rel="noopener">{{ data_get($entity, 'latitude') }}, {{ data_get($entity, 'longitude') }}</a></dd>
+                      </div>
+                    @endif
+                  </dl>
+                </article>
+              @endforeach
+            </div>
+          @endif
         </section>
         @break
     @endswitch

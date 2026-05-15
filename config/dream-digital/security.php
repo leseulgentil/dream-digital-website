@@ -8,7 +8,7 @@ return [
     ],
 
     'security_txt' => [
-        'contact' => env('DD_SECURITY_EMAIL', env('DD_SUPPORT_EMAIL', 'security@dream-digital.info')),
+        'contact' => 'security@dream-digital.info',
         'expires_days' => (int) env('DD_SECURITY_TXT_EXPIRES_DAYS', 30),
     ],
 ];

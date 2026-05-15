@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Country;
+use App\Models\CompanyProfile;
 use App\Models\Page;
 use App\Models\Service;
 use App\Models\ServicePrice;
@@ -18,9 +19,10 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('dd:launch-check {--public : Require conditions for public opening}', function () {
+Artisan::command('dd:launch-check {--public : Require conditions for public opening} {--testing : Allow remote testing before all public contact data is filled}', function () {
     /** @var ClosureCommand $this */
     $public = (bool) $this->option('public');
+    $testing = ! $public && (bool) $this->option('testing');
     $failures = [];
     $warnings = [];
     $passes = [];
@@ -103,7 +105,7 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     };
 
     $this->line('Dream Digital launch readiness check');
-    $this->line($public ? 'Mode: public opening' : 'Mode: pre-launch');
+    $this->line($public ? 'Mode: public opening' : ($testing ? 'Mode: remote testing' : 'Mode: pre-launch'));
 
     try {
         DB::select('select 1');
@@ -186,15 +188,41 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     }
 
     foreach ([
-        'company.legal_name',
-        'contact.email_support',
-        'contact.phone',
-    ] as $key) {
+        'company.legal_name' => true,
+        'contact.email_support' => true,
+        'contact.phone' => ! $testing,
+        'contact.whatsapp' => ! $testing,
+        'company.geo.latitude' => true,
+        'company.geo.longitude' => true,
+    ] as $key => $blocking) {
         $record(
             filled(data_get(config('dream-digital.site'), $key)),
             "Business field `dream-digital.site.{$key}` is filled",
-            true,
+            $blocking,
             "Business field `dream-digital.site.{$key}` is missing"
+        );
+    }
+
+    if (
+        Schema::hasTable('company_profiles')
+        && Schema::hasColumn('company_profiles', 'country_code')
+        && Schema::hasColumn('company_profiles', 'latitude')
+        && Schema::hasColumn('company_profiles', 'longitude')
+    ) {
+        $entityProfilesWithGps = CompanyProfile::query()
+            ->where('locale', 'fr')
+            ->whereIn('country_code', array_keys(CompanyProfile::ENTITY_COUNTRIES))
+            ->whereNotNull('latitude')
+            ->where('latitude', '!=', '')
+            ->whereNotNull('longitude')
+            ->where('longitude', '!=', '')
+            ->count();
+
+        $record(
+            $entityProfilesWithGps >= count(CompanyProfile::ENTITY_COUNTRIES),
+            'GPS coordinates are configured for the 3 country entities',
+            true,
+            'GPS coordinates are missing for one or more country entities'
         );
     }
 

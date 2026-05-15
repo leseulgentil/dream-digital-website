@@ -18,8 +18,8 @@
 |--------------------------------------------------------------------------
 |
 | Certaines clés ci-dessous sont volontairement à `null` (ex.
-| `contact.email_support`, `contact.phone`, `social.*`,
-| `company.legal_name`, `meta.og_image`). Elles attendent un input PO.
+| `contact.email_support`, `contact.phone`, `contact.whatsapp`, `social.*`,
+| `company.legal_name`, `company.address.*`, `meta.og_image`). Elles attendent un input PO.
 | En production, la table `company_profiles` geree par `/admin/company-profile`
 | surcharge ces valeurs pour les locales FR/EN.
 |
@@ -87,22 +87,36 @@ return [
     ],
 
     'contact' => [
-        'email_sales'   => env('DD_SALES_EMAIL', 'sales@dream-digital.info'),
-        'email_support' => env('DD_SUPPORT_EMAIL'),  // a fournir par PO avant ouverture publique
-        'email_security' => env('DD_SECURITY_EMAIL', env('DD_SUPPORT_EMAIL', 'security@dream-digital.info')),
-        'email_privacy' => env('DD_PRIVACY_EMAIL', env('DD_SUPPORT_EMAIL')),
-        'phone'         => env('DD_PUBLIC_PHONE'),  // a fournir par PO avant ouverture publique
+        'email_sales'   => 'sales@dream-digital.info',
+        'email_support' => null,  // a fournir dans /admin/company-profile avant ouverture publique
+        'email_security' => 'security@dream-digital.info',
+        'email_privacy' => null,
+        'phone'         => null,  // a fournir dans /admin/company-profile avant ouverture publique
+        'whatsapp'      => null,  // a fournir dans /admin/company-profile avant ouverture publique
+        'support_hours' => null,
     ],
 
     'social' => [
-        'linkedin' => env('DD_SOCIAL_LINKEDIN'),  // URL a fournir par PO
-        'twitter'  => env('DD_SOCIAL_TWITTER'),
-        'github'   => env('DD_SOCIAL_GITHUB'),
+        'linkedin' => null,  // URL a fournir dans /admin/company-profile
+        'twitter'  => null,
+        'github'   => null,
     ],
 
     'company' => [
         'name'       => 'Dream Digital',
-        'legal_name' => env('DD_COMPANY_LEGAL_NAME'),  // SARL / SAS / etc. a fournir par PO
+        'legal_name' => null,  // SARL / SAS / etc. a fournir dans /admin/company-profile
+        'registration_number' => null,
+        'tax_id' => null,
+        'address' => [
+            'line' => null,
+            'city' => null,
+            'country' => null,
+        ],
+        'geo' => [
+            'latitude' => null,
+            'longitude' => null,
+        ],
+        'entities' => [],
         'offices'    => [
             'Kinshasa (RDC)',
             'Abidjan (CI)',
@@ -116,6 +130,6 @@ return [
             'fr' => 'Voice. SMS. eSIM. And More. L\'opérateur télécom qui connecte les entreprises modernes à 200+ pays.',
             'en' => 'Voice. SMS. eSIM. And More. The telecom operator connecting modern enterprises to 200+ countries.',
         ],
-        'og_image'            => env('DD_OG_IMAGE', '/img/og/dream-digital-default.png'),  // a fournir par PO
+        'og_image'            => '/img/og/dream-digital-default.png',  // surchargeable dans /admin/company-profile
     ],
 ];

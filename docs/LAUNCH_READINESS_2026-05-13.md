@@ -20,6 +20,14 @@ Pour l'ouverture publique stricte :
 php artisan dd:launch-check --public
 ```
 
+Pour un test distant sur le VPS avant de remplir tous les contacts publics :
+
+```powershell
+php artisan dd:launch-check --testing
+```
+
+Le mode `--testing` laisse passer le deploiement si le telephone public ou WhatsApp manquent encore dans le CMS. Le mode `--public` reste obligatoire avant l'ouverture reelle et bloque sur ces champs.
+
 ## Variables a renseigner en production
 
 ```dotenv
@@ -38,16 +46,8 @@ DD_ADMIN_EMAIL=admin@dream-digital.info
 DD_ADMIN_NAME="Admin Dream Digital"
 DD_ADMIN_PASSWORD="mot-de-passe-temporaire-puis-rotation"
 
-DD_SALES_EMAIL=sales@dream-digital.info
-DD_SUPPORT_EMAIL=support@dream-digital.info
-DD_SECURITY_EMAIL=security@dream-digital.info
-DD_PRIVACY_EMAIL=privacy@dream-digital.info
-DD_PUBLIC_PHONE="+243..."
-DD_COMPANY_LEGAL_NAME="DREAM DIGITAL"
-DD_OG_IMAGE=/img/og/dream-digital-launch.png
-DD_SOCIAL_LINKEDIN=
-DD_SOCIAL_TWITTER=
-DD_SOCIAL_GITHUB=
+# Les donnees business ne vont plus dans .env.
+# Les renseigner dans le CMS: /admin/company-profile.
 ```
 
 ## Flags PO/ops obligatoires avant `DD_PUBLIC_INDEXABLE=true`
@@ -67,7 +67,9 @@ DD_DB_BACKUP_MAX_AGE_HOURS=24
 DD_REQUIRE_RECENT_DB_BACKUP=true
 ```
 
-Depuis le sprint admin, `DD_PUBLIC_PHONE`, `DD_COMPANY_LEGAL_NAME`, les URLs sociales, l'image OG et les confirmations `DD_ADMIN_PASSWORD_ROTATED` / `DD_LEGAL_VALIDATED` peuvent aussi etre geres depuis `/admin/company-profile` en FR et EN. Les variables `.env` restent utiles comme fallback ou seed initial.
+Depuis le sprint admin, la raison sociale, le telephone public, WhatsApp, l'adresse publique, RCCM/tax ID, les horaires support, les emails publics, les URLs sociales, l'image OG et les confirmations legal/admin sont geres dans `/admin/company-profile`, pas dans `.env`.
+
+Le profil est organise par entite pays (`CD`, `CI`, `CG`) et par langue (`FR`, `EN`). Chaque entite doit avoir ses contacts publics et ses coordonnees GPS afin d'alimenter les cartes sur les pages de contact.
 
 ## Garde-fou
 

@@ -27,8 +27,10 @@ use App\Http\Controllers\front_pages\Checkout;
 use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
 use App\Http\Controllers\Front\BlogController;
+use App\Http\Controllers\Front\ContactLeadController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\CompanyProfileController as AdminCompanyProfileController;
+use App\Http\Controllers\Admin\ContactLeadController as AdminContactLeadController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NavigationController as AdminNavigationController;
@@ -211,6 +213,11 @@ Route::get('/{locale}/blog/{slug}', [BlogController::class, 'localizedShow'])
   ->where('slug', '[a-z0-9-]+')
   ->name('front.localized.blog.show');
 
+Route::post('/{locale}/contact', [ContactLeadController::class, 'store'])
+  ->whereIn('locale', ['fr', 'en'])
+  ->middleware('throttle:8,1')
+  ->name('front.contact-leads.store');
+
 Route::get('/{page}', [MarketingPageController::class, 'show'])
   ->whereIn('page', ['products', 'developers', 'solutions', 'coverage', 'pricing', 'company', 'contact'])
   ->name('front.page');
@@ -241,6 +248,9 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
     Route::put('/admin/company-profile', [AdminCompanyProfileController::class, 'update'])
         ->middleware('admin.role:owner,admin')
         ->name('admin.company-profile.update');
+    Route::get('/admin/contact-leads', [AdminContactLeadController::class, 'index'])
+        ->middleware('admin.role:owner,admin,editor')
+        ->name('admin.contact-leads.index');
 
     Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
         Route::get('/', 'index')->name('index');

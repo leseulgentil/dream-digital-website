@@ -192,7 +192,10 @@
   @yield('layoutContent')
   <!--/ Layout Content -->
 
-  
+  @if(\Illuminate\Support\Facades\Schema::hasTable('ai_chat_settings') && \App\Models\AiChatSetting::current()->enabled)
+    @include('front.components.ai-chat-widget')
+    @vite(['resources/assets/css/dd-ai-chat-widget.css', 'resources/assets/js/dd-ai-chat-widget.js'])
+  @endif
 
   <!-- Include Scripts -->
   <!-- $isFront is used to append the front layout scripts only on the front layout otherwise the variable will be blank -->

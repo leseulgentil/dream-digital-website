@@ -52,6 +52,8 @@ const publicFrontInputs = [
   'resources/assets/js/front-main.js',
   'resources/assets/js/dd-theme-switcher.js',
   'resources/assets/js/dd-cookie-consent.js',
+  'resources/assets/css/dd-ai-chat-widget.css',
+  'resources/assets/js/dd-ai-chat-widget.js',
   'resources/assets/js/front-page-landing.js'
 ];
 

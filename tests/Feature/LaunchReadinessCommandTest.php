@@ -162,6 +162,32 @@ class LaunchReadinessCommandTest extends TestCase
         $this->assertNotEmpty(File::glob($target . DIRECTORY_SEPARATOR . '*.sqlite'));
     }
 
+    public function test_backup_command_supports_pgsql_driver_validation(): void
+    {
+        config([
+            'database.connections.pgsql_missing_database' => [
+                'driver' => 'pgsql',
+                'host' => '127.0.0.1',
+                'port' => '5432',
+                'database' => '',
+                'username' => 'dreamdigital',
+                'password' => '',
+                'charset' => 'utf8',
+                'prefix' => '',
+                'schema' => 'public',
+                'sslmode' => 'prefer',
+            ],
+        ]);
+
+        $exitCode = Artisan::call('dd:backup-db', [
+            '--connection' => 'pgsql_missing_database',
+            '--path' => storage_path('framework/testing/backups-command'),
+        ]);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('PostgreSQL backup requires DB_DATABASE', Artisan::output());
+    }
+
     private function seedLaunchData(): void
     {
         $this->seed([

@@ -26,6 +26,7 @@ class DatabaseBackup
         return match ($driver) {
             'sqlite' => $this->backupSqlite($config, $targetDirectory, $safeDatabaseName, $timestamp),
             'mysql', 'mariadb' => $this->backupMysql($config, $targetDirectory, $safeDatabaseName, $timestamp),
+            'pgsql' => $this->backupPostgres($config, $targetDirectory, $safeDatabaseName, $timestamp),
             default => throw new RuntimeException("Unsupported database backup driver: {$driver}"),
         };
     }
@@ -107,6 +108,67 @@ class DatabaseBackup
             @unlink($targetPath);
 
             $details = trim($stderr) ?: 'mysqldump failed without stderr output';
+            throw new RuntimeException('Database backup failed: ' . mb_substr($details, 0, 500));
+        }
+
+        return $targetPath;
+    }
+
+    private function backupPostgres(array $config, string $targetDirectory, string $safeDatabaseName, string $timestamp): string
+    {
+        $database = (string) ($config['database'] ?? '');
+
+        if ($database === '') {
+            throw new RuntimeException('PostgreSQL backup requires DB_DATABASE to be configured.');
+        }
+
+        $targetPath = $targetDirectory . DIRECTORY_SEPARATOR . "{$safeDatabaseName}-{$timestamp}.sql";
+        $binary = (string) config('dream-digital.launch.backups.pg_dump_binary', 'pg_dump');
+
+        $command = [
+            $binary,
+            '--clean',
+            '--if-exists',
+            '--no-owner',
+            '--no-privileges',
+            '--format=plain',
+            '--host=' . (string) ($config['host'] ?? '127.0.0.1'),
+            '--port=' . (string) ($config['port'] ?? '5432'),
+        ];
+
+        if (! empty($config['username'])) {
+            $command[] = '--username=' . $config['username'];
+        }
+
+        $command[] = $database;
+
+        $env = [];
+        if (($config['password'] ?? '') !== '') {
+            $env['PGPASSWORD'] = (string) $config['password'];
+        }
+
+        $handle = fopen($targetPath, 'wb');
+        if ($handle === false) {
+            throw new RuntimeException("Unable to open backup file for writing: {$targetPath}");
+        }
+
+        $stderr = '';
+        $process = new Process($command, base_path(), $env, null, 600);
+        $exitCode = $process->run(function (string $type, string $buffer) use ($handle, &$stderr): void {
+            if ($type === Process::OUT) {
+                fwrite($handle, $buffer);
+                return;
+            }
+
+            $stderr .= $buffer;
+        });
+
+        fclose($handle);
+
+        if ($exitCode !== 0 || ! is_file($targetPath) || filesize($targetPath) === 0) {
+            @unlink($targetPath);
+
+            $details = trim($stderr) ?: 'pg_dump failed without stderr output';
             throw new RuntimeException('Database backup failed: ' . mb_substr($details, 0, 500));
         }
 

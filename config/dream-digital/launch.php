@@ -33,6 +33,7 @@ return [
     'backups' => [
         'path' => env('DD_DB_BACKUP_PATH') ?: storage_path('app/private/backups/database'),
         'mysqldump_binary' => env('DD_MYSQLDUMP_BINARY', 'mysqldump'),
+        'pg_dump_binary' => env('DD_PG_DUMP_BINARY', 'pg_dump'),
         'max_age_hours' => (int) env('DD_DB_BACKUP_MAX_AGE_HOURS', 24),
         'require_recent_database_backup' => env('DD_REQUIRE_RECENT_DB_BACKUP', true),
     ],

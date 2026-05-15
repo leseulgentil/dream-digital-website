@@ -920,8 +920,11 @@ nav.dd-front-navbar {
 nav.dd-front-navbar {
   background: #0e121c;
   box-shadow: 0 1px 0 rgba(20, 184, 166, .08);
+  overflow: visible;
 
   .landing-navbar {
+    align-items: center;
+    display: flex;
     min-block-size: 72px;
   }
 
@@ -979,6 +982,48 @@ nav.dd-front-navbar {
       background: rgba(255, 255, 255, .14);
       color: #fff;
       box-shadow: none;
+    }
+  }
+}
+
+nav.dd-layout-navbar.dd-front-navbar.navbar-active::before {
+  backdrop-filter: none !important;
+}
+
+@media (min-width: 992px) {
+  nav.dd-front-navbar {
+    block-size: 73px;
+
+    &::before {
+      block-size: 73px !important;
+    }
+
+    > .container,
+    .landing-navbar,
+    .landing-nav-menu,
+    .dd-megamenu {
+      block-size: auto !important;
+    }
+
+    .landing-nav-menu {
+      align-items: center;
+      display: flex !important;
+      flex: 1 1 auto;
+    }
+
+    .dd-megamenu {
+      align-items: center;
+      display: flex !important;
+      flex-direction: row !important;
+      gap: .2rem;
+      justify-content: center;
+      margin-block: 0;
+      padding-inline-start: 0;
+    }
+
+    .dd-megamenu > .nav-item {
+      display: block;
+      inline-size: auto;
     }
   }
 }

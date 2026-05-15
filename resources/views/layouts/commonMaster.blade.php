@@ -192,8 +192,18 @@
   @yield('layoutContent')
   <!--/ Layout Content -->
 
-  @if(\Illuminate\Support\Facades\Schema::hasTable('ai_chat_settings') && \App\Models\AiChatSetting::current()->enabled)
-    @include('front.components.ai-chat-widget')
+  @php
+    $ddAiChatSettings = rescue(
+        fn () => \Illuminate\Support\Facades\Schema::hasTable('ai_chat_settings')
+            ? \App\Models\AiChatSetting::current()
+            : null,
+        null,
+        false
+    );
+  @endphp
+
+  @if($ddAiChatSettings?->enabled)
+    @include('front.components.ai-chat-widget', ['settings' => $ddAiChatSettings])
     @vite(['resources/assets/css/dd-ai-chat-widget.css', 'resources/assets/js/dd-ai-chat-widget.js'])
   @endif
 

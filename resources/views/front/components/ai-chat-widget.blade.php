@@ -1,7 +1,7 @@
 @php
   $locale = app()->getLocale() ?: 'fr';
-  $settings = \App\Models\AiChatSetting::current();
-  $greetings = is_array($settings->greetings) ? $settings->greetings : [];
+  $settings = $settings ?? null;
+  $greetings = is_array($settings?->greetings) ? $settings->greetings : [];
   $greeting = $greetings[$locale] ?? $greetings['fr'] ?? $greetings['en'] ?? 'Bonjour, comment puis-je aider ?';
 @endphp
 

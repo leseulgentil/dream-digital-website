@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\AiWebSourceRequest;
 use App\Models\AiKnowledgeWebSource;
 use App\Services\Ai\AiWebKnowledgeImporter;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -27,6 +28,11 @@ class AiWebSourcesController extends Controller
             'import_status' => $validated['import_status'],
             'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
             'next_sync_at' => $validated['frequency'] === AiKnowledgeWebSource::FREQUENCY_MANUAL ? null : now(),
+            'metadata' => [
+                'auth_token' => filled($validated['auth_token'] ?? null)
+                    ? Crypt::encryptString((string) $validated['auth_token'])
+                    : null,
+            ],
             'created_by_id' => auth()->id(),
         ]);
 

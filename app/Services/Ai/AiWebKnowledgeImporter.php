@@ -4,6 +4,7 @@ namespace App\Services\Ai;
 
 use App\Models\AiKnowledgeSource;
 use App\Models\AiKnowledgeWebSource;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -35,7 +36,7 @@ class AiWebKnowledgeImporter
 
     private function importSitemap(AiKnowledgeWebSource $webSource): int
     {
-        $response = Http::timeout(20)->accept('*/*')->get($webSource->url)->throw();
+        $response = $this->http($webSource)->accept('*/*')->get($webSource->url)->throw();
         $urls = $this->sitemapUrls($response->body(), $webSource->url);
         $imported = 0;
 
@@ -50,7 +51,7 @@ class AiWebKnowledgeImporter
     {
         $this->guardPublicUrl($url);
 
-        $response = Http::timeout(20)
+        $response = $this->http($webSource)
             ->accept('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
             ->get($url)
             ->throw();
@@ -75,7 +76,7 @@ class AiWebKnowledgeImporter
     {
         $this->guardPublicUrl($webSource->url);
 
-        $payload = Http::timeout(20)
+        $payload = $this->http($webSource)
             ->acceptJson()
             ->get($webSource->url)
             ->throw()
@@ -304,5 +305,17 @@ class AiWebKnowledgeImporter
             && filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
             throw new InvalidArgumentException('Private URLs are not allowed.');
         }
+    }
+
+    private function http(AiKnowledgeWebSource $webSource): \Illuminate\Http\Client\PendingRequest
+    {
+        $request = Http::timeout(20);
+        $encryptedToken = $webSource->metadata['auth_token'] ?? null;
+
+        if (is_string($encryptedToken) && $encryptedToken !== '') {
+            $request = $request->withToken(Crypt::decryptString($encryptedToken));
+        }
+
+        return $request;
     }
 }

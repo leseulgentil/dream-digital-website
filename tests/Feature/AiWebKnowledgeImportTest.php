@@ -156,8 +156,11 @@ class AiWebKnowledgeImportTest extends TestCase
             'country_code' => 'global',
             'frequency' => 'weekly',
             'import_status' => 'draft',
+            'auth_token' => 'secret-token',
             'sync_now' => '1',
         ])->assertRedirect(route('admin.ai.knowledge.index'));
+
+        Http::assertSent(fn ($request): bool => $request->hasHeader('Authorization', 'Bearer secret-token'));
 
         $webSource = AiKnowledgeWebSource::query()->where('title', 'eSIM Zone API')->firstOrFail();
 

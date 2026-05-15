@@ -33,6 +33,7 @@ class AiWebSourceRequest extends FormRequest
             'locale' => ['required', Rule::in(['fr', 'en'])],
             'country_code' => ['required', Rule::in(['global', 'cd', 'ci', 'cg'])],
             'category' => ['nullable', 'string', 'max:80'],
+            'auth_token' => ['nullable', 'string', 'max:500'],
             'frequency' => ['required', Rule::in([
                 AiKnowledgeWebSource::FREQUENCY_MANUAL,
                 AiKnowledgeWebSource::FREQUENCY_DAILY,

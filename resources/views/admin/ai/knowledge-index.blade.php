@@ -113,6 +113,11 @@
                 <label class="form-label" for="web_category">Categorie</label>
                 <input class="form-control" id="web_category" name="category" value="{{ old('category') }}" placeholder="esim">
               </div>
+              <div class="col-md-3">
+                <label class="form-label" for="web_auth_token">Token Bearer optionnel</label>
+                <input type="password" class="form-control @error('auth_token') is-invalid @enderror" id="web_auth_token" name="auth_token" autocomplete="new-password" placeholder="Endpoint protege">
+                @error('auth_token')<div class="invalid-feedback">{{ $message }}</div>@enderror
+              </div>
               <div class="col-md-2">
                 <label class="form-label" for="web_frequency">Frequence</label>
                 <select class="form-select" id="web_frequency" name="frequency">
@@ -128,7 +133,7 @@
                   <option value="published" @selected(old('import_status') === 'published')>Publie</option>
                 </select>
               </div>
-              <div class="col-md-2 d-flex align-items-end">
+              <div class="col-md-1 d-flex align-items-end">
                 <div class="form-check form-switch mb-2">
                   <input type="hidden" name="sync_now" value="0">
                   <input class="form-check-input" type="checkbox" id="sync_now" name="sync_now" value="1" @checked(old('sync_now', '1') === '1')>

@@ -56,10 +56,7 @@ class AiKnowledgeRetriever
         $terms = $this->terms($message);
 
         if ($terms === []) {
-            return $query
-                ->orderByDesc('priority')
-                ->limit($limit)
-                ->get();
+            return collect();
         }
 
         $matched = (clone $query)

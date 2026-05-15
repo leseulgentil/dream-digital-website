@@ -32,6 +32,8 @@ use App\Http\Controllers\Front\ContactLeadController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\CompanyProfileController as AdminCompanyProfileController;
 use App\Http\Controllers\Admin\ContactLeadController as AdminContactLeadController;
+use App\Http\Controllers\Admin\AiChatSettingsController as AdminAiChatSettingsController;
+use App\Http\Controllers\Admin\AiConversationsController as AdminAiConversationsController;
 use App\Http\Controllers\Admin\AiImportController as AdminAiImportController;
 use App\Http\Controllers\Admin\AiKnowledgeController as AdminAiKnowledgeController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -304,6 +306,18 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
     Route::prefix('admin/ai')
         ->name('admin.ai.')
         ->group(function () {
+            Route::get('/conversations', [AdminAiConversationsController::class, 'index'])
+                ->middleware('admin.permission:ai_chat.view')
+                ->name('conversations.index');
+            Route::get('/conversations/{session}', [AdminAiConversationsController::class, 'show'])
+                ->middleware('admin.permission:ai_chat.view')
+                ->name('conversations.show');
+            Route::get('/settings', [AdminAiChatSettingsController::class, 'edit'])
+                ->middleware('admin.permission:ai_chat.manage')
+                ->name('settings.edit');
+            Route::put('/settings', [AdminAiChatSettingsController::class, 'update'])
+                ->middleware('admin.permission:ai_chat.manage')
+                ->name('settings.update');
             Route::get('/knowledge', [AdminAiKnowledgeController::class, 'index'])
                 ->middleware('admin.permission:ai_knowledge.view')
                 ->name('knowledge.index');

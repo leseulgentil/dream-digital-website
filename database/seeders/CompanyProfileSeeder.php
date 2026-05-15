@@ -17,7 +17,7 @@ class CompanyProfileSeeder extends Seeder
 
         foreach ($entities as $countryCode => $entity) {
             foreach (CompanyProfile::LOCALES as $locale) {
-                CompanyProfile::updateOrCreate(
+                CompanyProfile::firstOrCreate(
                     ['country_code' => $countryCode, 'locale' => $locale],
                     [
                         'company_name' => 'Dream Digital',
@@ -42,6 +42,10 @@ class CompanyProfileSeeder extends Seeder
                         'og_image_path' => '/img/brand/logo-dd-horizontal.png',
                         'legal_validated' => filter_var(env('DD_LEGAL_VALIDATED', true), FILTER_VALIDATE_BOOLEAN),
                         'admin_password_rotated' => filter_var(env('DD_ADMIN_PASSWORD_ROTATED', true), FILTER_VALIDATE_BOOLEAN),
+                        'public_basic_auth_disabled' => filter_var(env('DD_PUBLIC_BASIC_AUTH_DISABLED', false), FILTER_VALIDATE_BOOLEAN),
+                        'backups_configured' => filter_var(env('DD_BACKUPS_CONFIGURED', false), FILTER_VALIDATE_BOOLEAN),
+                        'env_backed_up' => filter_var(env('DD_ENV_BACKED_UP', false), FILTER_VALIDATE_BOOLEAN),
+                        'deployment_runbook_reviewed' => filter_var(env('DD_DEPLOYMENT_RUNBOOK_REVIEWED', false), FILTER_VALIDATE_BOOLEAN),
                     ],
                 );
             }

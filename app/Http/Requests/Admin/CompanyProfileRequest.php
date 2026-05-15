@@ -47,6 +47,10 @@ class CompanyProfileRequest extends FormRequest
                 $rules["{$base}.og_image_path"] = ['nullable', 'string', 'max:500'];
                 $rules["{$base}.legal_validated"] = ['sometimes', 'boolean'];
                 $rules["{$base}.admin_password_rotated"] = ['sometimes', 'boolean'];
+                $rules["{$base}.public_basic_auth_disabled"] = ['sometimes', 'boolean'];
+                $rules["{$base}.backups_configured"] = ['sometimes', 'boolean'];
+                $rules["{$base}.env_backed_up"] = ['sometimes', 'boolean'];
+                $rules["{$base}.deployment_runbook_reviewed"] = ['sometimes', 'boolean'];
             }
         }
 
@@ -63,6 +67,10 @@ class CompanyProfileRequest extends FormRequest
                 $profiles[$countryCode][$locale]['locale'] = $locale;
                 $profiles[$countryCode][$locale]['legal_validated'] = (bool) data_get($profiles, "{$countryCode}.{$locale}.legal_validated", false);
                 $profiles[$countryCode][$locale]['admin_password_rotated'] = (bool) data_get($profiles, "{$countryCode}.{$locale}.admin_password_rotated", false);
+                $profiles[$countryCode][$locale]['public_basic_auth_disabled'] = (bool) data_get($profiles, "{$countryCode}.{$locale}.public_basic_auth_disabled", false);
+                $profiles[$countryCode][$locale]['backups_configured'] = (bool) data_get($profiles, "{$countryCode}.{$locale}.backups_configured", false);
+                $profiles[$countryCode][$locale]['env_backed_up'] = (bool) data_get($profiles, "{$countryCode}.{$locale}.env_backed_up", false);
+                $profiles[$countryCode][$locale]['deployment_runbook_reviewed'] = (bool) data_get($profiles, "{$countryCode}.{$locale}.deployment_runbook_reviewed", false);
             }
         }
 
@@ -112,6 +120,10 @@ class CompanyProfileRequest extends FormRequest
             'og_image_path' => $profile['og_image_path'] ?? null,
             'legal_validated' => (bool) ($profile['legal_validated'] ?? false),
             'admin_password_rotated' => (bool) ($profile['admin_password_rotated'] ?? false),
+            'public_basic_auth_disabled' => (bool) ($profile['public_basic_auth_disabled'] ?? false),
+            'backups_configured' => (bool) ($profile['backups_configured'] ?? false),
+            'env_backed_up' => (bool) ($profile['env_backed_up'] ?? false),
+            'deployment_runbook_reviewed' => (bool) ($profile['deployment_runbook_reviewed'] ?? false),
         ];
     }
 }

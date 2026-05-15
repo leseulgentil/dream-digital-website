@@ -36,7 +36,11 @@
               @if($page->country_id) / <code>{{ $page->country->code ?? '?' }}</code> @else / global @endif
             </p>
             <p class="text-muted small mb-0 mt-2">
-              Maj le {{ $page->updated_at?->format('Y-m-d H:i') }}.
+              {{ $page->editorialStatusLabel() }} · Maj le {{ $page->updated_at?->format('Y-m-d H:i') }}
+              @if($page->updatedBy)
+                par {{ $page->updatedBy->name }}
+              @endif
+              .
               @if($page->is_published && $publicUrl)
                 <a href="{{ $publicUrl }}" target="_blank" rel="noopener">
                   <i class="bx bx-link-external"></i> Voir page publique

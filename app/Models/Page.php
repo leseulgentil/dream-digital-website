@@ -7,6 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model
 {
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_IN_REVIEW = 'in_review';
+    public const STATUS_PUBLISHED = 'published';
+    public const STATUS_ARCHIVED = 'archived';
+
+    public const EDITORIAL_STATUSES = [
+        self::STATUS_DRAFT => 'Brouillon',
+        self::STATUS_IN_REVIEW => 'En revue',
+        self::STATUS_PUBLISHED => 'Publie',
+        self::STATUS_ARCHIVED => 'Archive',
+    ];
+
     protected $fillable = [
         'slug',
         'section',
@@ -17,6 +29,9 @@ class Page extends Model
         'meta_image_path',
         'content_blocks',
         'is_published',
+        'editorial_status',
+        'review_notes',
+        'updated_by_id',
         'published_at',
     ];
 
@@ -34,6 +49,16 @@ class Page extends Model
     public function revisions()
     {
         return $this->hasMany(PageRevision::class)->latest();
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by_id');
+    }
+
+    public function editorialStatusLabel(): string
+    {
+        return self::EDITORIAL_STATUSES[$this->editorial_status] ?? self::EDITORIAL_STATUSES[self::STATUS_DRAFT];
     }
 
     public function scopePublished(Builder $query): Builder

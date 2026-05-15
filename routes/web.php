@@ -292,9 +292,15 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
         });
     });
 
-    Route::get('/admin/media', [AdminMediaController::class, 'index'])
+    Route::prefix('admin/media')
+        ->name('admin.media.')
+        ->controller(AdminMediaController::class)
         ->middleware('admin.role:owner,admin,editor')
-        ->name('admin.media.index');
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::put('/{media}', 'update')->name('update');
+            Route::delete('/{media}', 'destroy')->name('destroy');
+        });
 
     Route::prefix('admin/users')
         ->name('admin.users.')

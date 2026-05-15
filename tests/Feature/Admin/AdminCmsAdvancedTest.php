@@ -87,9 +87,48 @@ class AdminCmsAdvancedTest extends TestCase
         $this->get(route('admin.media.index'))
             ->assertOk()
             ->assertSee(basename($page->meta_image_path))
-            ->assertSee($page->meta_image_path);
+            ->assertSee($page->meta_image_path)
+            ->assertSee('Media library test');
 
         File::delete(public_path(ltrim($page->meta_image_path, '/')));
+    }
+
+    public function test_media_metadata_can_be_updated_and_used_media_cannot_be_deleted(): void
+    {
+        $file = UploadedFile::fake()->image('cms-locked.jpg', 800, 450);
+
+        $this->post(route('admin.pages.store'), [
+            'slug' => 'media-locked',
+            'section' => 'blog',
+            'locale' => 'fr',
+            'title' => 'Media locked',
+            'meta_description' => 'Description',
+            'lead' => 'Lead',
+            'sections_json' => '[]',
+            'image_file' => $file,
+            'is_published' => '1',
+        ])->assertRedirect(route('admin.pages.index'));
+
+        $page = Page::where('slug', 'media-locked')->firstOrFail();
+        $this->get(route('admin.media.index'))->assertOk();
+        $asset = \App\Models\MediaAsset::where('path', $page->meta_image_path)->firstOrFail();
+
+        $this->put(route('admin.media.update', $asset), [
+            'alt_text' => 'Alt media',
+            'credit' => 'Credit media',
+            'source_url' => 'https://example.test/source',
+        ])->assertRedirect(route('admin.media.index'));
+
+        $asset->refresh();
+        $this->assertSame('Alt media', $asset->alt_text);
+        $this->assertSame('Credit media', $asset->credit);
+
+        $this->delete(route('admin.media.destroy', $asset))
+            ->assertRedirect(route('admin.media.index'))
+            ->assertSessionHas('error');
+
+        $this->assertFileExists(public_path(ltrim($asset->path, '/')));
+        File::delete(public_path(ltrim($asset->path, '/')));
     }
 
     public function test_cms_form_shows_section_schema_guidance(): void

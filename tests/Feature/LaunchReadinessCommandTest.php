@@ -63,7 +63,7 @@ class LaunchReadinessCommandTest extends TestCase
     public function test_public_launch_check_fails_when_operator_confirmations_are_missing(): void
     {
         $this->seedLaunchData();
-        $this->seedCompanyProfiles();
+        $this->seedCompanyProfiles(confirmOps: true);
         $this->setBusinessConfig();
         putenv('DD_PUBLIC_INDEXABLE=true');
         putenv('LOG_LEVEL=info');
@@ -89,7 +89,7 @@ class LaunchReadinessCommandTest extends TestCase
     public function test_public_launch_check_passes_when_required_data_and_flags_are_ready(): void
     {
         $this->seedLaunchData();
-        $this->seedCompanyProfiles();
+        $this->seedCompanyProfiles(confirmOps: true);
         $this->setBusinessConfig();
         putenv('DD_PUBLIC_INDEXABLE=true');
 
@@ -223,7 +223,7 @@ class LaunchReadinessCommandTest extends TestCase
         ]);
     }
 
-    private function seedCompanyProfiles(): void
+    private function seedCompanyProfiles(bool $confirmOps = false): void
     {
         foreach ([
             'cd' => ['city' => 'Kinshasa', 'country' => 'RDC', 'lat' => '-4.3250', 'lng' => '15.3222'],
@@ -251,6 +251,10 @@ class LaunchReadinessCommandTest extends TestCase
                 'og_image_path' => '/img/brand/logo-dd-horizontal.png',
                 'legal_validated' => true,
                 'admin_password_rotated' => true,
+                'public_basic_auth_disabled' => $confirmOps,
+                'backups_configured' => $confirmOps,
+                'env_backed_up' => $confirmOps,
+                'deployment_runbook_reviewed' => $confirmOps,
             ]);
         }
     }

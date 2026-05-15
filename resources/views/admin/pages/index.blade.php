@@ -38,7 +38,7 @@
               @endforeach
             </select>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label" for="locale">Locale</label>
             <select class="form-select" id="locale" name="locale">
               <option value="">Toutes</option>
@@ -46,12 +46,21 @@
               <option value="en" @selected($filters['locale'] === 'en')>EN</option>
             </select>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label" for="published">Publication</label>
             <select class="form-select" id="published" name="published">
               <option value="" @selected($filters['published'] === '')>Toutes</option>
               <option value="1" @selected($filters['published'] === '1')>Publiees</option>
               <option value="0" @selected($filters['published'] === '0')>Brouillons</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" for="editorial_status">Workflow</label>
+            <select class="form-select" id="editorial_status" name="editorial_status">
+              <option value="">Tous</option>
+              @foreach($editorialStatuses as $status => $label)
+                <option value="{{ $status }}" @selected($filters['editorial_status'] === $status)>{{ $label }}</option>
+              @endforeach
             </select>
           </div>
           <div class="col-md-2 d-flex align-items-end">
@@ -96,7 +105,10 @@
                     @if($page->is_published)
                       <span class="badge bg-label-success">Publie</span>
                     @else
-                      <span class="badge bg-label-warning">Brouillon</span>
+                      <span class="badge bg-label-warning">{{ $page->editorialStatusLabel() }}</span>
+                    @endif
+                    @if($page->updatedBy)
+                      <span class="d-block small text-muted mt-1">{{ $page->updatedBy->name }}</span>
                     @endif
                   </td>
                   <td><span class="badge bg-label-secondary">{{ $page->revisions_count }}</span></td>

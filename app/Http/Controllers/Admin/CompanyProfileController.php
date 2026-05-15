@@ -76,6 +76,10 @@ class CompanyProfileController extends Controller
             'og_image_path' => config('dream-digital.site.meta.og_image') ?: '/img/brand/logo-dd-horizontal.png',
             'legal_validated' => filter_var(config('dream-digital.launch.legal_validated', true), FILTER_VALIDATE_BOOLEAN),
             'admin_password_rotated' => filter_var(config('dream-digital.launch.admin_password_rotated', true), FILTER_VALIDATE_BOOLEAN),
+            'public_basic_auth_disabled' => filter_var(config('dream-digital.launch.public_basic_auth_disabled', false), FILTER_VALIDATE_BOOLEAN),
+            'backups_configured' => filter_var(config('dream-digital.launch.backups_configured', false), FILTER_VALIDATE_BOOLEAN),
+            'env_backed_up' => filter_var(config('dream-digital.launch.env_backed_up', false), FILTER_VALIDATE_BOOLEAN),
+            'deployment_runbook_reviewed' => filter_var(config('dream-digital.launch.deployment_runbook_reviewed', false), FILTER_VALIDATE_BOOLEAN),
         ];
     }
 }

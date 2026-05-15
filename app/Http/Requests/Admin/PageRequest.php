@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -38,6 +39,8 @@ class PageRequest extends FormRequest
             'last_updated' => ['nullable', 'string', 'max:30'],
             'sections_json' => ['nullable', 'string'],
             'faq_json' => ['nullable', 'string'],
+            'editorial_status' => ['nullable', Rule::in(array_keys(Page::EDITORIAL_STATUSES))],
+            'review_notes' => ['nullable', 'string', 'max:3000'],
             'is_published' => ['sometimes', 'boolean'],
         ];
     }
@@ -53,6 +56,7 @@ class PageRequest extends FormRequest
             'country_id' => $rawCountry !== '' && $rawCountry !== null ? $rawCountry : null,
             'slug' => $rawSlug ? strtolower(trim($rawSlug)) : null,
             'locale' => $rawLocale ? strtolower($rawLocale) : null,
+            'editorial_status' => $this->input('editorial_status') ?: null,
         ]);
     }
 

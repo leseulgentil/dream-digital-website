@@ -22,6 +22,10 @@ class CompanyProfileService
             'dream-digital.site' => $site,
             'dream-digital.launch.legal_validated' => $profile->legal_validated,
             'dream-digital.launch.admin_password_rotated' => $profile->admin_password_rotated,
+            'dream-digital.launch.public_basic_auth_disabled' => $profile->public_basic_auth_disabled,
+            'dream-digital.launch.backups_configured' => $profile->backups_configured,
+            'dream-digital.launch.env_backed_up' => $profile->env_backed_up,
+            'dream-digital.launch.deployment_runbook_reviewed' => $profile->deployment_runbook_reviewed,
             'dream-digital.security.security_txt.contact' => $profile->email_security
                 ?: $profile->email_support
                 ?: config('dream-digital.security.security_txt.contact'),

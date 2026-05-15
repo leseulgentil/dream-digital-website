@@ -206,6 +206,28 @@
                             <label class="form-check-label" for="admin_password_rotated_{{ $countryCode }}_{{ $locale }}">Admin password rotate</label>
                           </div>
                         </div>
+
+                        <div class="col-12">
+                          <div class="border rounded p-3">
+                            <h3 class="h6 mb-3">Confirmations ouverture publique</h3>
+                            <div class="row g-3">
+                              @foreach([
+                                'public_basic_auth_disabled' => 'Basic Auth public retire',
+                                'backups_configured' => 'Backups VPS confirmes',
+                                'env_backed_up' => '.env sauvegarde',
+                                'deployment_runbook_reviewed' => 'Runbook deploiement relu',
+                              ] as $flag => $label)
+                                <div class="col-md-3">
+                                  <div class="form-check form-switch">
+                                    <input type="hidden" name="{{ $fieldPrefix }}[{{ $flag }}]" value="0">
+                                    <input class="form-check-input" type="checkbox" id="{{ $flag }}_{{ $countryCode }}_{{ $locale }}" name="{{ $fieldPrefix }}[{{ $flag }}]" value="1" @checked(old("$errorPrefix.$flag", $profile->{$flag}))>
+                                    <label class="form-check-label" for="{{ $flag }}_{{ $countryCode }}_{{ $locale }}">{{ $label }}</label>
+                                  </div>
+                                </div>
+                              @endforeach
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   @endforeach

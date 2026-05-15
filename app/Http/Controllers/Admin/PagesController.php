@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PageRequest;
 use App\Models\Country;
+use App\Models\MediaAsset;
 use App\Models\Page;
 use App\Models\PageRevision;
 use App\Services\Admin\ArticleGeneratorService;
@@ -28,6 +29,7 @@ class PagesController extends Controller
     public function index(Request $request): View
     {
         $query = Page::with('country')
+            ->with('updatedBy')
             ->withCount('revisions')
             ->orderBy('section')
             ->orderBy('slug')
@@ -42,14 +44,19 @@ class PagesController extends Controller
         if ($request->has('published') && $request->input('published') !== '') {
             $query->where('is_published', $request->boolean('published'));
         }
+        if ($status = $request->input('editorial_status')) {
+            $query->where('editorial_status', $status);
+        }
 
         return view('admin.pages.index', [
             'pages' => $query->paginate(25)->withQueryString(),
             'sections' => self::SECTIONS,
+            'editorialStatuses' => Page::EDITORIAL_STATUSES,
             'filters' => [
                 'section' => $section,
                 'locale' => $locale,
                 'published' => $request->input('published', ''),
+                'editorial_status' => $status,
             ],
         ]);
     }
@@ -60,6 +67,7 @@ class PagesController extends Controller
             'page' => new Page(['is_published' => true, 'locale' => 'fr', 'section' => 'legal']),
             'countries' => Country::active()->orderBy('sort_order')->get(),
             'sections' => self::SECTIONS,
+            'editorialStatuses' => Page::EDITORIAL_STATUSES,
             'sectionsJson' => '[]',
             'cmsSchemas' => config('dream-digital.cms.schemas', []),
         ]);
@@ -82,6 +90,7 @@ class PagesController extends Controller
             'page' => $page,
             'countries' => Country::active()->orderBy('sort_order')->get(),
             'sections' => self::SECTIONS,
+            'editorialStatuses' => Page::EDITORIAL_STATUSES,
             'cmsSchemas' => config('dream-digital.cms.schemas', []),
             'revisions' => $page->revisions()->with('user')->limit(8)->get(),
             'sectionsJson' => json_encode(
@@ -212,6 +221,20 @@ class PagesController extends Controller
         $sectionsArray = $request->decodedSections() ?? [];
         $faqArray = $request->decodedFaq();
         $uploadedImagePath = $this->uploadedImagePath($request, $validated);
+        $editorialStatus = $validated['editorial_status'] ?? null;
+        $isPublished = ($validated['is_published'] ?? false) || $editorialStatus === Page::STATUS_PUBLISHED;
+        if ($isPublished) {
+            $editorialStatus = Page::STATUS_PUBLISHED;
+        }
+        $editorialStatus ??= Page::STATUS_DRAFT;
+        if ($editorialStatus !== Page::STATUS_PUBLISHED) {
+            $isPublished = false;
+        }
+        $metaImagePath = $uploadedImagePath ?? ($validated['meta_image_path'] ?? null);
+
+        if ($metaImagePath) {
+            $this->syncMediaAsset($metaImagePath, $validated);
+        }
 
         return [
             'slug' => $validated['slug'],
@@ -220,7 +243,7 @@ class PagesController extends Controller
             'locale' => $validated['locale'],
             'title' => $validated['title'],
             'meta_description' => $validated['meta_description'] ?? null,
-            'meta_image_path' => $uploadedImagePath ?? ($validated['meta_image_path'] ?? null),
+            'meta_image_path' => $metaImagePath,
             'content_blocks' => array_merge($existingBlocks, [
                 'seo_title' => $validated['seo_title'] ?? null,
                 'eyebrow' => $validated['eyebrow'] ?? null,
@@ -235,8 +258,11 @@ class PagesController extends Controller
                 'faq' => $faqArray ?? ($existingBlocks['faq'] ?? []),
                 'sections' => $sectionsArray,
             ]),
-            'is_published' => $validated['is_published'] ?? false,
-            'published_at' => ($validated['is_published'] ?? false) ? now() : null,
+            'is_published' => $isPublished,
+            'editorial_status' => $editorialStatus,
+            'review_notes' => $validated['review_notes'] ?? null,
+            'updated_by_id' => auth()->id(),
+            'published_at' => $isPublished ? ($page?->published_at ?? now()) : null,
         ];
     }
 
@@ -274,6 +300,31 @@ class PagesController extends Controller
         $file->move($directory, $filename);
 
         return '/img/cms/pages/' . $filename;
+    }
+
+    private function syncMediaAsset(string $path, array $validated): void
+    {
+        if (! str_starts_with($path, '/img/cms/pages/')) {
+            return;
+        }
+
+        $fullPath = public_path(ltrim($path, '/'));
+        $dimensions = is_file($fullPath) ? @getimagesize($fullPath) : null;
+
+        MediaAsset::updateOrCreate(
+            ['path' => $path],
+            [
+                'filename' => basename($path),
+                'mime_type' => $dimensions['mime'] ?? null,
+                'size_bytes' => is_file($fullPath) ? filesize($fullPath) : null,
+                'width' => $dimensions[0] ?? null,
+                'height' => $dimensions[1] ?? null,
+                'alt_text' => $validated['image_alt'] ?? null,
+                'credit' => $validated['image_credit'] ?? null,
+                'source_url' => $validated['image_source_url'] ?? null,
+                'uploaded_by_id' => auth()->id(),
+            ],
+        );
     }
 
     private function pageToArticle(Page $page): array

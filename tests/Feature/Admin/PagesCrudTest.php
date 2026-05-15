@@ -68,6 +68,7 @@ class PagesCrudTest extends TestCase
         $this->assertSame('Lead test paragraph.', $page->content_blocks['lead']);
         $this->assertCount(2, $page->content_blocks['sections']);
         $this->assertSame('Section 1', $page->content_blocks['sections'][0]['heading']);
+        $this->assertSame('published', $page->editorial_status);
     }
 
     public function test_store_preserves_rich_section_html(): void
@@ -146,12 +147,18 @@ class PagesCrudTest extends TestCase
 
         $payload = $this->formPayload();
         $payload['title'] = 'Mentions modifiees';
+        $payload['editorial_status'] = 'in_review';
+        $payload['review_notes'] = 'A relire avant publication.';
+        $payload['is_published'] = '0';
 
         $this->put(route('admin.pages.update', $page), $payload)
             ->assertRedirect(route('admin.pages.index'));
 
         $page->refresh();
         $this->assertSame('Mentions modifiees', $page->title);
+        $this->assertSame('in_review', $page->editorial_status);
+        $this->assertSame('A relire avant publication.', $page->review_notes);
+        $this->assertSame(auth()->id(), $page->updated_by_id);
     }
 
     public function test_destroy_removes_page(): void
@@ -208,6 +215,8 @@ class PagesCrudTest extends TestCase
             'eyebrow' => 'Eyebrow test',
             'lead' => 'Lead test paragraph.',
             'last_updated' => '2026-05-12',
+            'editorial_status' => 'draft',
+            'review_notes' => '',
             'sections_json' => json_encode([
                 ['heading' => 'Section 1', 'body' => "Body 1 first paragraph.\n\nBody 1 second paragraph."],
                 ['heading' => 'Section 2', 'body' => 'Body 2.'],

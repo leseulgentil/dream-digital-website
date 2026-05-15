@@ -25,6 +25,8 @@ class CompanyProfileAdminTest extends TestCase
             ->assertSee('RCCM')
             ->assertSee('Latitude')
             ->assertSee('Longitude')
+            ->assertSee('Confirmations ouverture publique')
+            ->assertSee('Basic Auth public retire')
             ->assertSee('RDC')
             ->assertSee('Cote d Ivoire')
             ->assertSee('Congo')
@@ -75,6 +77,10 @@ class CompanyProfileAdminTest extends TestCase
             'longitude' => '15.3222',
             'legal_validated' => true,
             'admin_password_rotated' => true,
+            'public_basic_auth_disabled' => true,
+            'backups_configured' => true,
+            'env_backed_up' => true,
+            'deployment_runbook_reviewed' => true,
         ]);
         $this->assertDatabaseHas('company_profiles', [
             'country_code' => 'ci',
@@ -310,6 +316,10 @@ class CompanyProfileAdminTest extends TestCase
             'og_image_path' => '/img/brand/logo-dd-horizontal.png',
             'legal_validated' => '1',
             'admin_password_rotated' => '1',
+            'public_basic_auth_disabled' => '1',
+            'backups_configured' => '1',
+            'env_backed_up' => '1',
+            'deployment_runbook_reviewed' => '1',
         ];
     }
 }

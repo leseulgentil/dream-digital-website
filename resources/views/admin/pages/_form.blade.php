@@ -57,6 +57,16 @@
     @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
+  <div class="col-md-4">
+    <label class="form-label" for="editorial_status">Workflow editorial</label>
+    <select id="editorial_status" name="editorial_status" class="form-select @error('editorial_status') is-invalid @enderror">
+      @foreach($editorialStatuses as $status => $label)
+        <option value="{{ $status }}" @selected(old('editorial_status', $page->editorial_status ?? ($page->is_published ? 'published' : 'draft')) === $status)>{{ $label }}</option>
+      @endforeach
+    </select>
+    @error('editorial_status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
   <div class="col-md-4 d-flex align-items-end">
     <div class="form-check form-switch w-100">
       <input class="form-check-input" type="checkbox" id="is_published" name="is_published" value="1" @checked(old('is_published', $page->is_published))>
@@ -68,6 +78,12 @@
     <label class="form-label" for="meta_description">Meta description SEO <small class="text-muted">(500 char max)</small></label>
     <textarea id="meta_description" name="meta_description" rows="2" maxlength="500" class="form-control @error('meta_description') is-invalid @enderror">{{ old('meta_description', $page->meta_description) }}</textarea>
     @error('meta_description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-12">
+    <label class="form-label" for="review_notes">Notes de revue editoriale</label>
+    <textarea id="review_notes" name="review_notes" rows="2" maxlength="3000" class="form-control @error('review_notes') is-invalid @enderror" placeholder="Points a verifier, consignes de publication, retours PO...">{{ old('review_notes', $page->review_notes ?? '') }}</textarea>
+    @error('review_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
   <div class="col-12">

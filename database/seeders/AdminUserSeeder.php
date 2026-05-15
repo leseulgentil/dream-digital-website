@@ -19,7 +19,7 @@ class AdminUserSeeder extends Seeder
             return;
         }
 
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => $email],
             [
                 'name' => env('DD_ADMIN_NAME', 'Admin Dream Digital'),

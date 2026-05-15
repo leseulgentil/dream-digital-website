@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\User;
+use Database\Seeders\AdminUserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -138,5 +139,24 @@ class AdminUsersCrudTest extends TestCase
         $this->assertIsString($temporaryPassword);
         $this->assertGreaterThanOrEqual(16, strlen($temporaryPassword));
         $this->assertTrue(Hash::check($temporaryPassword, $user->refresh()->password));
+    }
+
+    public function test_admin_user_seed_does_not_overwrite_existing_admin_password(): void
+    {
+        config(['app.env' => 'testing']);
+        putenv('DD_ADMIN_EMAIL=gentil.mapendo@dream-digital.info');
+        putenv('DD_ADMIN_PASSWORD=env-password-2026');
+
+        $user = User::factory()->create([
+            'email' => 'gentil.mapendo@dream-digital.info',
+            'password' => 'cms-password-2026',
+        ]);
+
+        $this->seed(AdminUserSeeder::class);
+
+        $this->assertTrue(Hash::check('cms-password-2026', $user->refresh()->password));
+
+        putenv('DD_ADMIN_EMAIL');
+        putenv('DD_ADMIN_PASSWORD');
     }
 }

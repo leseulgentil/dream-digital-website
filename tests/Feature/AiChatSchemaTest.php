@@ -29,6 +29,19 @@ class AiChatSchemaTest extends TestCase
         }
     }
 
+    public function test_ai_chat_migration_matches_specified_column_definitions(): void
+    {
+        $migration = file_get_contents(database_path('migrations/2026_05_15_000007_create_ai_chat_tables.php'));
+
+        $this->assertStringContainsString("\$table->unsignedSmallInteger('max_sources')->default(5);", $migration);
+        $this->assertStringContainsString("\$table->unsignedSmallInteger('max_message_chars')->default(1200);", $migration);
+        $this->assertSame(4, substr_count($migration, "\$table->string('country_code', 12)"));
+        $this->assertStringContainsString("\$table->string('ip_hash')->nullable();", $migration);
+        $this->assertStringContainsString("\$table->string('user_agent_hash')->nullable();", $migration);
+        $this->assertStringNotContainsString("\$table->string('ip_hash', 64)->nullable();", $migration);
+        $this->assertStringNotContainsString("\$table->string('user_agent_hash', 64)->nullable();", $migration);
+    }
+
     public function test_ai_chat_permissions_are_available_and_defaulted_by_role(): void
     {
         $permissions = RoleProfile::availablePermissions();
@@ -62,6 +75,15 @@ class AiChatSchemaTest extends TestCase
         $this->assertFalse($settings->enabled);
         $this->assertSame('gpt-5.4-mini', $settings->model);
         $this->assertSame(5, $settings->max_sources);
+        $this->assertSame([
+            'fr' => 'Bonjour, comment puis-je aider ?',
+            'en' => 'Hello, how can I help?',
+        ], $settings->greetings);
+        $this->assertSame(['pages' => ['*']], $settings->display_rules);
+        $this->assertSame(
+            "Tu es l'assistant Dream Digital. Reponds uniquement avec les informations presentes dans la base de connaissances fournie. Si l'information n'est pas disponible, dis que Dream Digital ne peut pas confirmer et propose de contacter l'equipe. Ne cherche pas sur internet. N'invente pas de prix, delais, pays couverts, conditions contractuelles ou coordonnees.",
+            $settings->system_prompt,
+        );
     }
 
     public function test_ai_knowledge_source_has_chunks_relation(): void

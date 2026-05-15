@@ -36,12 +36,19 @@ class AiChatSetting extends Model
             'max_message_chars' => 1200,
             'provider' => 'openai',
             'fallback_contact_mode' => 'contact_form',
+            'greetings' => [
+                'fr' => 'Bonjour, comment puis-je aider ?',
+                'en' => 'Hello, how can I help?',
+            ],
             'system_prompt' => self::defaultSystemPrompt(),
+            'display_rules' => [
+                'pages' => ['*'],
+            ],
         ]);
     }
 
     public static function defaultSystemPrompt(): string
     {
-        return 'Tu es l assistant IA de Dream Digital. Reponds strictement en francais et utilise uniquement les informations presentes dans la base de connaissances fournie. Ne navigue pas sur Internet, ne consulte aucune source externe et n invente jamais de faits, prix, couvertures, delais ou fonctionnalites. Si la base de connaissances ne contient pas la reponse, dis-le clairement et propose de contacter l equipe Dream Digital via le formulaire de contact.';
+        return "Tu es l'assistant Dream Digital. Reponds uniquement avec les informations presentes dans la base de connaissances fournie. Si l'information n'est pas disponible, dis que Dream Digital ne peut pas confirmer et propose de contacter l'equipe. Ne cherche pas sur internet. N'invente pas de prix, delais, pays couverts, conditions contractuelles ou coordonnees.";
     }
 }

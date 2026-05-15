@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->boolean('enabled')->default(false);
             $table->string('model')->default('gpt-5.4-mini');
-            $table->unsignedInteger('max_sources')->default(5);
-            $table->unsignedInteger('max_message_chars')->default(1200);
+            $table->unsignedSmallInteger('max_sources')->default(5);
+            $table->unsignedSmallInteger('max_message_chars')->default(1200);
             $table->string('provider')->default('openai');
             $table->string('fallback_contact_mode')->default('contact_form');
             $table->json('greetings')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('stored_path')->nullable();
             $table->string('mime_type')->nullable();
             $table->string('locale', 2)->default('fr');
-            $table->string('country_code')->default('global');
+            $table->string('country_code', 12)->default('global');
             $table->string('status')->default('draft');
             $table->json('metadata')->nullable();
             $table->foreignId('created_by_id')->nullable()->constrained('users')->nullOnDelete();
@@ -45,7 +45,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('content');
             $table->string('locale', 2)->default('fr');
-            $table->string('country_code')->default('global');
+            $table->string('country_code', 12)->default('global');
             $table->string('category')->nullable();
             $table->string('status')->default('draft');
             $table->integer('priority')->default(0);
@@ -59,10 +59,10 @@ return new class extends Migration
             $table->id();
             $table->uuid('public_id')->unique();
             $table->string('locale', 2)->default('fr');
-            $table->string('country_code')->default('global');
+            $table->string('country_code', 12)->default('global');
             $table->string('page_url')->nullable();
-            $table->string('ip_hash', 64)->nullable();
-            $table->string('user_agent_hash', 64)->nullable();
+            $table->string('ip_hash')->nullable();
+            $table->string('user_agent_hash')->nullable();
             $table->string('lead_status')->default('none');
             $table->timestamps();
         });
@@ -85,7 +85,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('whatsapp')->nullable();
             $table->string('company')->nullable();
-            $table->string('country_code')->nullable();
+            $table->string('country_code', 12)->nullable();
             $table->text('need')->nullable();
             $table->boolean('consent')->default(false);
             $table->timestamps();

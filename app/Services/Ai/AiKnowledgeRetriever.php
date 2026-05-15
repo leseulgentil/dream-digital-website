@@ -73,14 +73,7 @@ class AiKnowledgeRetriever
             ->limit($limit)
             ->get();
 
-        if ($matched->isNotEmpty()) {
-            return $matched;
-        }
-
-        return $query
-            ->orderByDesc('priority')
-            ->limit($limit)
-            ->get();
+        return $matched;
     }
 
     /**

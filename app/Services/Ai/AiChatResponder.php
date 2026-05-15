@@ -40,7 +40,7 @@ class AiChatResponder
             (int) $settings->max_sources,
         );
 
-        if ($chunks->isEmpty() || blank(config('services.openai.api_key'))) {
+        if ($chunks->isEmpty() || $settings->provider !== 'openai' || blank(config('services.openai.api_key'))) {
             return $this->storeFallback($session, $session->locale);
         }
 

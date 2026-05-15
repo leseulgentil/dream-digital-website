@@ -50,6 +50,7 @@ class AiChatResponderTest extends TestCase
         ]);
 
         $chunk = $this->createChunk([
+            'title' => 'Pays couverts',
             'content' => 'Dream Digital opere en RDC, Cote d Ivoire et Congo.',
             'locale' => 'fr',
             'country_code' => 'global',
@@ -103,6 +104,80 @@ class AiChatResponderTest extends TestCase
         $response = app(AiChatResponder::class)->reply($session, 'Quel est le prix WhatsApp ?');
 
         $this->assertFalse($response['answered']);
+        Http::assertNothingSent();
+    }
+
+    public function test_unrelated_published_chunks_do_not_trigger_provider_on_non_pgsql_fallback(): void
+    {
+        config([
+            'database.default' => 'sqlite',
+            'services.openai.api_key' => 'test-key',
+            'services.openai.base_url' => 'https://api.openai.com/v1',
+        ]);
+
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'provider' => 'openai',
+        ]);
+
+        $this->createChunk([
+            'title' => 'Coverage',
+            'content' => 'Dream Digital opere en RDC, Cote d Ivoire et Congo.',
+            'status' => 'published',
+            'priority' => 100,
+        ]);
+
+        Http::fake([
+            'api.openai.com/*' => Http::response([
+                'output_text' => 'This should not be used.',
+            ], 200),
+        ]);
+
+        $session = AiChatSession::create([
+            'locale' => 'fr',
+            'country_code' => 'global',
+        ]);
+
+        $response = app(AiChatResponder::class)->reply($session, 'Comment cuire le riz ?');
+
+        $this->assertFalse($response['answered']);
+        $this->assertStringContainsString('ne peut pas confirmer', $response['message']);
+        Http::assertNothingSent();
+    }
+
+    public function test_non_openai_provider_falls_back_without_calling_http(): void
+    {
+        config([
+            'services.openai.api_key' => 'test-key',
+            'services.openai.base_url' => 'https://api.openai.com/v1',
+        ]);
+
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'provider' => 'local',
+        ]);
+
+        $this->createChunk([
+            'title' => 'Coverage',
+            'content' => 'Dream Digital opere en RDC, Cote d Ivoire et Congo.',
+            'status' => 'published',
+        ]);
+
+        Http::fake([
+            'api.openai.com/*' => Http::response([
+                'output_text' => 'Dream Digital opere en RDC, Cote d Ivoire et Congo.',
+            ], 200),
+        ]);
+
+        $session = AiChatSession::create([
+            'locale' => 'fr',
+            'country_code' => 'global',
+        ]);
+
+        $response = app(AiChatResponder::class)->reply($session, 'Quels pays couvrez-vous ?');
+
+        $this->assertFalse($response['answered']);
+        $this->assertStringContainsString('ne peut pas confirmer', $response['message']);
         Http::assertNothingSent();
     }
 

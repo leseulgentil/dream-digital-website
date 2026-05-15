@@ -21,6 +21,8 @@ class AiKnowledgeSource extends Model
 
     public const TYPE_WEB_SITEMAP = 'web_sitemap';
 
+    public const TYPE_WEB_ENDPOINT = 'web_endpoint';
+
     protected $fillable = [
         'ai_knowledge_web_source_id',
         'type',

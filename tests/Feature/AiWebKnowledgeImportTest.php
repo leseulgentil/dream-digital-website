@@ -121,6 +121,61 @@ class AiWebKnowledgeImportTest extends TestCase
         ]);
     }
 
+    public function test_endpoint_json_source_imports_validated_items(): void
+    {
+        Http::fake([
+            'https://esimzone.test/api/ai-knowledge/export' => Http::response([
+                'source' => 'esimzone',
+                'version' => '1.0',
+                'items' => [
+                    [
+                        'external_id' => 'faq-activation-fr',
+                        'title' => 'Activer une eSIM',
+                        'locale' => 'fr',
+                        'country' => 'global',
+                        'category' => 'support',
+                        'canonical_url' => 'https://esimzone.test/fr/faq/activation',
+                        'updated_at' => '2026-05-15T00:00:00Z',
+                        'content_hash' => 'hash-from-esimzone',
+                        'content_markdown' => 'Installez le QR code puis activez les donnees mobiles.',
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_OWNER,
+            'is_active' => true,
+        ]));
+
+        $this->post(route('admin.ai.web-sources.store'), [
+            'title' => 'eSIM Zone API',
+            'type' => 'endpoint_json',
+            'url' => 'https://esimzone.test/api/ai-knowledge/export',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'frequency' => 'weekly',
+            'import_status' => 'draft',
+            'sync_now' => '1',
+        ])->assertRedirect(route('admin.ai.knowledge.index'));
+
+        $webSource = AiKnowledgeWebSource::query()->where('title', 'eSIM Zone API')->firstOrFail();
+
+        $this->assertDatabaseHas('ai_knowledge_sources', [
+            'ai_knowledge_web_source_id' => $webSource->id,
+            'source_url' => 'https://esimzone.test/fr/faq/activation',
+            'content_hash' => 'hash-from-esimzone',
+        ]);
+        $this->assertDatabaseHas('ai_knowledge_chunks', [
+            'title' => 'Activer une eSIM',
+            'content' => 'Installez le QR code puis activez les donnees mobiles.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'support',
+            'status' => 'draft',
+        ]);
+    }
+
     /**
      * @param  array<int, string>  $urls
      */

@@ -20,7 +20,7 @@ class AiWebKnowledgeImporter
         $imported = match ($webSource->type) {
             AiKnowledgeWebSource::TYPE_URL => $this->importUrl($webSource, $webSource->url),
             AiKnowledgeWebSource::TYPE_SITEMAP => $this->importSitemap($webSource),
-            AiKnowledgeWebSource::TYPE_ENDPOINT_JSON => throw new InvalidArgumentException('Endpoint JSON import is not available yet.'),
+            AiKnowledgeWebSource::TYPE_ENDPOINT_JSON => $this->importEndpointJson($webSource),
             default => throw new InvalidArgumentException("Unsupported web source type [{$webSource->type}]."),
         };
 
@@ -68,7 +68,75 @@ class AiWebKnowledgeImporter
             ? AiKnowledgeSource::TYPE_WEB_SITEMAP
             : AiKnowledgeSource::TYPE_WEB_URL;
 
-        return DB::transaction(function () use ($webSource, $url, $title, $content, $hash, $type): int {
+        return $this->storeKnowledgePage($webSource, $url, $title, $content, $hash, $type);
+    }
+
+    private function importEndpointJson(AiKnowledgeWebSource $webSource): int
+    {
+        $this->guardPublicUrl($webSource->url);
+
+        $payload = Http::timeout(20)
+            ->acceptJson()
+            ->get($webSource->url)
+            ->throw()
+            ->json();
+
+        $items = is_array($payload) ? data_get($payload, 'items', []) : [];
+        $imported = 0;
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $content = trim((string) ($item['content_markdown'] ?? $item['content'] ?? ''));
+            $title = trim((string) ($item['title'] ?? ''));
+
+            if ($content === '' || $title === '') {
+                continue;
+            }
+
+            $url = trim((string) ($item['canonical_url'] ?? ''));
+
+            if ($url === '') {
+                $externalId = trim((string) ($item['external_id'] ?? hash('sha256', $title.$content)));
+                $url = rtrim($webSource->url, '#').'#'.$externalId;
+            }
+
+            $this->guardPublicUrl($url);
+
+            $imported += $this->storeKnowledgePage(
+                $webSource,
+                $url,
+                Str::limit($title, 180, ''),
+                $content,
+                trim((string) ($item['content_hash'] ?? '')) ?: hash('sha256', $content),
+                AiKnowledgeSource::TYPE_WEB_ENDPOINT,
+                $this->normalizedLocale($item['locale'] ?? null, $webSource->locale),
+                $this->normalizedCountryCode($item['country'] ?? null, $webSource->country_code),
+                trim((string) ($item['category'] ?? '')) ?: $webSource->category,
+            );
+        }
+
+        return $imported;
+    }
+
+    private function storeKnowledgePage(
+        AiKnowledgeWebSource $webSource,
+        string $url,
+        string $title,
+        string $content,
+        string $hash,
+        string $type,
+        ?string $locale = null,
+        ?string $countryCode = null,
+        ?string $category = null,
+    ): int {
+        $locale ??= $webSource->locale;
+        $countryCode ??= $webSource->country_code;
+        $category ??= $webSource->category;
+
+        return DB::transaction(function () use ($webSource, $url, $title, $content, $hash, $type, $locale, $countryCode, $category): int {
             $source = AiKnowledgeSource::query()
                 ->where('ai_knowledge_web_source_id', $webSource->id)
                 ->where('source_url', $url)
@@ -88,11 +156,11 @@ class AiWebKnowledgeImporter
                     'source_url' => $url,
                     'content_hash' => $hash,
                     'fetched_at' => now(),
-                    'locale' => $webSource->locale,
-                    'country_code' => $webSource->country_code,
+                    'locale' => $locale,
+                    'country_code' => $countryCode,
                     'status' => $webSource->import_status,
                     'metadata' => [
-                        'category' => $webSource->category,
+                        'category' => $category,
                     ],
                     'created_by_id' => $webSource->created_by_id,
                 ]);
@@ -103,12 +171,12 @@ class AiWebKnowledgeImporter
                     'title' => $title,
                     'content_hash' => $hash,
                     'fetched_at' => now(),
-                    'locale' => $webSource->locale,
-                    'country_code' => $webSource->country_code,
+                    'locale' => $locale,
+                    'country_code' => $countryCode,
                     'status' => $webSource->import_status,
                     'metadata' => [
                         ...($source->metadata ?? []),
-                        'category' => $webSource->category,
+                        'category' => $category,
                     ],
                 ]);
             }
@@ -119,9 +187,9 @@ class AiWebKnowledgeImporter
                 $source->chunks()->create([
                     'title' => $index === 0 ? $title : $title.' #'.($index + 1),
                     'content' => $chunk,
-                    'locale' => $webSource->locale,
-                    'country_code' => $webSource->country_code,
-                    'category' => $webSource->category,
+                    'locale' => $locale,
+                    'country_code' => $countryCode,
+                    'category' => $category,
                     'status' => $webSource->import_status,
                     'priority' => 0,
                 ]);
@@ -201,6 +269,20 @@ class AiWebKnowledgeImporter
         $text = preg_replace('/\s+/u', ' ', $text) ?? '';
 
         return trim($text);
+    }
+
+    private function normalizedLocale(mixed $value, string $fallback): string
+    {
+        $locale = strtolower(trim((string) $value));
+
+        return in_array($locale, ['fr', 'en'], true) ? $locale : $fallback;
+    }
+
+    private function normalizedCountryCode(mixed $value, string $fallback): string
+    {
+        $countryCode = strtolower(trim((string) $value));
+
+        return in_array($countryCode, ['global', 'cd', 'ci', 'cg'], true) ? $countryCode : $fallback;
     }
 
     private function guardPublicUrl(string $url): void

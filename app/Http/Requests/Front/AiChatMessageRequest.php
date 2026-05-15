@@ -4,13 +4,25 @@ namespace App\Http\Requests\Front;
 
 use App\Models\AiChatSetting;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class AiChatMessageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return rescue(
+            fn () => (bool) AiChatSetting::current()->enabled,
+            false,
+            false,
+        );
+    }
+
+    protected function failedAuthorization(): void
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'AI chat is disabled.',
+        ], 403));
     }
 
     /**

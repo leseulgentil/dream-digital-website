@@ -141,6 +141,25 @@ class AiChatSchemaTest extends TestCase
         $this->assertNotContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, $permissions);
     }
 
+    public function test_existing_empty_role_profile_permissions_do_not_fall_back_to_defaults(): void
+    {
+        RoleProfile::query()->whereIn('role', [User::ROLE_EDITOR, User::ROLE_VIEWER])->update([
+            'permissions' => [],
+        ]);
+
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $viewer = User::factory()->create(['role' => User::ROLE_VIEWER]);
+
+        foreach ([
+            RoleProfile::PERMISSION_ADMIN_ACCESS,
+            RoleProfile::PERMISSION_AI_CHAT_VIEW,
+            RoleProfile::PERMISSION_AI_KNOWLEDGE_VIEW,
+        ] as $permission) {
+            $this->assertFalse($editor->hasPermission($permission), "Editor should not have [{$permission}].");
+            $this->assertFalse($viewer->hasPermission($permission), "Viewer should not have [{$permission}].");
+        }
+    }
+
     public function test_ai_chat_setting_current_creates_defaults(): void
     {
         $settings = AiChatSetting::current();

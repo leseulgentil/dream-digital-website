@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AiChatSetting;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -31,6 +32,21 @@ class AiChatWidgetTest extends TestCase
             ->assertOk()
             ->assertSee('dd-ai-chat-widget', false)
             ->assertSee('data-ai-chat-endpoint', false);
+    }
+
+    public function test_widget_is_only_included_on_public_front_pages(): void
+    {
+        AiChatSetting::current()->update(['enabled' => true]);
+
+        $this->actingAs(User::factory()->create());
+
+        $this->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertDontSee('dd-ai-chat-widget', false);
+
+        $this->get('/fr/contact')
+            ->assertOk()
+            ->assertSee('dd-ai-chat-widget', false);
     }
 
     public function test_widget_uses_public_endpoint_and_does_not_expose_openai_key(): void

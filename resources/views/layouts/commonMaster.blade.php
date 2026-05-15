@@ -202,7 +202,7 @@
     );
   @endphp
 
-  @if($ddAiChatSettings?->enabled)
+  @if($isFront === 'Front' && $ddAiChatSettings?->enabled)
     @include('front.components.ai-chat-widget', ['settings' => $ddAiChatSettings])
     @vite(['resources/assets/css/dd-ai-chat-widget.css', 'resources/assets/js/dd-ai-chat-widget.js'])
   @endif

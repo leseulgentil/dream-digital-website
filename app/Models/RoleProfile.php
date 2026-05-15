@@ -133,7 +133,7 @@ class RoleProfile extends Model
         }
 
         $profile = self::query()->where('role', $role)->first();
-        $permissions = $profile?->permissions ?: self::defaultPermissionsFor($role);
+        $permissions = $profile ? ($profile->permissions ?? []) : self::defaultPermissionsFor($role);
 
         return in_array($permission, $permissions, true);
     }

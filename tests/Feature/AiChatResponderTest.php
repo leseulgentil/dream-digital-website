@@ -294,6 +294,23 @@ class AiChatResponderTest extends TestCase
         $this->assertSame(4, AiChatMessage::count());
     }
 
+    public function test_public_endpoint_rejects_messages_when_chat_is_disabled(): void
+    {
+        AiChatSetting::current()->update(['enabled' => false]);
+
+        $this->postJson(route('front.ai-chat.message'), [
+            'message' => 'Bonjour',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'page_url' => 'https://dreamdigital.example/contact',
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'AI chat is disabled.');
+
+        $this->assertSame(0, AiChatSession::count());
+        $this->assertSame(0, AiChatMessage::count());
+    }
+
     public function test_public_endpoint_respects_configured_max_message_chars(): void
     {
         AiChatSetting::current()->update([

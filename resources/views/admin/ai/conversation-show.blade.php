@@ -58,31 +58,33 @@
         </div>
       </div>
 
-      <div class="card mt-4">
-        <div class="card-header">
-          <h2 class="h5 mb-0">Lead capture</h2>
+      @if($canViewLeadDetails)
+        <div class="card mt-4">
+          <div class="card-header">
+            <h2 class="h5 mb-0">Lead capture</h2>
+          </div>
+          <div class="card-body">
+            @if($session->lead)
+              <dl class="row mb-0">
+                <dt class="col-5">Nom</dt>
+                <dd class="col-7">{{ $session->lead->name ?: '-' }}</dd>
+                <dt class="col-5">Email</dt>
+                <dd class="col-7">{{ $session->lead->email ?: '-' }}</dd>
+                <dt class="col-5">Telephone</dt>
+                <dd class="col-7">{{ $session->lead->phone ?: '-' }}</dd>
+                <dt class="col-5">WhatsApp</dt>
+                <dd class="col-7">{{ $session->lead->whatsapp ?: '-' }}</dd>
+                <dt class="col-5">Societe</dt>
+                <dd class="col-7">{{ $session->lead->company ?: '-' }}</dd>
+                <dt class="col-5">Besoin</dt>
+                <dd class="col-7">{{ $session->lead->need ?: '-' }}</dd>
+              </dl>
+            @else
+              <p class="text-muted mb-0">Aucun lead capture.</p>
+            @endif
+          </div>
         </div>
-        <div class="card-body">
-          @if($session->lead)
-            <dl class="row mb-0">
-              <dt class="col-5">Nom</dt>
-              <dd class="col-7">{{ $session->lead->name ?: '-' }}</dd>
-              <dt class="col-5">Email</dt>
-              <dd class="col-7">{{ $session->lead->email ?: '-' }}</dd>
-              <dt class="col-5">Telephone</dt>
-              <dd class="col-7">{{ $session->lead->phone ?: '-' }}</dd>
-              <dt class="col-5">WhatsApp</dt>
-              <dd class="col-7">{{ $session->lead->whatsapp ?: '-' }}</dd>
-              <dt class="col-5">Societe</dt>
-              <dd class="col-7">{{ $session->lead->company ?: '-' }}</dd>
-              <dt class="col-5">Besoin</dt>
-              <dd class="col-7">{{ $session->lead->need ?: '-' }}</dd>
-            </dl>
-          @else
-            <p class="text-muted mb-0">Aucun lead capture.</p>
-          @endif
-        </div>
-      </div>
+      @endif
     </div>
   </div>
 @endsection

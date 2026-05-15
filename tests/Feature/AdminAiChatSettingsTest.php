@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AiChatMessage;
+use App\Models\AiChatLead;
 use App\Models\AiChatSession;
 use App\Models\AiChatSetting;
 use App\Models\User;
@@ -106,5 +107,44 @@ class AdminAiChatSettingsTest extends TestCase
             ],
             'system_prompt' => AiChatSetting::defaultSystemPrompt(),
         ])->assertForbidden();
+    }
+
+    public function test_viewer_can_view_transcript_without_lead_pii(): void
+    {
+        $session = AiChatSession::create([
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'lead_status' => 'captured',
+        ]);
+        AiChatMessage::create([
+            'ai_chat_session_id' => $session->id,
+            'role' => 'user',
+            'content' => 'Transcript visible to chat viewers.',
+        ]);
+        AiChatLead::create([
+            'ai_chat_session_id' => $session->id,
+            'name' => 'Alice Lead',
+            'email' => 'alice@example.test',
+            'phone' => '+243999111222',
+            'whatsapp' => '+243888333444',
+            'company' => 'Alice Company',
+            'need' => 'Private lead need',
+            'consent' => true,
+        ]);
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_VIEWER,
+            'is_active' => true,
+        ]));
+
+        $this->get("/admin/ai/conversations/{$session->id}")
+            ->assertOk()
+            ->assertSee('Transcript visible to chat viewers.')
+            ->assertDontSee('Alice Lead')
+            ->assertDontSee('alice@example.test')
+            ->assertDontSee('+243999111222')
+            ->assertDontSee('+243888333444')
+            ->assertDontSee('Alice Company')
+            ->assertDontSee('Private lead need');
     }
 }

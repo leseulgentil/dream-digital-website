@@ -21,13 +21,16 @@ class AiConversationsController extends Controller
         ]);
     }
 
-    public function show(AiChatSession $session): View
+    public function show(Request $request, AiChatSession $session): View
     {
+        $canViewLeadDetails = $request->user()?->hasPermission(RoleProfile::PERMISSION_CONTACT_LEADS_VIEW) ?? false;
+
         return view('admin.ai.conversation-show', [
             'session' => $session->load([
                 'messages' => fn ($query) => $query->oldest(),
-                'lead',
+                ...($canViewLeadDetails ? ['lead'] : []),
             ]),
+            'canViewLeadDetails' => $canViewLeadDetails,
         ]);
     }
 }

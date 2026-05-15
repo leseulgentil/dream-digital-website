@@ -182,8 +182,8 @@ class AiKnowledgeImporter
             $rows[] = [
                 'title' => $question !== '' ? $question : $title.' #'.(count($rows) + 1),
                 'content' => $content,
-                'locale' => trim((string) ($row['locale'] ?? '')) ?: $locale,
-                'country_code' => trim((string) ($row['country'] ?? '')) ?: $countryCode,
+                'locale' => $this->normalizedLocale($row['locale'] ?? null, $locale),
+                'country_code' => $this->normalizedCountryCode($row['country'] ?? null, $countryCode),
                 'category' => trim((string) ($row['category'] ?? '')) ?: $category,
             ];
         }
@@ -191,6 +191,20 @@ class AiKnowledgeImporter
         fclose($handle);
 
         return $rows;
+    }
+
+    private function normalizedLocale(mixed $value, string $fallback): string
+    {
+        $locale = strtolower(trim((string) $value));
+
+        return in_array($locale, ['fr', 'en'], true) ? $locale : $fallback;
+    }
+
+    private function normalizedCountryCode(mixed $value, string $fallback): string
+    {
+        $countryCode = strtolower(trim((string) $value));
+
+        return in_array($countryCode, ['global', 'cd', 'ci', 'cg'], true) ? $countryCode : $fallback;
     }
 
     /**

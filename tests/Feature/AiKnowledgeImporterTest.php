@@ -73,6 +73,29 @@ class AiKnowledgeImporterTest extends TestCase
         $this->assertSame('global', $chunk->country_code);
     }
 
+    public function test_csv_import_falls_back_when_row_locale_or_country_is_invalid(): void
+    {
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->createWithContent(
+            'coverage.csv',
+            "question,answer,category,country,locale\n\"Quels pays?\",\"RDC CI Congo\",coverage,sn,es\n",
+        );
+
+        $source = app(AiKnowledgeImporter::class)->import($file, [
+            'title' => 'Coverage',
+            'locale' => 'fr',
+            'country_code' => 'ci',
+            'category' => 'general',
+            'created_by_id' => null,
+        ]);
+
+        $chunk = AiKnowledgeChunk::query()->where('ai_knowledge_source_id', $source->id)->firstOrFail();
+
+        $this->assertSame('fr', $chunk->locale);
+        $this->assertSame('ci', $chunk->country_code);
+    }
+
     public function test_pdf_import_creates_draft_chunks(): void
     {
         Storage::fake('local');

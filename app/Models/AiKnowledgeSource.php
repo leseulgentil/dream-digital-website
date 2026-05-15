@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class AiKnowledgeSource extends Model
 {
@@ -33,6 +34,15 @@ class AiKnowledgeSource extends Model
         return [
             'metadata' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (AiKnowledgeSource $source): void {
+            if ($source->stored_path) {
+                Storage::disk('local')->delete($source->stored_path);
+            }
+        });
     }
 
     public function chunks(): HasMany

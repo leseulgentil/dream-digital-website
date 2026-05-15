@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AiKnowledgeRequest;
 use App\Models\AiKnowledgeChunk;
 use App\Models\AiKnowledgeSource;
+use App\Models\RoleProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -30,6 +31,7 @@ class AiKnowledgeController extends Controller
 
         return view('admin.ai.knowledge-index', [
             'chunks' => $query->paginate(25)->withQueryString(),
+            'canManageAiKnowledge' => $request->user()?->hasPermission(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE) ?? false,
             'filters' => [
                 'locale' => $locale,
                 'country_code' => $countryCode,

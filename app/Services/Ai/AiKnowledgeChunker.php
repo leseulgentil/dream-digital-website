@@ -9,6 +9,7 @@ class AiKnowledgeChunker
      */
     public function chunks(string $text, int $maxChars = 1200): array
     {
+        $maxChars = max(1, $maxChars);
         $text = strip_tags($text);
         $text = str_replace(["\r\n", "\r"], "\n", $text);
         $text = preg_replace('/[ \t]+/', ' ', $text) ?? '';
@@ -64,6 +65,17 @@ class AiKnowledgeChunker
 
         foreach ($words as $word) {
             if ($word === '') {
+                continue;
+            }
+
+            if (mb_strlen($word) > $maxChars) {
+                $chunks = array_merge($chunks, $this->flushCurrent($current));
+                $current = '';
+
+                for ($offset = 0; $offset < mb_strlen($word); $offset += $maxChars) {
+                    $chunks[] = mb_substr($word, $offset, $maxChars);
+                }
+
                 continue;
             }
 

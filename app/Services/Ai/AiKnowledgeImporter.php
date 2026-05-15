@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Smalot\PdfParser\Parser;
+use Throwable;
 
 class AiKnowledgeImporter
 {
@@ -18,43 +19,52 @@ class AiKnowledgeImporter
     public function import(UploadedFile $file, array $metadata): AiKnowledgeSource
     {
         $type = $this->typeForExtension($file->getClientOriginalExtension());
+        $storedPath = null;
 
-        return DB::transaction(function () use ($file, $metadata, $type): AiKnowledgeSource {
-            $storedPath = $file->store('ai-knowledge-sources', 'local');
-            $title = (string) ($metadata['title'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-            $locale = (string) ($metadata['locale'] ?? 'fr');
-            $countryCode = (string) ($metadata['country_code'] ?? 'global');
-            $category = $metadata['category'] ?? null;
+        try {
+            return DB::transaction(function () use ($file, $metadata, $type, &$storedPath): AiKnowledgeSource {
+                $storedPath = $file->store('ai-knowledge-sources', 'local');
+                $title = (string) ($metadata['title'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+                $locale = (string) ($metadata['locale'] ?? 'fr');
+                $countryCode = (string) ($metadata['country_code'] ?? 'global');
+                $category = $metadata['category'] ?? null;
 
-            $source = AiKnowledgeSource::create([
-                'type' => $type,
-                'title' => $title,
-                'original_filename' => $file->getClientOriginalName(),
-                'stored_path' => $storedPath,
-                'mime_type' => $file->getMimeType(),
-                'locale' => $locale,
-                'country_code' => $countryCode,
-                'status' => 'draft',
-                'metadata' => [
-                    'category' => $category,
-                ],
-                'created_by_id' => $metadata['created_by_id'] ?? null,
-            ]);
-
-            foreach ($this->chunkRows($type, $storedPath, $title, $locale, $countryCode, $category) as $chunk) {
-                $source->chunks()->create([
-                    'title' => $chunk['title'],
-                    'content' => $chunk['content'],
-                    'locale' => $chunk['locale'],
-                    'country_code' => $chunk['country_code'],
-                    'category' => $chunk['category'],
+                $source = AiKnowledgeSource::create([
+                    'type' => $type,
+                    'title' => $title,
+                    'original_filename' => $file->getClientOriginalName(),
+                    'stored_path' => $storedPath,
+                    'mime_type' => $file->getMimeType(),
+                    'locale' => $locale,
+                    'country_code' => $countryCode,
                     'status' => 'draft',
-                    'priority' => 0,
+                    'metadata' => [
+                        'category' => $category,
+                    ],
+                    'created_by_id' => $metadata['created_by_id'] ?? null,
                 ]);
+
+                foreach ($this->chunkRows($type, $storedPath, $title, $locale, $countryCode, $category) as $chunk) {
+                    $source->chunks()->create([
+                        'title' => $chunk['title'],
+                        'content' => $chunk['content'],
+                        'locale' => $chunk['locale'],
+                        'country_code' => $chunk['country_code'],
+                        'category' => $chunk['category'],
+                        'status' => 'draft',
+                        'priority' => 0,
+                    ]);
+                }
+
+                return $source->load('chunks');
+            });
+        } catch (Throwable $exception) {
+            if ($storedPath !== null) {
+                Storage::disk('local')->delete($storedPath);
             }
 
-            return $source->load('chunks');
-        });
+            throw $exception;
+        }
     }
 
     private function typeForExtension(string $extension): string

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AiKnowledgeChunk;
 use App\Models\AiKnowledgeSource;
+use App\Services\Ai\AiKnowledgeChunker;
 use App\Services\Ai\AiKnowledgeImporter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -93,6 +94,43 @@ class AiKnowledgeImporterTest extends TestCase
             'status' => 'draft',
             'category' => 'guide',
         ]);
+    }
+
+    public function test_chunker_splits_unbroken_tokens_that_exceed_max_chars(): void
+    {
+        $chunks = app(AiKnowledgeChunker::class)->chunks(str_repeat('A', 1300), 1200);
+
+        $this->assertGreaterThan(1, count($chunks));
+
+        foreach ($chunks as $chunk) {
+            $this->assertLessThanOrEqual(1200, mb_strlen($chunk));
+        }
+    }
+
+    public function test_failed_pdf_import_removes_stored_file_and_rolls_back_database_rows(): void
+    {
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->createWithContent('broken.pdf', 'this is not a valid pdf');
+
+        $exception = null;
+
+        try {
+            app(AiKnowledgeImporter::class)->import($file, [
+                'title' => 'Broken PDF',
+                'locale' => 'fr',
+                'country_code' => 'global',
+                'category' => 'guide',
+                'created_by_id' => null,
+            ]);
+        } catch (\Throwable $caught) {
+            $exception = $caught;
+        }
+
+        $this->assertNotNull($exception, 'Expected invalid PDF import to fail.');
+        $this->assertDatabaseCount('ai_knowledge_sources', 0);
+        $this->assertDatabaseCount('ai_knowledge_chunks', 0);
+        $this->assertSame([], Storage::disk('local')->allFiles('ai-knowledge-sources'));
     }
 
     public function test_unsupported_file_type_is_rejected(): void

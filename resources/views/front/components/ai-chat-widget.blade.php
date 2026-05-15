@@ -3,6 +3,7 @@
   $settings = $settings ?? null;
   $greetings = is_array($settings?->greetings) ? $settings->greetings : [];
   $greeting = $greetings[$locale] ?? $greetings['fr'] ?? $greetings['en'] ?? 'Bonjour, comment puis-je aider ?';
+  $maxMessageChars = max(200, min(2000, (int) ($settings?->max_message_chars ?? 1200)));
 @endphp
 
 <div
@@ -38,7 +39,7 @@
       <textarea
         id="dd-ai-chat-message"
         name="message"
-        maxlength="1200"
+        maxlength="{{ $maxMessageChars }}"
         rows="2"
         placeholder="Posez votre question"
         required

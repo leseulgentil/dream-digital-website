@@ -294,6 +294,20 @@ class AiChatResponderTest extends TestCase
         $this->assertSame(4, AiChatMessage::count());
     }
 
+    public function test_public_endpoint_respects_configured_max_message_chars(): void
+    {
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'max_message_chars' => 200,
+        ]);
+
+        $this->postJson(route('front.ai-chat.message'), [
+            'message' => str_repeat('a', 201),
+            'locale' => 'fr',
+            'country_code' => 'global',
+        ])->assertJsonValidationErrors('message');
+    }
+
     private function createChunk(array $attributes = []): AiKnowledgeChunk
     {
         $source = AiKnowledgeSource::create([

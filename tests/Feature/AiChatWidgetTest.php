@@ -48,4 +48,16 @@ class AiChatWidgetTest extends TestCase
             ->assertDontSee('sk-test-secret-from-config', false)
             ->assertDontSee('OPENAI_API_KEY', false);
     }
+
+    public function test_widget_uses_configured_message_limit(): void
+    {
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'max_message_chars' => 1800,
+        ]);
+
+        $this->get('/fr/contact')
+            ->assertOk()
+            ->assertSee('maxlength="1800"', false);
+    }
 }

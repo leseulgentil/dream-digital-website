@@ -116,7 +116,6 @@ class RoleProfile extends Model
                 self::PERMISSION_DASHBOARD_VIEW,
                 self::PERMISSION_PAGES_VIEW,
                 self::PERMISSION_PRICING_VIEW,
-                self::PERMISSION_AI_CHAT_VIEW,
                 self::PERMISSION_AI_KNOWLEDGE_VIEW,
             ],
             default => [],

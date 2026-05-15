@@ -63,7 +63,7 @@ class AiChatSchemaTest extends TestCase
             $this->assertContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, RoleProfile::defaultPermissionsFor($role));
         }
 
-        $this->assertContains(RoleProfile::PERMISSION_AI_CHAT_VIEW, RoleProfile::defaultPermissionsFor(User::ROLE_VIEWER));
+        $this->assertNotContains(RoleProfile::PERMISSION_AI_CHAT_VIEW, RoleProfile::defaultPermissionsFor(User::ROLE_VIEWER));
         $this->assertNotContains(RoleProfile::PERMISSION_AI_CHAT_MANAGE, RoleProfile::defaultPermissionsFor(User::ROLE_VIEWER));
         $this->assertContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_VIEW, RoleProfile::defaultPermissionsFor(User::ROLE_VIEWER));
         $this->assertNotContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, RoleProfile::defaultPermissionsFor(User::ROLE_VIEWER));
@@ -99,7 +99,7 @@ class AiChatSchemaTest extends TestCase
         $this->assertContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, $adminPermissions);
 
         $this->assertContains('viewer.custom', $viewerPermissions);
-        $this->assertContains(RoleProfile::PERMISSION_AI_CHAT_VIEW, $viewerPermissions);
+        $this->assertNotContains(RoleProfile::PERMISSION_AI_CHAT_VIEW, $viewerPermissions);
         $this->assertNotContains(RoleProfile::PERMISSION_AI_CHAT_MANAGE, $viewerPermissions);
         $this->assertContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_VIEW, $viewerPermissions);
         $this->assertNotContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, $viewerPermissions);
@@ -116,12 +116,13 @@ class AiChatSchemaTest extends TestCase
         );
     }
 
-    public function test_role_profile_seeder_preserves_removed_non_ai_permissions_while_adding_ai_permissions(): void
+    public function test_role_profile_seeder_does_not_regrant_removed_permissions_on_existing_profiles(): void
     {
         RoleProfile::query()->where('role', User::ROLE_EDITOR)->update([
             'permissions' => [
                 RoleProfile::PERMISSION_ADMIN_ACCESS,
                 RoleProfile::PERMISSION_PAGES_VIEW,
+                RoleProfile::PERMISSION_AI_CHAT_VIEW,
                 'editor.custom',
             ],
         ]);
@@ -133,11 +134,11 @@ class AiChatSchemaTest extends TestCase
         $this->assertContains('editor.custom', $permissions);
         $this->assertContains(RoleProfile::PERMISSION_ADMIN_ACCESS, $permissions);
         $this->assertContains(RoleProfile::PERMISSION_PAGES_VIEW, $permissions);
-        $this->assertNotContains(RoleProfile::PERMISSION_PAGES_MANAGE, $permissions);
         $this->assertContains(RoleProfile::PERMISSION_AI_CHAT_VIEW, $permissions);
-        $this->assertContains(RoleProfile::PERMISSION_AI_CHAT_MANAGE, $permissions);
-        $this->assertContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_VIEW, $permissions);
-        $this->assertContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, $permissions);
+        $this->assertNotContains(RoleProfile::PERMISSION_PAGES_MANAGE, $permissions);
+        $this->assertNotContains(RoleProfile::PERMISSION_AI_CHAT_MANAGE, $permissions);
+        $this->assertNotContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_VIEW, $permissions);
+        $this->assertNotContains(RoleProfile::PERMISSION_AI_KNOWLEDGE_MANAGE, $permissions);
     }
 
     public function test_ai_chat_setting_current_creates_defaults(): void

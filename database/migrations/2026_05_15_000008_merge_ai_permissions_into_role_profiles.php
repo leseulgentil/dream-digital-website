@@ -80,7 +80,6 @@ return new class extends Migration
             User::ROLE_ADMIN => $this->aiPermissions,
             User::ROLE_EDITOR => $this->aiPermissions,
             User::ROLE_VIEWER => [
-                RoleProfile::PERMISSION_AI_CHAT_VIEW,
                 RoleProfile::PERMISSION_AI_KNOWLEDGE_VIEW,
             ],
         ];

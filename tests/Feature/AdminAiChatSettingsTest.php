@@ -71,7 +71,7 @@ class AdminAiChatSettingsTest extends TestCase
             ->assertSee('Bonjour');
     }
 
-    public function test_viewer_can_view_conversations_but_cannot_manage_settings(): void
+    public function test_viewer_cannot_view_conversations_or_manage_settings(): void
     {
         $session = AiChatSession::create([
             'locale' => 'fr',
@@ -85,12 +85,10 @@ class AdminAiChatSettingsTest extends TestCase
         ]));
 
         $this->get('/admin/ai/conversations')
-            ->assertOk()
-            ->assertSee($session->public_id)
-            ->assertDontSee('/admin/ai/settings');
+            ->assertForbidden();
 
         $this->get("/admin/ai/conversations/{$session->id}")
-            ->assertOk();
+            ->assertForbidden();
 
         $this->get('/admin/ai/settings')
             ->assertForbidden();
@@ -109,7 +107,7 @@ class AdminAiChatSettingsTest extends TestCase
         ])->assertForbidden();
     }
 
-    public function test_viewer_can_view_transcript_without_lead_pii(): void
+    public function test_chat_viewer_with_custom_permission_can_view_transcript_without_lead_pii(): void
     {
         $session = AiChatSession::create([
             'locale' => 'fr',
@@ -132,10 +130,19 @@ class AdminAiChatSettingsTest extends TestCase
             'consent' => true,
         ]);
 
-        $this->actingAs(User::factory()->create([
+        $viewer = User::factory()->create([
             'role' => User::ROLE_VIEWER,
             'is_active' => true,
-        ]));
+        ]);
+
+        \App\Models\RoleProfile::query()->where('role', User::ROLE_VIEWER)->update([
+            'permissions' => [
+                \App\Models\RoleProfile::PERMISSION_ADMIN_ACCESS,
+                \App\Models\RoleProfile::PERMISSION_AI_CHAT_VIEW,
+            ],
+        ]);
+
+        $this->actingAs($viewer);
 
         $this->get("/admin/ai/conversations/{$session->id}")
             ->assertOk()

@@ -76,4 +76,24 @@ class AiChatWidgetTest extends TestCase
             ->assertOk()
             ->assertSee('maxlength="1800"', false);
     }
+
+    public function test_widget_renders_localized_suggested_questions(): void
+    {
+        AiChatSetting::current()->update(['enabled' => true]);
+
+        $this->get('/fr/contact')
+            ->assertOk()
+            ->assertSee('data-ai-chat-suggestion', false)
+            ->assertSee('Quels services proposez-vous ?', false)
+            ->assertSee('Comment demander un devis ?', false)
+            ->assertSee('Quels pays couvrez-vous ?', false)
+            ->assertSee('Parler a un conseiller', false);
+
+        $this->get('/en/contact')
+            ->assertOk()
+            ->assertSee('What services do you offer?', false)
+            ->assertSee('How can I request a quote?', false)
+            ->assertSee('Which countries do you cover?', false)
+            ->assertSee('Talk to an advisor', false);
+    }
 }

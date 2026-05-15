@@ -41,6 +41,7 @@ const initWidget = widget => {
   const textarea = widget.querySelector('textarea[name="message"]');
   const submit = widget.querySelector('.dd-ai-chat-widget__send');
   const messages = widget.querySelector('.dd-ai-chat-widget__messages');
+  const suggestions = widget.querySelectorAll('[data-ai-chat-suggestion]');
 
   if (!endpoint || !toggle || !close || !panel || !form || !textarea || !submit || !messages) return;
 
@@ -55,15 +56,18 @@ const initWidget = widget => {
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   close.addEventListener('click', () => setOpen(false));
 
-  form.addEventListener('submit', async event => {
-    event.preventDefault();
+  const sendMessage = async value => {
+    if (textarea.disabled) return;
 
-    const message = textarea.value.trim();
+    const message = value.trim();
     if (!message) return;
 
     appendMessage(messages, 'user', message);
     textarea.value = '';
     textarea.disabled = true;
+    suggestions.forEach(suggestion => {
+      suggestion.disabled = true;
+    });
 
     const pending = appendMessage(
       messages,
@@ -122,9 +126,24 @@ const initWidget = widget => {
 
       textarea.disabled = false;
       submit.disabled = false;
+      suggestions.forEach(suggestion => {
+        suggestion.disabled = false;
+      });
       textarea.focus();
       messages.scrollTop = messages.scrollHeight;
     }
+  };
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    sendMessage(textarea.value);
+  });
+
+  suggestions.forEach(suggestion => {
+    suggestion.addEventListener('click', () => {
+      setOpen(true);
+      sendMessage(suggestion.dataset.aiChatSuggestion || suggestion.textContent || '');
+    });
   });
 };
 

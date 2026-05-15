@@ -31,6 +31,8 @@ use App\Http\Controllers\Front\ContactLeadController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\CompanyProfileController as AdminCompanyProfileController;
 use App\Http\Controllers\Admin\ContactLeadController as AdminContactLeadController;
+use App\Http\Controllers\Admin\AiImportController as AdminAiImportController;
+use App\Http\Controllers\Admin\AiKnowledgeController as AdminAiKnowledgeController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\NavigationController as AdminNavigationController;
@@ -294,6 +296,32 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
             Route::delete('/{page}', 'destroy')->name('destroy');
         });
     });
+
+    Route::prefix('admin/ai')
+        ->name('admin.ai.')
+        ->group(function () {
+            Route::get('/knowledge', [AdminAiKnowledgeController::class, 'index'])
+                ->middleware('admin.permission:ai_knowledge.view')
+                ->name('knowledge.index');
+            Route::post('/knowledge', [AdminAiKnowledgeController::class, 'store'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('knowledge.store');
+            Route::get('/knowledge/{chunk}/edit', [AdminAiKnowledgeController::class, 'edit'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('knowledge.edit');
+            Route::put('/knowledge/{chunk}', [AdminAiKnowledgeController::class, 'update'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('knowledge.update');
+            Route::delete('/knowledge/{chunk}', [AdminAiKnowledgeController::class, 'destroy'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('knowledge.destroy');
+            Route::get('/import', [AdminAiImportController::class, 'create'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('import.create');
+            Route::post('/import', [AdminAiImportController::class, 'store'])
+                ->middleware('admin.permission:ai_knowledge.manage')
+                ->name('import.store');
+        });
 
     Route::prefix('admin/media')
         ->name('admin.media.')

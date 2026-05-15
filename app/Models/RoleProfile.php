@@ -8,16 +8,35 @@ use Illuminate\Support\Facades\Schema;
 class RoleProfile extends Model
 {
     public const PERMISSION_ADMIN_ACCESS = 'admin.access';
+
     public const PERMISSION_DASHBOARD_VIEW = 'dashboard.view';
+
     public const PERMISSION_PAGES_VIEW = 'pages.view';
+
     public const PERMISSION_PAGES_MANAGE = 'pages.manage';
+
     public const PERMISSION_NAVIGATION_MANAGE = 'navigation.manage';
+
     public const PERMISSION_COMPANY_PROFILE_MANAGE = 'company_profile.manage';
+
     public const PERMISSION_MEDIA_MANAGE = 'media.manage';
+
     public const PERMISSION_PRICING_VIEW = 'pricing.view';
+
     public const PERMISSION_PRICING_MANAGE = 'pricing.manage';
+
     public const PERMISSION_CONTACT_LEADS_VIEW = 'contact_leads.view';
+
+    public const PERMISSION_AI_CHAT_VIEW = 'ai_chat.view';
+
+    public const PERMISSION_AI_CHAT_MANAGE = 'ai_chat.manage';
+
+    public const PERMISSION_AI_KNOWLEDGE_VIEW = 'ai_knowledge.view';
+
+    public const PERMISSION_AI_KNOWLEDGE_MANAGE = 'ai_knowledge.manage';
+
     public const PERMISSION_USERS_MANAGE = 'users.manage';
+
     public const PERMISSION_PROFILES_MANAGE = 'profiles.manage';
 
     protected $fillable = [
@@ -47,6 +66,10 @@ class RoleProfile extends Model
             self::PERMISSION_PRICING_VIEW => 'Tarification - lecture',
             self::PERMISSION_PRICING_MANAGE => 'Tarification - edition',
             self::PERMISSION_CONTACT_LEADS_VIEW => 'Leads',
+            self::PERMISSION_AI_CHAT_VIEW => 'Assistant IA - conversations',
+            self::PERMISSION_AI_CHAT_MANAGE => 'Assistant IA - parametres',
+            self::PERMISSION_AI_KNOWLEDGE_VIEW => 'Base IA - lecture',
+            self::PERMISSION_AI_KNOWLEDGE_MANAGE => 'Base IA - edition',
             self::PERMISSION_USERS_MANAGE => 'Utilisateurs',
             self::PERMISSION_PROFILES_MANAGE => 'Profils & acces',
         ];
@@ -67,6 +90,10 @@ class RoleProfile extends Model
                 self::PERMISSION_PRICING_VIEW,
                 self::PERMISSION_PRICING_MANAGE,
                 self::PERMISSION_CONTACT_LEADS_VIEW,
+                self::PERMISSION_AI_CHAT_VIEW,
+                self::PERMISSION_AI_CHAT_MANAGE,
+                self::PERMISSION_AI_KNOWLEDGE_VIEW,
+                self::PERMISSION_AI_KNOWLEDGE_MANAGE,
                 self::PERMISSION_USERS_MANAGE,
             ],
             User::ROLE_EDITOR => [
@@ -79,12 +106,18 @@ class RoleProfile extends Model
                 self::PERMISSION_PRICING_VIEW,
                 self::PERMISSION_PRICING_MANAGE,
                 self::PERMISSION_CONTACT_LEADS_VIEW,
+                self::PERMISSION_AI_CHAT_VIEW,
+                self::PERMISSION_AI_CHAT_MANAGE,
+                self::PERMISSION_AI_KNOWLEDGE_VIEW,
+                self::PERMISSION_AI_KNOWLEDGE_MANAGE,
             ],
             User::ROLE_VIEWER => [
                 self::PERMISSION_ADMIN_ACCESS,
                 self::PERMISSION_DASHBOARD_VIEW,
                 self::PERMISSION_PAGES_VIEW,
                 self::PERMISSION_PRICING_VIEW,
+                self::PERMISSION_AI_CHAT_VIEW,
+                self::PERMISSION_AI_KNOWLEDGE_VIEW,
             ],
             default => [],
         };

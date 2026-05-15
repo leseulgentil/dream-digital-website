@@ -59,6 +59,20 @@
       "permission": "contact_leads.view"
     },
     {
+      "url": "admin/ai/conversations",
+      "name": "Assistant IA",
+      "icon": "dd-menu-icon icon-base bx bx-message-rounded-dots",
+      "slug": "admin.ai",
+      "permission": "ai_chat.view"
+    },
+    {
+      "url": "admin/ai/knowledge",
+      "name": "Base IA",
+      "icon": "dd-menu-icon icon-base bx bx-brain",
+      "slug": "admin.ai.knowledge",
+      "permission": "ai_knowledge.view"
+    },
+    {
       "url": "admin/users",
       "name": "Utilisateurs",
       "icon": "dd-menu-icon icon-base bx bx-user",

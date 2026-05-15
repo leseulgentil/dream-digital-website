@@ -11,7 +11,7 @@ class RoleProfileSeeder extends Seeder
     public function run(): void
     {
         foreach (User::ROLES as $role => $label) {
-            RoleProfile::query()->firstOrCreate(
+            RoleProfile::query()->updateOrCreate(
                 ['role' => $role],
                 [
                     'label' => $label,

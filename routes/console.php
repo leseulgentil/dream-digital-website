@@ -272,7 +272,7 @@ Artisan::command('dd:launch-check {--public : Require conditions for public open
     );
 
     if ($public) {
-        $indexable = filter_var(env('DD_PUBLIC_INDEXABLE', false), FILTER_VALIDATE_BOOLEAN);
+        $indexable = $bool('public_indexable');
 
         $record(config('app.env') === 'production', 'APP_ENV is production', true, 'APP_ENV is not production');
         $record(config('app.debug') === false, 'APP_DEBUG is false', true, 'APP_DEBUG is not false');

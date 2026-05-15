@@ -14,7 +14,7 @@ class SeoIndexableTest extends TestCase
 
     public function test_robots_txt_disallows_when_not_indexable(): void
     {
-        putenv('DD_PUBLIC_INDEXABLE=false');
+        config(['dream-digital.launch.public_indexable' => false]);
 
         $response = $this->get('/robots.txt');
         $response->assertOk();
@@ -26,7 +26,7 @@ class SeoIndexableTest extends TestCase
 
     public function test_robots_txt_allows_when_indexable(): void
     {
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/robots.txt');
         $response->assertOk();
@@ -38,7 +38,7 @@ class SeoIndexableTest extends TestCase
 
     public function test_sitemap_returns_410_when_not_indexable(): void
     {
-        putenv('DD_PUBLIC_INDEXABLE=false');
+        config(['dream-digital.launch.public_indexable' => false]);
 
         $this->get('/sitemap.xml')->assertStatus(410);
     }
@@ -46,7 +46,7 @@ class SeoIndexableTest extends TestCase
     public function test_sitemap_returns_xml_when_indexable(): void
     {
         $this->seed([CountrySeeder::class, ServiceSeeder::class]);
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -59,7 +59,7 @@ class SeoIndexableTest extends TestCase
     public function test_sitemap_contains_locale_homes(): void
     {
         $this->seed([CountrySeeder::class, ServiceSeeder::class]);
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -70,7 +70,7 @@ class SeoIndexableTest extends TestCase
     public function test_sitemap_contains_marketing_hubs_both_locales(): void
     {
         $this->seed([CountrySeeder::class, ServiceSeeder::class]);
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -83,7 +83,7 @@ class SeoIndexableTest extends TestCase
     public function test_sitemap_contains_legal_pages_both_locales(): void
     {
         $this->seed([CountrySeeder::class, ServiceSeeder::class]);
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -96,7 +96,7 @@ class SeoIndexableTest extends TestCase
     public function test_sitemap_contains_active_service_product_pages(): void
     {
         $this->seed([CountrySeeder::class, ServiceSeeder::class]);
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -108,7 +108,7 @@ class SeoIndexableTest extends TestCase
     public function test_sitemap_contains_blog_index_and_articles(): void
     {
         $this->seed([CountrySeeder::class, ServiceSeeder::class, BlogContentSeeder::class]);
-        putenv('DD_PUBLIC_INDEXABLE=true');
+        config(['dream-digital.launch.public_indexable' => true]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -121,7 +121,7 @@ class SeoIndexableTest extends TestCase
     protected function tearDown(): void
     {
         // Restaure l'etat env apres chaque test pour eviter pollution.
-        putenv('DD_PUBLIC_INDEXABLE=false');
+        config(['dream-digital.launch.public_indexable' => false]);
         parent::tearDown();
     }
 }

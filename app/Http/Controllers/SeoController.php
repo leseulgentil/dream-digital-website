@@ -15,7 +15,7 @@ class SeoController extends Controller
      */
     public function robots(): Response
     {
-        $indexable = filter_var(env('DD_PUBLIC_INDEXABLE', false), FILTER_VALIDATE_BOOLEAN);
+        $indexable = $this->isPublicIndexable();
         $base = rtrim(config('app.url'), '/');
 
         $lines = ['User-agent: *'];
@@ -44,7 +44,7 @@ class SeoController extends Controller
      */
     public function sitemap(): Response
     {
-        $indexable = filter_var(env('DD_PUBLIC_INDEXABLE', false), FILTER_VALIDATE_BOOLEAN);
+        $indexable = $this->isPublicIndexable();
 
         if (!$indexable) {
             return response("Sitemap unavailable: site not yet publicly indexable.\n", 410, ['Content-Type' => 'text/plain']);
@@ -114,6 +114,11 @@ class SeoController extends Controller
             ->whereNull('country_id')
             ->first();
         return optional($page?->updated_at)->toDateString() ?? $fallback;
+    }
+
+    private function isPublicIndexable(): bool
+    {
+        return filter_var(config('dream-digital.launch.public_indexable', false), FILTER_VALIDATE_BOOLEAN);
     }
 
     private function blogUrls(string $base, string $fallback): array

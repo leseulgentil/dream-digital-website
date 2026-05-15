@@ -14,6 +14,7 @@ return [
 
     'admin_password_rotated' => env('DD_ADMIN_PASSWORD_ROTATED', false),
     'legal_validated' => env('DD_LEGAL_VALIDATED', false),
+    'public_indexable' => env('DD_PUBLIC_INDEXABLE', false),
     'public_basic_auth_disabled' => env('DD_PUBLIC_BASIC_AUTH_DISABLED', false),
     'backups_configured' => env('DD_BACKUPS_CONFIGURED', false),
     'env_backed_up' => env('DD_ENV_BACKED_UP', false),

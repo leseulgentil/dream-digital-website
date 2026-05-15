@@ -76,7 +76,7 @@
   <title>@yield('title', $ddTitleDefault)</title>
   <meta name="description" content="@yield('page-description', $ddDescResolved)" />
   <meta name="keywords" content="@yield('page-keywords', 'cpaas, itsp, voice api, sms api, esim, programmable telecom, dream digital')" />
-  <meta name="robots" content="{{ filter_var(env('DD_PUBLIC_INDEXABLE', false), FILTER_VALIDATE_BOOLEAN) ? 'index, follow' : 'noindex, nofollow' }}" />
+  <meta name="robots" content="{{ filter_var(config('dream-digital.launch.public_indexable', false), FILTER_VALIDATE_BOOLEAN) ? 'index, follow' : 'noindex, nofollow' }}" />
   <link rel="canonical" href="@yield('canonical-url', $ddCanonicalDefault)" />
 
   @php

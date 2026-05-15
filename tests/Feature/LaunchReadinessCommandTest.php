@@ -23,6 +23,7 @@ class LaunchReadinessCommandTest extends TestCase
     {
         putenv('DD_PUBLIC_INDEXABLE=false');
         putenv('LOG_LEVEL=debug');
+        config(['dream-digital.launch.public_indexable' => false]);
 
         parent::tearDown();
     }
@@ -65,13 +66,13 @@ class LaunchReadinessCommandTest extends TestCase
         $this->seedLaunchData();
         $this->seedCompanyProfiles(confirmOps: true);
         $this->setBusinessConfig();
-        putenv('DD_PUBLIC_INDEXABLE=true');
         putenv('LOG_LEVEL=info');
 
         config([
             'app.debug' => false,
             'app.env' => 'production',
             'app.url' => 'https://dream-digital.info',
+            'dream-digital.launch.public_indexable' => true,
         ]);
 
         $exitCode = Artisan::call('dd:launch-check', ['--public' => true]);
@@ -91,7 +92,6 @@ class LaunchReadinessCommandTest extends TestCase
         $this->seedLaunchData();
         $this->seedCompanyProfiles(confirmOps: true);
         $this->setBusinessConfig();
-        putenv('DD_PUBLIC_INDEXABLE=true');
 
         config([
             'app.debug' => false,
@@ -104,6 +104,7 @@ class LaunchReadinessCommandTest extends TestCase
             'logging.channels.single.level' => 'info',
             'dream-digital.launch.admin_password_rotated' => true,
             'dream-digital.launch.legal_validated' => true,
+            'dream-digital.launch.public_indexable' => true,
             'dream-digital.launch.public_basic_auth_disabled' => true,
             'dream-digital.launch.backups_configured' => true,
             'dream-digital.launch.env_backed_up' => true,

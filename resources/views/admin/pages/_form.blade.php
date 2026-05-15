@@ -197,6 +197,19 @@
   </div>
 
   <div class="col-12">
+    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+      <div>
+        <label class="form-label mb-1" for="dd_faq_repeater">FAQ SEO</label>
+        <p class="text-muted small mb-0">Questions/reponses publiees avec la page et exploitables en donnees structurees SEO.</p>
+      </div>
+      <button type="button" class="btn btn-outline-primary btn-sm" id="dd_faq_add">
+        <i class="bx bx-plus me-1"></i>Ajouter une question
+      </button>
+    </div>
+    <div id="dd_faq_repeater" class="d-flex flex-column gap-3"></div>
+  </div>
+
+  <div class="col-12">
     <details>
       <summary class="fw-medium">FAQ SEO (JSON avance)</summary>
       <div class="mt-3">

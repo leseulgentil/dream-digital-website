@@ -42,6 +42,8 @@ class PagesCrudTest extends TestCase
             ->assertSee('Nouvelle page')
             ->assertSee('Generate Article')
             ->assertSee('Editeur riche des sections')
+            ->assertSee('FAQ SEO')
+            ->assertSee('Ajouter une question')
             ->assertSee('Sections (JSON avance)');
     }
 
@@ -85,6 +87,24 @@ class PagesCrudTest extends TestCase
 
         $page = Page::firstWhere('slug', 'rich-html');
         $this->assertSame('<p><strong>Texte riche</strong></p><ul><li>Point SEO</li></ul>', $page->content_blocks['sections'][0]['body_html']);
+    }
+
+    public function test_store_preserves_faq_items(): void
+    {
+        $payload = $this->formPayload();
+        $payload['slug'] = 'faq-items';
+        $payload['faq_json'] = json_encode([
+            ['question' => 'Quelle route choisir ?', 'answer' => 'La route depend du volume et du pays cible.'],
+            ['question' => 'WhatsApp est-il supporte ?', 'answer' => 'Oui, via les parcours commerciaux Dream Digital.'],
+        ]);
+
+        $this->post(route('admin.pages.store'), $payload)
+            ->assertRedirect(route('admin.pages.index'));
+
+        $page = Page::firstWhere('slug', 'faq-items');
+        $this->assertCount(2, $page->content_blocks['faq']);
+        $this->assertSame('Quelle route choisir ?', $page->content_blocks['faq'][0]['question']);
+        $this->assertSame('Oui, via les parcours commerciaux Dream Digital.', $page->content_blocks['faq'][1]['answer']);
     }
 
     public function test_store_rejects_invalid_slug(): void

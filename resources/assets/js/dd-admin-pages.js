@@ -8,6 +8,9 @@
   const form = document.getElementById('dd-cms-page-form');
   const jsonField = document.getElementById('sections_json');
   const editorTarget = document.getElementById('sections_rich_editor');
+  const faqJsonField = document.getElementById('faq_json');
+  const faqRepeater = document.getElementById('dd_faq_repeater');
+  const faqAddButton = document.getElementById('dd_faq_add');
   let editor = null;
   let fallbackRoot = null;
 
@@ -179,6 +182,87 @@
     });
   }
 
+  const parseFaqJson = () => {
+    if (!faqJsonField || !faqJsonField.value.trim()) return [];
+
+    try {
+      const decoded = JSON.parse(faqJsonField.value);
+      return Array.isArray(decoded) ? decoded : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const faqItemsFromRepeater = () => {
+    if (!faqRepeater) return parseFaqJson();
+
+    return Array.from(faqRepeater.querySelectorAll('[data-dd-faq-item]'))
+      .map(item => ({
+        question: item.querySelector('[data-dd-faq-question]')?.value.trim() || '',
+        answer: item.querySelector('[data-dd-faq-answer]')?.value.trim() || ''
+      }))
+      .filter(item => item.question || item.answer);
+  };
+
+  const syncFaqJsonFromRepeater = () => {
+    if (!faqJsonField || !faqRepeater) return;
+    faqJsonField.value = JSON.stringify(faqItemsFromRepeater(), null, 2);
+  };
+
+  const renderFaqItem = (item = {}) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'border rounded p-3 bg-body';
+    wrapper.dataset.ddFaqItem = 'true';
+    wrapper.innerHTML = `
+      <div class="row g-3 align-items-start">
+        <div class="col-md-5">
+          <label class="form-label small text-muted">Question</label>
+          <input type="text" class="form-control" data-dd-faq-question value="${escapeHtml(item.question)}" placeholder="Quelle est la question SEO ?">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small text-muted">Reponse</label>
+          <textarea rows="3" class="form-control" data-dd-faq-answer placeholder="Reponse courte, concrete et publiable.">${escapeHtml(item.answer)}</textarea>
+        </div>
+        <div class="col-md-1 d-flex justify-content-md-end">
+          <button type="button" class="btn btn-icon btn-outline-danger mt-md-4" data-dd-faq-remove aria-label="Supprimer cette question">
+            <i class="bx bx-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+
+    wrapper.querySelectorAll('input, textarea').forEach(field => {
+      field.addEventListener('input', syncFaqJsonFromRepeater);
+    });
+
+    wrapper.querySelector('[data-dd-faq-remove]')?.addEventListener('click', () => {
+      wrapper.remove();
+      if (!faqRepeater.querySelector('[data-dd-faq-item]')) {
+        faqRepeater.appendChild(renderFaqItem());
+      }
+      syncFaqJsonFromRepeater();
+    });
+
+    return wrapper;
+  };
+
+  const hydrateFaqRepeaterFromJson = () => {
+    if (!faqRepeater) return;
+    const items = parseFaqJson();
+    faqRepeater.innerHTML = '';
+    (items.length ? items : [{}]).forEach(item => faqRepeater.appendChild(renderFaqItem(item)));
+  };
+
+  if (faqRepeater && faqJsonField) {
+    hydrateFaqRepeaterFromJson();
+    faqJsonField.addEventListener('blur', hydrateFaqRepeaterFromJson);
+    faqAddButton?.addEventListener('click', () => {
+      faqRepeater.appendChild(renderFaqItem());
+      syncFaqJsonFromRepeater();
+    });
+    form?.addEventListener('submit', syncFaqJsonFromRepeater);
+  }
+
   const generatorButton = document.getElementById('article_generator_submit');
   const generatorStatus = document.getElementById('article_generator_status');
   const generatorResults = document.getElementById('article_generator_results');
@@ -251,6 +335,7 @@
     setValue('image_credit', article.image_credit);
     setValue('image_source_url', article.image_source_url);
     setValue('faq_json', JSON.stringify(article.faq || [], null, 2));
+    hydrateFaqRepeaterFromJson();
 
     if (jsonField) {
       jsonField.value = JSON.stringify(article.sections || [], null, 2);

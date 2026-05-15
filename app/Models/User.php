@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -65,24 +66,43 @@ class User extends Authenticatable
 
     public function canViewAdmin(): bool
     {
-        return $this->is_active && array_key_exists($this->role, self::ROLES);
+        return $this->hasPermission(RoleProfile::PERMISSION_ADMIN_ACCESS);
     }
 
     public function canManageContent(): bool
     {
-        return $this->is_active && in_array($this->role, [
-            self::ROLE_OWNER,
-            self::ROLE_ADMIN,
-            self::ROLE_EDITOR,
-        ], true);
+        return $this->hasAnyPermission([
+            RoleProfile::PERMISSION_PAGES_MANAGE,
+            RoleProfile::PERMISSION_NAVIGATION_MANAGE,
+            RoleProfile::PERMISSION_MEDIA_MANAGE,
+            RoleProfile::PERMISSION_PRICING_MANAGE,
+        ]);
     }
 
     public function canManageUsers(): bool
     {
-        return $this->is_active && in_array($this->role, [
-            self::ROLE_OWNER,
-            self::ROLE_ADMIN,
-        ], true);
+        return $this->hasPermission(RoleProfile::PERMISSION_USERS_MANAGE);
+    }
+
+    public function roleProfile(): HasOne
+    {
+        return $this->hasOne(RoleProfile::class, 'role', 'role');
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return $this->is_active && RoleProfile::roleHasPermission($this->role, $permission);
+    }
+
+    public function hasAnyPermission(array $permissions): bool
+    {
+        foreach ($permissions as $permission) {
+            if ($this->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function roleLabel(): string

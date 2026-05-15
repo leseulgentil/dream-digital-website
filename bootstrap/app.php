@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\EnsureAdminAccess;
+use App\Http\Middleware\EnsureAdminPermission;
 use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\ApplyCompanyProfile;
 use App\Http\Middleware\InternalDemoGuard;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'admin.access' => EnsureAdminAccess::class,
+            'admin.permission' => EnsureAdminPermission::class,
             'admin.role' => EnsureAdminRole::class,
             'internal.demo' => InternalDemoGuard::class,
         ]);

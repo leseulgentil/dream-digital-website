@@ -35,6 +35,7 @@ $configData = Helper::appClasses();
     @else
     @continue((isset($menu->hidden) && $menu->hidden) || (isset($menu->enabled) && ! $menu->enabled))
     @continue(isset($menu->ability) && ! (auth()->user()?->{$menu->ability}() ?? false))
+    @continue(isset($menu->permission) && ! (auth()->user()?->hasPermission($menu->permission) ?? false))
 
     {{-- active menu method --}}
     @php

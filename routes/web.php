@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\NavigationController as AdminNavigationController
 use App\Http\Controllers\Admin\PagesController as AdminPagesController;
 use App\Http\Controllers\Admin\PricingController as AdminPricingController;
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
+use App\Http\Controllers\Admin\RoleProfilesController as AdminRoleProfilesController;
 use App\Http\Controllers\apps\Email;
 use App\Http\Controllers\apps\Chat;
 use App\Http\Controllers\apps\Calendar;
@@ -240,22 +241,24 @@ Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 // utilisateurs authentifies. Les routes Sneat de demo (lignes plus bas)
 // restent sous internal.demo.
 Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function () {
-    Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin', [AdminDashboardController::class, 'index'])
+        ->middleware('admin.permission:dashboard.view')
+        ->name('admin.dashboard');
 
     Route::get('/admin/company-profile', [AdminCompanyProfileController::class, 'edit'])
-        ->middleware('admin.role:owner,admin')
+        ->middleware('admin.permission:company_profile.manage')
         ->name('admin.company-profile.edit');
     Route::put('/admin/company-profile', [AdminCompanyProfileController::class, 'update'])
-        ->middleware('admin.role:owner,admin')
+        ->middleware('admin.permission:company_profile.manage')
         ->name('admin.company-profile.update');
     Route::get('/admin/contact-leads', [AdminContactLeadController::class, 'index'])
-        ->middleware('admin.role:owner,admin,editor')
+        ->middleware('admin.permission:contact_leads.view')
         ->name('admin.contact-leads.index');
 
     Route::prefix('admin/pricing')->name('admin.pricing.')->controller(AdminPricingController::class)->group(function () {
-        Route::get('/', 'index')->name('index');
+        Route::get('/', 'index')->middleware('admin.permission:pricing.view')->name('index');
 
-        Route::middleware('admin.role:owner,admin,editor')->group(function () {
+        Route::middleware('admin.permission:pricing.manage')->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
             Route::get('/{pricing}/edit', 'edit')->name('edit');
@@ -267,7 +270,7 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
     Route::prefix('admin/navigation')
         ->name('admin.navigation.')
         ->controller(AdminNavigationController::class)
-        ->middleware('admin.role:owner,admin,editor')
+        ->middleware('admin.permission:navigation.manage')
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
@@ -278,9 +281,9 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
         });
 
     Route::prefix('admin/pages')->name('admin.pages.')->controller(AdminPagesController::class)->group(function () {
-        Route::get('/', 'index')->name('index');
+        Route::get('/', 'index')->middleware('admin.permission:pages.view')->name('index');
 
-        Route::middleware('admin.role:owner,admin,editor')->group(function () {
+        Route::middleware('admin.permission:pages.manage')->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/generate-article', 'generateArticle')->middleware('throttle:6,1')->name('generate-article');
             Route::post('/', 'store')->name('store');
@@ -295,7 +298,7 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
     Route::prefix('admin/media')
         ->name('admin.media.')
         ->controller(AdminMediaController::class)
-        ->middleware('admin.role:owner,admin,editor')
+        ->middleware('admin.permission:media.manage')
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::put('/{media}', 'update')->name('update');
@@ -305,15 +308,25 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
     Route::prefix('admin/users')
         ->name('admin.users.')
         ->controller(AdminUsersController::class)
-        ->middleware('admin.role:owner,admin')
+        ->middleware('admin.permission:users.manage')
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
+            Route::post('/{user}/reset-password', 'resetPassword')->name('reset-password');
             Route::get('/{user}/edit', 'edit')->name('edit');
             Route::put('/{user}', 'update')->name('update');
             Route::delete('/{user}', 'destroy')->name('destroy');
     });
+
+    Route::prefix('admin/role-profiles')
+        ->name('admin.role-profiles.')
+        ->controller(AdminRoleProfilesController::class)
+        ->middleware('admin.permission:profiles.manage')
+        ->group(function () {
+            Route::get('/', 'edit')->name('edit');
+            Route::put('/', 'update')->name('update');
+        });
 });
 
 Route::middleware('internal.demo')->group(function () {

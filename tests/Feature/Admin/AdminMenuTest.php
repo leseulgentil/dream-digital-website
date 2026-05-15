@@ -26,6 +26,7 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('Pricing', $menuHtml);
         $this->assertStringContainsString('Leads', $menuHtml);
         $this->assertStringContainsString('Utilisateurs', $menuHtml);
+        $this->assertStringContainsString('Profils &amp; acces', $menuHtml);
         $this->assertStringContainsString('Voir le site', $menuHtml);
         $this->assertStringContainsString('/admin/pages', $menuHtml);
         $this->assertStringContainsString('/admin/navigation', $menuHtml);
@@ -35,6 +36,7 @@ class AdminMenuTest extends TestCase
         $this->assertStringContainsString('/admin/pricing', $menuHtml);
         $this->assertStringContainsString('/admin/contact-leads', $menuHtml);
         $this->assertStringContainsString('/admin/users', $menuHtml);
+        $this->assertStringContainsString('/admin/role-profiles', $menuHtml);
 
         foreach (['eCommerce', 'Layouts', 'Academy', 'Form Elements', 'Datatables', 'Roles', 'Email', 'Discuter', 'Calendrier', 'Commerce', 'Logistique', 'Facture', 'Authentification', 'Laravel Example', 'Premi'] as $legacyLabel) {
             $this->assertStringNotContainsString($legacyLabel, $menuHtml);
@@ -52,6 +54,8 @@ class AdminMenuTest extends TestCase
         $this->assertStringNotContainsString('/admin/users', $menuHtml);
         $this->assertStringNotContainsString('Company Profile', $menuHtml);
         $this->assertStringNotContainsString('/admin/company-profile', $menuHtml);
+        $this->assertStringNotContainsString('Profils &amp; acces', $menuHtml);
+        $this->assertStringNotContainsString('/admin/role-profiles', $menuHtml);
     }
 
     public function test_vertical_menu_config_stays_compact(): void
@@ -69,6 +73,7 @@ class AdminMenuTest extends TestCase
             'Pricing',
             'Leads',
             'Utilisateurs',
+            'Profils & acces',
             'Public',
             'Voir le site',
         ], collect($menu['menu'])->map(fn (array $item) => $item['menuHeader'] ?? $item['name'])->all());

@@ -23,6 +23,15 @@
         <div class="alert alert-success" role="alert">{{ session('status') }}</div>
       </div>
     @endif
+    @if(session('temporary_password'))
+      <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+          <strong>Mot de passe temporaire pour {{ session('temporary_password_email') }} :</strong>
+          <code>{{ session('temporary_password') }}</code>
+          <div class="small mt-1">Copiez-le maintenant : il ne sera plus affiche apres navigation.</div>
+        </div>
+      </div>
+    @endif
 
     <div class="col-12">
       <div class="card">
@@ -83,6 +92,12 @@
                     <a href="{{ route('admin.users.edit', $adminUser) }}" class="btn btn-sm btn-icon btn-outline-primary me-1" title="Editer">
                       <i class="bx bx-pencil"></i>
                     </a>
+                    <form method="POST" action="{{ route('admin.users.reset-password', $adminUser) }}" class="d-inline" onsubmit="return confirm('Generer un nouveau mot de passe temporaire pour cet utilisateur ?');">
+                      @csrf
+                      <button type="submit" class="btn btn-sm btn-icon btn-outline-warning me-1" title="Reinitialiser le mot de passe">
+                        <i class="bx bx-key"></i>
+                      </button>
+                    </form>
                     @if(!auth()->user()->is($adminUser) && $adminUser->is_active)
                       <form method="POST" action="{{ route('admin.users.destroy', $adminUser) }}" class="d-inline" onsubmit="return confirm('Desactiver cet utilisateur ?');">
                         @csrf

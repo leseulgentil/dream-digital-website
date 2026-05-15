@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             BlogContentSeeder::class,
             NavigationItemSeeder::class,
             CompanyProfileSeeder::class,
+            RoleProfileSeeder::class,
             AdminUserSeeder::class,
         ]);
     }

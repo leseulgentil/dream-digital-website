@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\UserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class UsersController extends Controller
@@ -83,6 +84,20 @@ class UsersController extends Controller
         return redirect()
             ->route('admin.users.index')
             ->with('status', "Utilisateur desactive : {$user->email}");
+    }
+
+    public function resetPassword(Request $request, User $user): RedirectResponse
+    {
+        abort_unless($request->user()?->canManageUsers(), 403);
+
+        $temporaryPassword = Str::random(18) . '!';
+        $user->forceFill(['password' => $temporaryPassword])->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('status', "Mot de passe temporaire genere pour {$user->email}.")
+            ->with('temporary_password', $temporaryPassword)
+            ->with('temporary_password_email', $user->email);
     }
 
     private function payload(UserRequest $request, ?User $user = null): array

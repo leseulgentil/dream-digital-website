@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminUsersCrudTest extends TestCase
@@ -118,5 +119,24 @@ class AdminUsersCrudTest extends TestCase
 
         $this->owner->refresh();
         $this->assertTrue($this->owner->is_active);
+    }
+
+    public function test_owner_can_reset_user_password_from_admin(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'reset-me@example.test',
+            'password' => 'old-password-2026',
+        ]);
+
+        $this->post(route('admin.users.reset-password', $user))
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHas('temporary_password')
+            ->assertSessionHas('status');
+
+        $temporaryPassword = session('temporary_password');
+
+        $this->assertIsString($temporaryPassword);
+        $this->assertGreaterThanOrEqual(16, strlen($temporaryPassword));
+        $this->assertTrue(Hash::check($temporaryPassword, $user->refresh()->password));
     }
 }

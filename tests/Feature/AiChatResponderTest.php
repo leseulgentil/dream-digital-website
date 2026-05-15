@@ -1,0 +1,163 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\AiChatMessage;
+use App\Models\AiChatSession;
+use App\Models\AiChatSetting;
+use App\Models\AiKnowledgeChunk;
+use App\Models\AiKnowledgeSource;
+use App\Services\Ai\AiChatResponder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
+
+class AiChatResponderTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_chat_falls_back_without_published_knowledge(): void
+    {
+        AiChatSetting::current()->update(['enabled' => true]);
+
+        $session = AiChatSession::create([
+            'locale' => 'fr',
+            'country_code' => 'global',
+        ]);
+
+        $response = app(AiChatResponder::class)->reply($session, 'Quel est le prix WhatsApp ?');
+
+        $this->assertFalse($response['answered']);
+        $this->assertStringContainsString('ne peut pas confirmer', $response['message']);
+        $this->assertSame([], $response['sources']);
+        $this->assertDatabaseHas('ai_chat_messages', [
+            'ai_chat_session_id' => $session->id,
+            'role' => 'assistant',
+            'content' => $response['message'],
+        ]);
+    }
+
+    public function test_chat_sends_only_retrieved_chunks_to_provider(): void
+    {
+        config([
+            'services.openai.api_key' => 'test-key',
+            'services.openai.base_url' => 'https://api.openai.com/v1',
+        ]);
+
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'model' => 'gpt-test',
+        ]);
+
+        $chunk = $this->createChunk([
+            'content' => 'Dream Digital opere en RDC, Cote d Ivoire et Congo.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'status' => 'published',
+        ]);
+
+        Http::fake([
+            'api.openai.com/*' => Http::response([
+                'output_text' => 'Dream Digital opere en RDC, Cote d Ivoire et Congo.',
+            ], 200),
+        ]);
+
+        $session = AiChatSession::create([
+            'locale' => 'fr',
+            'country_code' => 'cd',
+        ]);
+
+        $response = app(AiChatResponder::class)->reply($session, 'Quels pays couvrez-vous ?');
+
+        $this->assertTrue($response['answered']);
+        $this->assertStringContainsString('RDC', $response['message']);
+        $this->assertSame([$chunk->id], collect($response['sources'])->pluck('id')->all());
+
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.openai.com/v1/responses'
+            && $request->hasHeader('Authorization', 'Bearer test-key')
+            && data_get($request->data(), 'model') === 'gpt-test'
+            && str_contains(data_get($request->data(), 'input.0.content.0.text'), $chunk->content)
+            && str_contains(data_get($request->data(), 'input.0.content.0.text'), 'Quels pays couvrez-vous ?'));
+    }
+
+    public function test_unpublished_chunks_are_ignored(): void
+    {
+        config([
+            'services.openai.api_key' => 'test-key',
+            'services.openai.base_url' => 'https://api.openai.com/v1',
+        ]);
+
+        AiChatSetting::current()->update(['enabled' => true]);
+
+        $this->createChunk([
+            'title' => 'WhatsApp pricing',
+            'content' => 'Le prix WhatsApp est dans ce brouillon.',
+            'status' => 'draft',
+        ]);
+
+        $session = AiChatSession::create([
+            'locale' => 'fr',
+            'country_code' => 'global',
+        ]);
+
+        $response = app(AiChatResponder::class)->reply($session, 'Quel est le prix WhatsApp ?');
+
+        $this->assertFalse($response['answered']);
+        Http::assertNothingSent();
+    }
+
+    public function test_public_endpoint_creates_and_reuses_session(): void
+    {
+        AiChatSetting::current()->update(['enabled' => true]);
+
+        $first = $this->postJson(route('front.ai-chat.message'), [
+            'message' => 'Bonjour',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'page_url' => 'https://dreamdigital.example/contact',
+        ]);
+
+        $first
+            ->assertOk()
+            ->assertJsonPath('answered', false)
+            ->assertJsonStructure(['session_id', 'message', 'answered']);
+
+        $sessionId = $first->json('session_id');
+
+        $second = $this->postJson(route('front.ai-chat.message'), [
+            'session_id' => $sessionId,
+            'message' => 'Encore',
+            'locale' => 'fr',
+            'country_code' => 'global',
+        ]);
+
+        $second
+            ->assertOk()
+            ->assertJsonPath('session_id', $sessionId);
+
+        $this->assertSame(1, AiChatSession::count());
+        $this->assertSame(4, AiChatMessage::count());
+    }
+
+    private function createChunk(array $attributes = []): AiKnowledgeChunk
+    {
+        $source = AiKnowledgeSource::create([
+            'type' => AiKnowledgeSource::TYPE_MANUAL,
+            'title' => $attributes['title'] ?? 'Knowledge source',
+            'status' => $attributes['status'] ?? 'published',
+            'locale' => $attributes['locale'] ?? 'fr',
+            'country_code' => $attributes['country_code'] ?? 'global',
+        ]);
+
+        return AiKnowledgeChunk::create(array_merge([
+            'ai_knowledge_source_id' => $source->id,
+            'title' => 'Knowledge chunk',
+            'content' => 'Dream Digital knowledge content.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'faq',
+            'status' => 'published',
+            'priority' => 0,
+        ], $attributes));
+    }
+}

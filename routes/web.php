@@ -27,6 +27,7 @@ use App\Http\Controllers\front_pages\Checkout;
 use App\Http\Controllers\front_pages\HelpCenter;
 use App\Http\Controllers\front_pages\HelpCenterArticle;
 use App\Http\Controllers\Front\BlogController;
+use App\Http\Controllers\Front\AiChatController;
 use App\Http\Controllers\Front\ContactLeadController;
 use App\Http\Controllers\Front\MarketingPageController;
 use App\Http\Controllers\Admin\CompanyProfileController as AdminCompanyProfileController;
@@ -184,6 +185,9 @@ Route::get('/healthz', HealthController::class)->name('healthz');
 Route::get('/readyz', [HealthController::class, 'ready'])->name('readyz');
 Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security.txt');
 Route::get('/_reset-country', [GeoDetectController::class, 'resetToGlobal'])->name('reset-country');
+Route::post('/ai-chat/message', [AiChatController::class, 'message'])
+  ->middleware('throttle:12,1')
+  ->name('front.ai-chat.message');
 Route::get('/{locale}', [Landing::class, 'index'])
   ->whereIn('locale', ['fr', 'en'])
   ->name('front.localized.home');

@@ -11,13 +11,13 @@ class RoleProfileSeeder extends Seeder
     public function run(): void
     {
         foreach (User::ROLES as $role => $label) {
-            RoleProfile::query()->updateOrCreate(
-                ['role' => $role],
-                [
-                    'label' => $label,
-                    'permissions' => RoleProfile::defaultPermissionsFor($role),
-                ],
-            );
+            $profile = RoleProfile::query()->firstOrNew(['role' => $role]);
+            $profile->label = $label;
+            $profile->permissions = array_values(array_unique([
+                ...($profile->permissions ?? []),
+                ...RoleProfile::defaultPermissionsFor($role),
+            ]));
+            $profile->save();
         }
     }
 }

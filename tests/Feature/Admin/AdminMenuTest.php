@@ -72,6 +72,8 @@ class AdminMenuTest extends TestCase
             'Media CMS',
             'Pricing',
             'Leads',
+            'Assistant IA',
+            'Base IA',
             'Utilisateurs',
             'Profils & acces',
             'Public',

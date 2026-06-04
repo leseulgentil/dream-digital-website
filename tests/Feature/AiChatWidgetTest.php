@@ -96,4 +96,43 @@ class AiChatWidgetTest extends TestCase
             ->assertSee('Which countries do you cover?', false)
             ->assertSee('Talk to an advisor', false);
     }
+
+    public function test_widget_display_rules_can_limit_pages(): void
+    {
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'display_rules' => [
+                'pages' => ['/fr/products/*'],
+            ],
+        ]);
+
+        $this->get('/fr/contact')
+            ->assertOk()
+            ->assertDontSee('dd-ai-chat-widget', false);
+
+        $this->get('/fr/products/voice')
+            ->assertOk()
+            ->assertSee('dd-ai-chat-widget', false);
+    }
+
+    public function test_widget_display_rules_can_limit_countries(): void
+    {
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'display_rules' => [
+                'pages' => ['*'],
+                'countries' => ['cd'],
+            ],
+        ]);
+
+        $this->withSession(['dd_country_code' => 'ci'])
+            ->get('/fr/contact')
+            ->assertOk()
+            ->assertDontSee('dd-ai-chat-widget', false);
+
+        $this->withSession(['dd_country_code' => 'cd'])
+            ->get('/fr/contact')
+            ->assertOk()
+            ->assertSee('dd-ai-chat-widget', false);
+    }
 }

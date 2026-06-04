@@ -20,7 +20,7 @@ class PageRequest extends FormRequest
 
         return [
             'slug' => ['required', 'string', 'max:120', 'regex:/^[a-z0-9-]+$/'],
-            'section' => ['required', 'string', 'max:60', Rule::in(['legal', 'marketing', 'blog', 'help'])],
+            'section' => ['required', 'string', 'max:60', Rule::in(['home', 'product', 'legal', 'marketing', 'blog', 'help'])],
             'country_id' => ['nullable', 'integer', Rule::exists('countries', 'id')],
             'locale' => ['required', 'string', 'size:2', Rule::in(['fr', 'en'])],
             'title' => ['required', 'string', 'max:200'],
@@ -39,6 +39,7 @@ class PageRequest extends FormRequest
             'last_updated' => ['nullable', 'string', 'max:30'],
             'sections_json' => ['nullable', 'string'],
             'faq_json' => ['nullable', 'string'],
+            'product_detail_json' => ['nullable', 'string'],
             'editorial_status' => ['nullable', Rule::in(array_keys(Page::EDITORIAL_STATUSES))],
             'review_notes' => ['nullable', 'string', 'max:3000'],
             'is_published' => ['sometimes', 'boolean'],
@@ -108,6 +109,39 @@ class PageRequest extends FormRequest
             ->all();
     }
 
+    public function decodedProductDetail(): ?array
+    {
+        $raw = $this->input('product_detail_json');
+        if (empty($raw)) {
+            return null;
+        }
+
+        $decoded = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+            return null;
+        }
+
+        return [
+            'proofs' => collect($decoded['proofs'] ?? [])
+                ->map(fn ($item) => [
+                    'icon' => $this->cleanIcon(data_get($item, 'icon', 'bx-check')),
+                    'title' => trim((string) data_get($item, 'title')),
+                    'body' => trim((string) data_get($item, 'body')),
+                ])
+                ->filter(fn (array $item) => $item['title'] !== '' || $item['body'] !== '')
+                ->values()
+                ->all(),
+            'workflow' => collect($decoded['workflow'] ?? [])
+                ->map(fn ($item) => [
+                    'label' => trim((string) data_get($item, 'label')),
+                    'body' => trim((string) data_get($item, 'body')),
+                ])
+                ->filter(fn (array $item) => $item['label'] !== '' || $item['body'] !== '')
+                ->values()
+                ->all(),
+        ];
+    }
+
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
@@ -120,6 +154,11 @@ class PageRequest extends FormRequest
             if (!empty($faqRaw) && $this->decodedFaq() === null) {
                 $validator->errors()->add('faq_json', 'Le champ "FAQ SEO (JSON)" doit etre un JSON valide (tableau).');
             }
+
+            $productDetailRaw = $this->input('product_detail_json');
+            if (!empty($productDetailRaw) && $this->decodedProductDetail() === null) {
+                $validator->errors()->add('product_detail_json', 'Le champ "Blocs produit (JSON)" doit etre un JSON valide.');
+            }
         });
     }
 
@@ -128,5 +167,12 @@ class PageRequest extends FormRequest
         return [
             'slug.regex' => 'Le slug ne doit contenir que des lettres minuscules, chiffres et tirets.',
         ];
+    }
+
+    private function cleanIcon(mixed $icon): string
+    {
+        $icon = trim((string) $icon);
+
+        return preg_match('/^bx-[a-z0-9-]+$/', $icon) ? $icon : 'bx-check';
     }
 }

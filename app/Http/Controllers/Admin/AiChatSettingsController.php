@@ -28,6 +28,7 @@ class AiChatSettingsController extends Controller
             'max_message_chars' => $validated['max_message_chars'],
             'fallback_contact_mode' => $validated['fallback_contact_mode'],
             'greetings' => $validated['greetings'],
+            'display_rules' => $request->decodedDisplayRules(),
             'system_prompt' => $validated['system_prompt'],
         ]);
 

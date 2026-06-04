@@ -17,12 +17,18 @@ class AiKnowledgeChunk extends Model
         'category',
         'status',
         'priority',
+        'embedding',
+        'embedding_model',
+        'embedding_hash',
+        'embedded_at',
         'expires_at',
     ];
 
     protected function casts(): array
     {
         return [
+            'embedding' => 'array',
+            'embedded_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
     }

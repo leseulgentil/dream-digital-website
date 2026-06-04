@@ -11,6 +11,13 @@
   const faqJsonField = document.getElementById('faq_json');
   const faqRepeater = document.getElementById('dd_faq_repeater');
   const faqAddButton = document.getElementById('dd_faq_add');
+  const sectionField = document.getElementById('section');
+  const productDetailPanel = document.querySelector('[data-dd-product-detail-panel]');
+  const productDetailJsonField = document.getElementById('product_detail_json');
+  const productProofsRepeater = document.getElementById('dd_product_proofs_repeater');
+  const productWorkflowRepeater = document.getElementById('dd_product_workflow_repeater');
+  const productProofAddButton = document.getElementById('dd_product_proof_add');
+  const productWorkflowAddButton = document.getElementById('dd_product_workflow_add');
   let editor = null;
   let fallbackRoot = null;
 
@@ -62,6 +69,47 @@
       .replace(/\sclass="[^"]*"/g, '')
       .trim();
 
+  const embeddedMediaSelector = 'img, picture, video, audio, iframe, embed, object';
+
+  const pickImageFile = () =>
+    new Promise(resolve => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/jpeg,image/png,image/webp';
+      input.addEventListener('change', () => resolve(input.files?.[0] || null), { once: true });
+      input.click();
+    });
+
+  const uploadInlineImage = async () => {
+    if (!form?.dataset.mediaUploadUrl || !editor) return;
+
+    const file = await pickImageFile();
+    if (!file) return;
+
+    const payload = new FormData();
+    payload.append('image', file);
+
+    const response = await fetch(form.dataset.mediaUploadUrl, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'X-CSRF-TOKEN': form.dataset.csrfToken
+      },
+      body: payload
+    });
+
+    if (!response.ok) {
+      window.alert('Upload image impossible. Verifiez le format ou la taille du fichier.');
+      return;
+    }
+
+    const media = await response.json();
+    const range = editor.getSelection(true);
+    editor.insertEmbed(range.index, 'image', media.path, 'user');
+    editor.setSelection(range.index + 1, 0, 'silent');
+    queueJsonSync();
+  };
+
   const editorToSections = () => {
     const richRoot = editor?.root || fallbackRoot;
 
@@ -74,18 +122,24 @@
       const tag = node.tagName ? node.tagName.toLowerCase() : '';
       const text = (node.innerText || node.textContent || '').trim();
       const html = normalizeHtml(node.outerHTML || '');
+      const embeddedMediaHtml = Array.from(node.querySelectorAll ? node.querySelectorAll(embeddedMediaSelector) : [])
+        .map(media => normalizeHtml(media.outerHTML || ''))
+        .join('');
 
       if (tag === 'h1' || tag === 'h2' || tag === 'h3') {
         if (current) sections.push(current);
         current = {
           heading: text || 'Section',
           body: '',
-          body_html: ''
+          body_html: embeddedMediaHtml
         };
         return;
       }
 
-      if (!text && !html.replace(/<[^>]+>/g, '').trim()) return;
+      const hasEmbeddedMedia = ['img', 'picture', 'video', 'audio', 'iframe', 'embed', 'object'].includes(tag)
+        || Boolean(node.querySelector?.(embeddedMediaSelector));
+
+      if (!text && !html.replace(/<[^>]+>/g, '').trim() && !hasEmbeddedMedia) return;
 
       if (!current) {
         current = {
@@ -95,7 +149,9 @@
         };
       }
 
-      current.body += `${current.body ? '\n\n' : ''}${text}`;
+      if (text) {
+        current.body += `${current.body ? '\n\n' : ''}${text}`;
+      }
       current.body_html += html;
     });
 
@@ -107,6 +163,15 @@
   const syncJsonFromEditor = () => {
     if (!jsonField || (!editor && !fallbackRoot)) return;
     jsonField.value = JSON.stringify(editorToSections(), null, 2);
+  };
+
+  const queueJsonSync = () => {
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(syncJsonFromEditor);
+      return;
+    }
+
+    window.setTimeout(syncJsonFromEditor, 0);
   };
 
   const hydrateEditorFromJson = () => {
@@ -135,7 +200,7 @@
     editorTarget.appendChild(fallbackRoot);
 
     hydrateEditorFromJson();
-    fallbackRoot.addEventListener('input', syncJsonFromEditor);
+    fallbackRoot.addEventListener('input', queueJsonSync);
     bindEditorSync();
   };
 
@@ -148,15 +213,17 @@
           [{ header: [2, 3, false] }],
           ['bold', 'italic', 'underline'],
           [{ list: 'ordered' }, { list: 'bullet' }],
-          ['blockquote', 'link'],
+          ['blockquote', 'link', 'image'],
           ['clean']
         ]
       },
       theme: 'snow'
     });
 
+    editor.getModule('toolbar')?.addHandler('image', uploadInlineImage);
+
     hydrateEditorFromJson();
-    editor.on('text-change', syncJsonFromEditor);
+    editor.on('text-change', queueJsonSync);
     bindEditorSync();
   };
 
@@ -263,6 +330,165 @@
     form?.addEventListener('submit', syncFaqJsonFromRepeater);
   }
 
+  const parseProductDetailJson = () => {
+    if (!productDetailJsonField || !productDetailJsonField.value.trim()) {
+      return { proofs: [], workflow: [] };
+    }
+
+    try {
+      const decoded = JSON.parse(productDetailJsonField.value);
+      return {
+        proofs: Array.isArray(decoded.proofs) ? decoded.proofs : [],
+        workflow: Array.isArray(decoded.workflow) ? decoded.workflow : []
+      };
+    } catch (error) {
+      return { proofs: [], workflow: [] };
+    }
+  };
+
+  const productDetailFromRepeaters = () => ({
+    proofs: productProofsRepeater
+      ? Array.from(productProofsRepeater.querySelectorAll('[data-dd-product-proof]'))
+          .map(item => ({
+            icon: item.querySelector('[data-dd-product-proof-icon]')?.value.trim() || 'bx-check',
+            title: item.querySelector('[data-dd-product-proof-title]')?.value.trim() || '',
+            body: item.querySelector('[data-dd-product-proof-body]')?.value.trim() || ''
+          }))
+          .filter(item => item.title || item.body)
+      : parseProductDetailJson().proofs,
+    workflow: productWorkflowRepeater
+      ? Array.from(productWorkflowRepeater.querySelectorAll('[data-dd-product-workflow]'))
+          .map(item => ({
+            label: item.querySelector('[data-dd-product-workflow-label]')?.value.trim() || '',
+            body: item.querySelector('[data-dd-product-workflow-body]')?.value.trim() || ''
+          }))
+          .filter(item => item.label || item.body)
+      : parseProductDetailJson().workflow
+  });
+
+  const syncProductDetailJsonFromRepeaters = () => {
+    if (!productDetailJsonField || !productProofsRepeater || !productWorkflowRepeater) return;
+    productDetailJsonField.value = JSON.stringify(productDetailFromRepeaters(), null, 2);
+  };
+
+  const renderProductProofItem = (item = {}) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'border rounded p-3 bg-body-tertiary';
+    wrapper.dataset.ddProductProof = 'true';
+    wrapper.innerHTML = `
+      <div class="row g-3 align-items-start">
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Icone</label>
+          <input type="text" class="form-control" data-dd-product-proof-icon value="${escapeHtml(item.icon || 'bx-check')}" placeholder="bx-check">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Titre</label>
+          <input type="text" class="form-control" data-dd-product-proof-title value="${escapeHtml(item.title)}" placeholder="SLA, qualite, supervision...">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Texte</label>
+          <textarea rows="2" class="form-control" data-dd-product-proof-body placeholder="Preuve courte et factuelle.">${escapeHtml(item.body)}</textarea>
+        </div>
+        <div class="col-md-1 d-flex justify-content-md-end">
+          <button type="button" class="btn btn-icon btn-outline-danger mt-md-4" data-dd-product-proof-remove aria-label="Supprimer cette preuve">
+            <i class="bx bx-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+
+    wrapper.querySelectorAll('input, textarea').forEach(field => {
+      field.addEventListener('input', syncProductDetailJsonFromRepeaters);
+    });
+    wrapper.querySelector('[data-dd-product-proof-remove]')?.addEventListener('click', () => {
+      wrapper.remove();
+      if (!productProofsRepeater.querySelector('[data-dd-product-proof]')) {
+        productProofsRepeater.appendChild(renderProductProofItem());
+      }
+      syncProductDetailJsonFromRepeaters();
+    });
+
+    return wrapper;
+  };
+
+  const renderProductWorkflowItem = (item = {}) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'border rounded p-3 bg-body-tertiary';
+    wrapper.dataset.ddProductWorkflow = 'true';
+    wrapper.innerHTML = `
+      <div class="row g-3 align-items-start">
+        <div class="col-md-5">
+          <label class="form-label small text-muted">Etape</label>
+          <input type="text" class="form-control" data-dd-product-workflow-label value="${escapeHtml(item.label)}" placeholder="Cadrage, test, go-live...">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small text-muted">Texte</label>
+          <textarea rows="2" class="form-control" data-dd-product-workflow-body placeholder="Description courte de l etape.">${escapeHtml(item.body)}</textarea>
+        </div>
+        <div class="col-md-1 d-flex justify-content-md-end">
+          <button type="button" class="btn btn-icon btn-outline-danger mt-md-4" data-dd-product-workflow-remove aria-label="Supprimer cette etape">
+            <i class="bx bx-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+
+    wrapper.querySelectorAll('input, textarea').forEach(field => {
+      field.addEventListener('input', syncProductDetailJsonFromRepeaters);
+    });
+    wrapper.querySelector('[data-dd-product-workflow-remove]')?.addEventListener('click', () => {
+      wrapper.remove();
+      if (!productWorkflowRepeater.querySelector('[data-dd-product-workflow]')) {
+        productWorkflowRepeater.appendChild(renderProductWorkflowItem());
+      }
+      syncProductDetailJsonFromRepeaters();
+    });
+
+    return wrapper;
+  };
+
+  const hydrateProductDetailRepeatersFromJson = () => {
+    if (!productProofsRepeater || !productWorkflowRepeater) return;
+
+    const detail = parseProductDetailJson();
+    productProofsRepeater.innerHTML = '';
+    productWorkflowRepeater.innerHTML = '';
+    (detail.proofs.length ? detail.proofs : [{}]).forEach(item => productProofsRepeater.appendChild(renderProductProofItem(item)));
+    (detail.workflow.length ? detail.workflow : [{}]).forEach(item => productWorkflowRepeater.appendChild(renderProductWorkflowItem(item)));
+  };
+
+  const toggleProductDetailPanel = () => {
+    if (!productDetailPanel) return;
+
+    const isProduct = sectionField?.value === 'product';
+    productDetailPanel.classList.toggle('d-none', !isProduct);
+
+    if (productDetailJsonField) {
+      productDetailJsonField.disabled = !isProduct;
+    }
+  };
+
+  if (productDetailPanel && productDetailJsonField) {
+    hydrateProductDetailRepeatersFromJson();
+    toggleProductDetailPanel();
+    productDetailJsonField.addEventListener('blur', hydrateProductDetailRepeatersFromJson);
+    productProofAddButton?.addEventListener('click', () => {
+      productProofsRepeater.appendChild(renderProductProofItem());
+      syncProductDetailJsonFromRepeaters();
+    });
+    productWorkflowAddButton?.addEventListener('click', () => {
+      productWorkflowRepeater.appendChild(renderProductWorkflowItem());
+      syncProductDetailJsonFromRepeaters();
+    });
+    sectionField?.addEventListener('change', toggleProductDetailPanel);
+    form?.addEventListener('submit', () => {
+      if (sectionField?.value === 'product' && productDetailJsonField) {
+        productDetailJsonField.disabled = false;
+        syncProductDetailJsonFromRepeaters();
+      }
+    });
+  }
+
   const generatorButton = document.getElementById('article_generator_submit');
   const generatorStatus = document.getElementById('article_generator_status');
   const generatorResults = document.getElementById('article_generator_results');
@@ -296,6 +522,13 @@
 
   document.querySelectorAll('[data-dd-open-article-generator]').forEach(button => {
     button.addEventListener('click', () => {
+      const currentSection = document.getElementById('section')?.value;
+      const currentSlug = document.getElementById('slug')?.value;
+      if (currentSection && ['blog', 'product'].includes(currentSection)) {
+        setSelectValue('article_generator_target_section', currentSection);
+      }
+      setValue('article_generator_target_slug', currentSlug);
+
       window.setTimeout(() => {
         if (generatorModal && !generatorModal.classList.contains('show')) {
           if (window.bootstrap?.Modal) {
@@ -320,6 +553,7 @@
 
   const applyArticle = article => {
     setSelectValue('section', article.section || 'blog');
+    toggleProductDetailPanel();
     setValue('title', article.title);
     setValue('slug', article.slug);
     setSelectValue('locale', article.locale || 'fr');
@@ -350,6 +584,23 @@
     }
   };
 
+  const applyArticleSections = article => {
+    if (!jsonField) return;
+
+    const existingSections = parseSectionsJson();
+    const generatedSections = Array.isArray(article.sections) ? article.sections : [];
+
+    jsonField.value = JSON.stringify([...existingSections, ...generatedSections], null, 2);
+    hydrateEditorFromJson();
+
+    const modalEl = document.getElementById('ddGenerateArticleModal');
+    if (modalEl && window.bootstrap) {
+      window.bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    } else {
+      closeModalFallback(modalEl);
+    }
+  };
+
   const renderResults = articles => {
     if (!generatorResults) return;
     generatorResults.innerHTML = '';
@@ -362,10 +613,14 @@
           <span class="badge bg-label-primary align-self-start">Option ${index + 1}</span>
           <strong>${escapeHtml(article.title)}</strong>
           <p class="text-muted small mb-0">${escapeHtml(article.meta_description)}</p>
-          <button type="button" class="btn btn-sm btn-primary mt-auto">Utiliser cet article</button>
+          <div class="d-grid gap-2 mt-auto">
+            <button type="button" class="btn btn-sm btn-primary" data-dd-apply-full>Remplacer toute la page</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-dd-apply-sections>Ajouter les sections</button>
+          </div>
         </div>
       `;
-      card.querySelector('button')?.addEventListener('click', () => applyArticle(article));
+      card.querySelector('[data-dd-apply-full]')?.addEventListener('click', () => applyArticle(article));
+      card.querySelector('[data-dd-apply-sections]')?.addEventListener('click', () => applyArticleSections(article));
       generatorResults.appendChild(card);
     });
   };
@@ -395,11 +650,30 @@
           keywords: document.getElementById('article_generator_keywords')?.value || '',
           guidelines: document.getElementById('article_generator_guidelines')?.value || '',
           locale: document.getElementById('article_generator_locale')?.value || 'fr',
-          variants: document.getElementById('article_generator_variants')?.value || 3
+          variants: document.getElementById('article_generator_variants')?.value || 3,
+          target_section: document.getElementById('article_generator_target_section')?.value || 'blog',
+          target_slug: document.getElementById('article_generator_target_slug')?.value || document.getElementById('slug')?.value || ''
         })
       });
 
-      if (!response.ok) throw new Error('Generation impossible');
+      if (!response.ok) {
+        let errorMessage = 'Generation impossible.';
+
+        try {
+          const errorPayload = await response.json();
+          errorMessage = errorPayload.message || errorPayload.error || errorMessage;
+        } catch (error) {
+          if (response.status === 429) {
+            errorMessage = 'Limite temporaire atteinte. Patientez une minute puis relancez la generation.';
+          }
+        }
+
+        if (response.status === 429) {
+          errorMessage = 'Limite temporaire atteinte. Patientez une minute puis relancez la generation.';
+        }
+
+        throw new Error(errorMessage);
+      }
 
       const payload = await response.json();
       renderResults(payload.articles || []);
@@ -408,7 +682,7 @@
         : (payload.fallback_used ? 'Source: fallback local.' : 'Source: local.');
       generatorStatus.textContent = `${(payload.articles || []).length} article(s) genere(s). ${providerLabel}`;
     } catch (error) {
-      generatorStatus.textContent = 'Erreur pendant la generation.';
+      generatorStatus.textContent = error?.message || 'Erreur pendant la generation.';
     } finally {
       generatorButton.disabled = false;
     }

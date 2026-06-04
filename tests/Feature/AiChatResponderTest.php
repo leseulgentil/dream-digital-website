@@ -294,6 +294,92 @@ class AiChatResponderTest extends TestCase
         $this->assertSame(4, AiChatMessage::count());
     }
 
+    public function test_public_endpoint_returns_source_citations(): void
+    {
+        config([
+            'services.openai.api_key' => 'test-key',
+            'services.openai.base_url' => 'https://api.openai.com/v1',
+        ]);
+
+        AiChatSetting::current()->update([
+            'enabled' => true,
+            'provider' => 'openai',
+        ]);
+
+        $chunk = $this->createChunk([
+            'title' => 'eSIM activation',
+            'content' => 'Dream Digital can guide eSIM QR activation for supported travel plans.',
+            'locale' => 'en',
+            'country_code' => 'global',
+            'category' => 'esim',
+            'status' => 'published',
+        ]);
+        $chunk->source()->update([
+            'source_url' => 'https://esimzone.test/help/activation',
+        ]);
+
+        Http::fake([
+            'api.openai.com/*' => Http::response([
+                'output_text' => 'Dream Digital can guide eSIM QR activation.',
+            ], 200),
+        ]);
+
+        $response = $this->postJson(route('front.ai-chat.message'), [
+            'message' => 'How does eSIM activation work?',
+            'locale' => 'en',
+            'country_code' => 'global',
+            'page_url' => 'https://dreamdigital.example/en/products/esim',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('answered', true)
+            ->assertJsonPath('sources.0.id', $chunk->id)
+            ->assertJsonPath('sources.0.title', 'eSIM activation')
+            ->assertJsonPath('sources.0.url', 'https://esimzone.test/help/activation');
+    }
+
+    public function test_public_lead_endpoint_creates_or_updates_lead_from_chat_session(): void
+    {
+        AiChatSetting::current()->update(['enabled' => true]);
+
+        $message = $this->postJson(route('front.ai-chat.message'), [
+            'message' => 'Parler a un conseiller',
+            'locale' => 'fr',
+            'country_code' => 'cd',
+            'page_url' => 'https://dreamdigital.example/fr/products/esim',
+        ]);
+
+        $sessionId = $message->json('session_id');
+
+        $this->postJson(route('front.ai-chat.lead'), [
+            'session_id' => $sessionId,
+            'locale' => 'fr',
+            'country_code' => 'cd',
+            'page_url' => 'https://dreamdigital.example/fr/products/esim',
+            'name' => 'Alice Client',
+            'email' => 'alice@example.test',
+            'phone' => '+243999111222',
+            'whatsapp' => '+243999111222',
+            'company' => 'Alice SARL',
+            'need' => 'Besoin eSIM corporate',
+            'consent' => true,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('lead_status', 'captured');
+
+        $session = AiChatSession::query()->where('public_id', $sessionId)->firstOrFail();
+
+        $this->assertSame('captured', $session->fresh()->lead_status);
+        $this->assertDatabaseHas('ai_chat_leads', [
+            'ai_chat_session_id' => $session->id,
+            'name' => 'Alice Client',
+            'email' => 'alice@example.test',
+            'company' => 'Alice SARL',
+            'consent' => true,
+        ]);
+    }
+
     public function test_public_endpoint_rejects_messages_when_chat_is_disabled(): void
     {
         AiChatSetting::current()->update(['enabled' => false]);

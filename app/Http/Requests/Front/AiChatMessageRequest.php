@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Front;
 
 use App\Models\AiChatSetting;
+use App\Services\Ai\AiChatVisibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
@@ -11,11 +12,16 @@ class AiChatMessageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return rescue(
-            fn () => (bool) AiChatSetting::current()->enabled,
-            false,
-            false,
-        );
+        return rescue(function (): bool {
+            $settings = AiChatSetting::current();
+
+            return app(AiChatVisibility::class)->allowsPayload(
+                $settings,
+                $this->input('page_url'),
+                $this->input('country_code'),
+                $this->input('locale'),
+            );
+        }, false, false);
     }
 
     protected function failedAuthorization(): void

@@ -43,8 +43,14 @@
       'locale' => $locale,
     ])
 
+    @include('front.components.home-cms-sections', [
+      'homePage' => $homePage ?? null,
+      'locale' => $locale,
+    ])
+
     @include('front.components.service-grid', [
       'services' => $services,
+      'homeCards' => $homeServiceCards ?? [],
       'locale' => $locale,
     ])
 

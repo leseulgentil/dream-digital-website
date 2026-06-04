@@ -103,23 +103,61 @@ class MarketingPageController extends Controller
     session()->put('locale', $locale);
 
     $serviceName = $serviceData['name'] ?? ['fr' => '', 'en' => ''];
-    $pageData = [
+    $productSlug = $serviceData['slug'] ?? $serviceData['id'] ?? $service;
+    $pageData = $this->resolveProductPage($productSlug, $locale) ?? [
       'eyebrow' => [
         'fr' => 'Produits › ' . ($serviceName['fr'] ?? ''),
         'en' => 'Products › ' . ($serviceName['en'] ?? ''),
       ],
       'title' => $serviceName,
       'lead' => $serviceData['description'] ?? $serviceData['tagline'] ?? '',
+      'source' => 'config',
     ];
 
     return view('content.front-pages.marketing-page', array_merge(
       $this->viewData($locale, 'product', $pageData),
       [
         'service' => $serviceData,
-        'productDetail' => config('dream-digital.product-pages.items.' . ($serviceData['slug'] ?? $serviceData['id']), []),
-        'blogGuides' => $this->resolveBlogGuides($locale, $serviceData['slug'] ?? $serviceData['id'] ?? null),
+        'productDetail' => $this->productDetailFor($productSlug, $pageData['product_detail'] ?? []),
+        'blogGuides' => $this->resolveBlogGuides($locale, $productSlug),
       ]
     ));
+  }
+
+  private function resolveProductPage(string $serviceSlug, string $locale): ?array
+  {
+    $dbPage = Schema::hasTable('pages')
+      ? Page::published()
+          ->where('section', 'product')
+          ->where('slug', $serviceSlug)
+          ->where('locale', $locale)
+          ->whereNull('country_id')
+          ->first()
+      : null;
+
+    if ($dbPage === null) {
+      return null;
+    }
+
+    $blocks = $dbPage->content_blocks ?? [];
+
+    return [
+      'eyebrow' => $blocks['eyebrow'] ?? '',
+      'title' => $dbPage->title,
+      'seo_title' => $blocks['seo_title'] ?? $dbPage->title,
+      'meta_description' => $dbPage->meta_description,
+      'meta_image_path' => $dbPage->meta_image_path,
+      'lead' => $blocks['lead'] ?? '',
+      'image_alt' => $blocks['image_alt'] ?? $dbPage->title,
+      'image_credit' => $blocks['image_credit'] ?? null,
+      'image_source_url' => $blocks['image_source_url'] ?? null,
+      'seo_focus_keywords' => $blocks['seo_focus_keywords'] ?? ($blocks['tags'] ?? []),
+      'faq' => $blocks['faq'] ?? [],
+      'internal_links' => $blocks['internal_links'] ?? [],
+      'sections' => $blocks['sections'] ?? [],
+      'product_detail' => $blocks['product_detail'] ?? [],
+      'source' => 'db',
+    ];
   }
 
   private function viewData(string $locale, string $page, array $pageData): array
@@ -270,5 +308,26 @@ class MarketingPageController extends Controller
       ->sortBy('order')
       ->values()
       ->all();
+  }
+
+  private function productDetailFor(string $slug, mixed $cmsDetail): array
+  {
+    $detail = config('dream-digital.product-pages.items.' . $slug, []);
+
+    if (! is_array($detail)) {
+      $detail = [];
+    }
+
+    if (! is_array($cmsDetail)) {
+      return $detail;
+    }
+
+    foreach (['proofs', 'workflow'] as $key) {
+      if (array_key_exists($key, $cmsDetail) && is_array($cmsDetail[$key])) {
+        $detail[$key] = $cmsDetail[$key];
+      }
+    }
+
+    return $detail;
   }
 }

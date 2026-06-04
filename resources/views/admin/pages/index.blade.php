@@ -34,7 +34,7 @@
             <select class="form-select" id="section" name="section">
               <option value="">Toutes</option>
               @foreach($sections as $sec)
-                <option value="{{ $sec }}" @selected($filters['section'] === $sec)>{{ ucfirst($sec) }}</option>
+                <option value="{{ $sec }}" @selected($filters['section'] === $sec)>{{ $sectionLabels[$sec] ?? ucfirst($sec) }}</option>
               @endforeach
             </select>
           </div>
@@ -90,7 +90,7 @@
             <tbody>
               @forelse($pages as $page)
                 <tr>
-                  <td><span class="badge bg-label-info">{{ $page->section }}</span></td>
+                  <td><span class="badge bg-label-info">{{ $sectionLabels[$page->section] ?? $page->section }}</span></td>
                   <td><code>{{ $page->slug }}</code></td>
                   <td><span class="badge bg-label-secondary">{{ strtoupper($page->locale) }}</span></td>
                   <td>

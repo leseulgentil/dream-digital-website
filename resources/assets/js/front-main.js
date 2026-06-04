@@ -3,12 +3,18 @@
  */
 'use strict';
 
+import * as bootstrap from 'bootstrap';
+import { MegaDropdown } from '../vendor/js/mega-dropdown';
+
+window.bootstrap = window.bootstrap || bootstrap;
+window.MegaDropdown = window.MegaDropdown || MegaDropdown;
 window.isRtl = window.Helpers.isRtl();
 window.isDarkStyle = window.Helpers.isDarkStyle();
 
 (function () {
-  const menu = document.getElementById('navbarSupportedContent'),
+  const menu = document.getElementById('ddFrontNav') || document.getElementById('navbarSupportedContent'),
     nav = document.querySelector('.dd-layout-navbar'),
+    menuToggle = document.querySelector('[data-bs-target="#ddFrontNav"], [data-bs-target="#navbarSupportedContent"]'),
     navItemLink = document.querySelectorAll('.navbar-nav .nav-link');
 
   // Initialised custom options if checked
@@ -31,6 +37,7 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
 
   // Navbar
   window.addEventListener('scroll', e => {
+    if (!nav) return;
     if (window.scrollY > 10) {
       nav.classList.add('navbar-active');
     } else {
@@ -38,6 +45,7 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
     }
   });
   window.addEventListener('load', e => {
+    if (!nav) return;
     if (window.scrollY > 10) {
       nav.classList.add('navbar-active');
     } else {
@@ -47,12 +55,18 @@ window.isDarkStyle = window.Helpers.isDarkStyle();
 
   // Function to close the mobile menu
   function closeMenu() {
+    if (!menu) return;
+    if (window.bootstrap?.Collapse) {
+      window.bootstrap.Collapse.getOrCreateInstance(menu, { toggle: false }).hide();
+      return;
+    }
+
     menu.classList.remove('show');
   }
 
   document.addEventListener('click', function (event) {
     // Check if the clicked element is inside mobile menu
-    if (!menu.contains(event.target)) {
+    if (menu && !menu.contains(event.target) && !menuToggle?.contains(event.target)) {
       closeMenu();
     }
   });

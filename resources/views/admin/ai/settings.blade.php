@@ -3,6 +3,13 @@
 @section('title', 'Parametres assistant IA -- Admin Dream Digital')
 
 @section('content')
+  @php
+    $displayRulesJson = old(
+        'display_rules_json',
+        json_encode($settings->display_rules ?: ['pages' => ['*']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+    );
+  @endphp
+
   <div class="row g-6">
     <div class="col-12">
       <div class="card">
@@ -71,6 +78,15 @@
             <label class="form-label" for="greetings_en">Accueil EN</label>
             <input class="form-control @error('greetings.en') is-invalid @enderror" id="greetings_en" name="greetings[en]" value="{{ old('greetings.en', $settings->greetings['en'] ?? '') }}" required>
             @error('greetings.en')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="display_rules_json">Regles d affichage widget</label>
+            <textarea class="form-control font-monospace small @error('display_rules_json') is-invalid @enderror" id="display_rules_json" name="display_rules_json" rows="6">{{ $displayRulesJson }}</textarea>
+            @error('display_rules_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <small class="text-muted d-block mt-1">
+              Exemple: <code>{"pages":["/fr/products/*","/en/products/*"],"countries":["global","cd"],"locales":["fr","en"]}</code>. Utilisez <code>*</code> pour tout autoriser.
+            </small>
           </div>
 
           <div class="col-12">

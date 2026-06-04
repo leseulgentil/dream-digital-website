@@ -64,7 +64,7 @@ class ArticleGeneratorService
         $variants = $input['variants'];
 
         return collect(range(1, $variants))
-            ->map(fn (int $index) => $this->variant($idea, $keywords, $guidelines, $locale, $index))
+            ->map(fn (int $index) => $this->variant($idea, $keywords, $guidelines, $locale, $index, $input['target_section'], $input['target_slug']))
             ->all();
     }
 
@@ -129,12 +129,18 @@ class ArticleGeneratorService
 
     private function normalizeInput(array $input): array
     {
+        $targetSection = $input['target_section'] ?? 'blog';
+
         return [
             'locale' => in_array($input['locale'] ?? 'fr', ['fr', 'en'], true) ? $input['locale'] : 'fr',
             'idea' => trim((string) $input['idea']),
             'keywords' => $this->keywords($input['keywords'] ?? ''),
             'guidelines' => trim((string) ($input['guidelines'] ?? '')),
             'variants' => max(1, min(5, (int) ($input['variants'] ?? 3))),
+            'target_section' => in_array($targetSection, ['blog', 'product'], true)
+                ? $targetSection
+                : 'blog',
+            'target_slug' => Str::slug((string) ($input['target_slug'] ?? '')),
         ];
     }
 
@@ -144,6 +150,8 @@ class ArticleGeneratorService
         $keywordLine = $input['keywords'] ? implode(', ', $input['keywords']) : 'CPaaS, SMS A2P, Voice API, telecom B2B';
         $guidelines = $input['guidelines'] !== '' ? $input['guidelines'] : 'Ton expert, concret, commercial, utile pour des decideurs B2B.';
 
+        $contentType = $input['target_section'] === 'product' ? 'product page' : 'SEO blog article';
+
         return [
             'model' => $this->model(),
             'instructions' => "You are Dream Digital's senior SEO editor for programmable telecom, CPaaS, SMS A2P, Voice API, DID, eSIM, cloud and digital transformation. Return only valid JSON matching the schema.",
@@ -152,10 +160,12 @@ class ArticleGeneratorService
                 'content' => [[
                     'type' => 'input_text',
                     'text' => implode("\n", [
-                        "Generate {$input['variants']} complete SEO blog article variant(s) in {$localeLabel}.",
+                        "Generate {$input['variants']} complete {$contentType} variant(s) in {$localeLabel}.",
                         "Main idea: {$input['idea']}",
                         "Target keywords: {$keywordLine}",
                         "Editorial guidelines: {$guidelines}",
+                        "CMS section: {$input['target_section']}",
+                        $input['target_slug'] !== '' ? "Required slug: {$input['target_slug']}" : 'Choose a clean SEO slug.',
                         'Each article must be ready to paste into a Laravel CMS form.',
                         'Use factual, non-hype language, practical examples, and HTML paragraphs/lists in body_html.',
                         'Include 2 to 4 concise FAQ entries that answer buyer/search-intent questions.',
@@ -168,15 +178,17 @@ class ArticleGeneratorService
                     'type' => 'json_schema',
                     'name' => 'dream_digital_article_variants',
                     'strict' => true,
-                    'schema' => $this->openAiSchema($input['locale']),
+                    'schema' => $this->openAiSchema($input),
                 ],
             ],
             'max_output_tokens' => (int) config('services.openai.max_output_tokens', 9000),
         ];
     }
 
-    private function openAiSchema(string $locale): array
+    private function openAiSchema(array $input): array
     {
+        $locale = $input['locale'];
+
         return [
             'type' => 'object',
             'additionalProperties' => false,
@@ -211,7 +223,7 @@ class ArticleGeneratorService
                         'properties' => [
                             'title' => ['type' => 'string'],
                             'slug' => ['type' => 'string'],
-                            'section' => ['type' => 'string', 'enum' => ['blog']],
+                            'section' => ['type' => 'string', 'enum' => [$input['target_section']]],
                             'locale' => ['type' => 'string', 'enum' => [$locale]],
                             'seo_title' => ['type' => 'string'],
                             'meta_description' => ['type' => 'string'],
@@ -342,12 +354,12 @@ class ArticleGeneratorService
 
         return [
             'title' => $title,
-            'slug' => Str::slug((string) ($article['slug'] ?? $title)),
-            'section' => 'blog',
+            'slug' => $input['target_slug'] !== '' ? $input['target_slug'] : Str::slug((string) ($article['slug'] ?? $title)),
+            'section' => $input['target_section'],
             'locale' => $input['locale'],
             'seo_title' => Str::limit(trim((string) ($article['seo_title'] ?? $title)), 68, ''),
             'meta_description' => Str::limit(trim((string) ($article['meta_description'] ?? $lead)), 155, ''),
-            'eyebrow' => trim((string) ($article['eyebrow'] ?? 'Blog')) ?: 'Blog',
+            'eyebrow' => trim((string) ($article['eyebrow'] ?? $this->defaultEyebrow($input['target_section'], $input['locale']))) ?: $this->defaultEyebrow($input['target_section'], $input['locale']),
             'lead' => $lead,
             'author' => trim((string) ($article['author'] ?? 'Dream Digital')) ?: 'Dream Digital',
             'reading_time' => trim((string) ($article['reading_time'] ?? ($input['locale'] === 'fr' ? '6 min' : '6 min read'))),
@@ -361,7 +373,7 @@ class ArticleGeneratorService
         ];
     }
 
-    private function variant(string $idea, array $keywords, string $guidelines, string $locale, int $index): array
+    private function variant(string $idea, array $keywords, string $guidelines, string $locale, int $index, string $targetSection, string $targetSlug): array
     {
         $keywordLine = $keywords ? implode(', ', $keywords) : ($locale === 'fr' ? 'telecom B2B, CPaaS, Afrique' : 'B2B telecom, CPaaS, Africa');
         $angle = $this->angle($locale, $index);
@@ -371,12 +383,12 @@ class ArticleGeneratorService
 
         return [
             'title' => $title,
-            'slug' => Str::slug($title),
-            'section' => 'blog',
+            'slug' => $targetSlug !== '' ? $targetSlug : Str::slug($title),
+            'section' => $targetSection,
             'locale' => $locale,
             'seo_title' => Str::limit($title . ($locale === 'fr' ? ' | Guide Dream Digital' : ' | Dream Digital guide'), 68, ''),
             'meta_description' => Str::limit($lead, 155, ''),
-            'eyebrow' => 'Blog',
+            'eyebrow' => $this->defaultEyebrow($targetSection, $locale),
             'lead' => $lead,
             'author' => 'Dream Digital',
             'reading_time' => $locale === 'fr' ? '6 min' : '6 min read',
@@ -416,6 +428,15 @@ class ArticleGeneratorService
         }
 
         return "{$title} explique comment Dream Digital aide les operateurs, agregateurs et entreprises digitales a transformer {$keywordLine} en performance mesurable : routage plus propre, meilleure observabilite et experience client plus fiable.";
+    }
+
+    private function defaultEyebrow(string $targetSection, string $locale): string
+    {
+        if ($targetSection === 'product') {
+            return $locale === 'en' ? 'Product' : 'Produit';
+        }
+
+        return 'Blog';
     }
 
     private function sections(string $idea, array $keywords, string $guidelines, string $locale, int $index): array

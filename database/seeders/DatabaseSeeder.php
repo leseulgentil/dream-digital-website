@@ -18,10 +18,12 @@ class DatabaseSeeder extends Seeder
             ServicePriceSeeder::class,
             LegalPageSeeder::class,
             MarketingPageSeeder::class,
+            ProductPageSeeder::class,
             BlogContentSeeder::class,
             NavigationItemSeeder::class,
             CompanyProfileSeeder::class,
             RoleProfileSeeder::class,
+            AiWebSourceSeeder::class,
             AdminUserSeeder::class,
         ]);
     }

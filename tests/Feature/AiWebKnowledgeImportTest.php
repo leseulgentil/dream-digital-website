@@ -6,7 +6,9 @@ use App\Models\AiKnowledgeChunk;
 use App\Models\AiKnowledgeSource;
 use App\Models\AiKnowledgeWebSource;
 use App\Models\User;
+use Database\Seeders\AiWebSourceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -177,6 +179,185 @@ class AiWebKnowledgeImportTest extends TestCase
             'category' => 'support',
             'status' => 'draft',
         ]);
+    }
+
+    public function test_endpoint_json_source_follows_pagination_and_keeps_esimzone_metadata(): void
+    {
+        Http::fake([
+            'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=50' => Http::response([
+                'items' => [[
+                    'external_id' => 'offer-france-1gb-fr',
+                    'title' => 'Forfait eSIM France - 1 Go - 7 jours',
+                    'locale' => 'fr',
+                    'country' => 'FRA',
+                    'destination_country' => 'FRA',
+                    'audience_country' => 'global',
+                    'category' => 'offer',
+                    'canonical_url' => 'https://esimzone.test/fr/packages?country=FRA',
+                    'updated_at' => '2026-06-04T10:15:00+00:00',
+                    'status' => 'active',
+                    'deleted_at' => null,
+                    'expires_at' => '2026-12-31T23:59:59+00:00',
+                    'content_hash' => 'sha256:' . str_repeat('a', 64),
+                    'content_markdown' => 'Offre France 1 Go valable sept jours.',
+                ]],
+                'meta' => [
+                    'current_page' => 1,
+                    'last_page' => 2,
+                    'per_page' => 50,
+                    'total' => 2,
+                ],
+                'links' => [
+                    'next' => 'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&page=2&per_page=50',
+                ],
+            ], 200),
+            'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&page=2&per_page=50' => Http::response([
+                'items' => [[
+                    'external_id' => 'destination-france-fr',
+                    'title' => 'Destination France',
+                    'locale' => 'fr',
+                    'country' => 'FRA',
+                    'destination_country' => 'FRA',
+                    'audience_country' => 'global',
+                    'category' => 'destination',
+                    'canonical_url' => 'https://esimzone.test/fr/destinations/france',
+                    'updated_at' => '2026-06-04T11:15:00+00:00',
+                    'status' => 'active',
+                    'deleted_at' => null,
+                    'expires_at' => null,
+                    'content_hash' => str_repeat('b', 64),
+                    'content_markdown' => 'Resume destination France pour les voyageurs.',
+                ]],
+                'meta' => [
+                    'current_page' => 2,
+                    'last_page' => 2,
+                    'per_page' => 50,
+                    'total' => 2,
+                ],
+                'links' => [
+                    'next' => null,
+                ],
+            ], 200),
+        ]);
+
+        $webSource = AiKnowledgeWebSource::create([
+            'title' => 'eSIMZone API',
+            'type' => AiKnowledgeWebSource::TYPE_ENDPOINT_JSON,
+            'url' => 'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=50',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'esim',
+            'frequency' => 'manual',
+            'import_status' => 'published',
+            'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
+        ]);
+
+        app(\App\Services\Ai\AiWebKnowledgeImporter::class)->sync($webSource);
+
+        Http::assertSentCount(2);
+        $this->assertSame(2, AiKnowledgeChunk::query()->count());
+
+        $source = AiKnowledgeSource::query()
+            ->where('source_url', 'https://esimzone.test/fr/packages?country=FRA')
+            ->firstOrFail();
+
+        $this->assertSame(str_repeat('a', 64), $source->content_hash);
+        $this->assertSame('offer-france-1gb-fr', $source->metadata['external_id']);
+        $this->assertSame('FRA', $source->metadata['destination_country']);
+        $this->assertSame('global', $source->metadata['audience_country']);
+        $this->assertSame('active', $source->metadata['status']);
+
+        $chunk = $source->chunks()->firstOrFail();
+        $this->assertSame('global', $chunk->country_code);
+        $this->assertSame('offer', $chunk->category);
+        $this->assertNotNull($chunk->expires_at);
+    }
+
+    public function test_endpoint_json_source_deletes_stale_item_when_export_marks_it_deleted(): void
+    {
+        $webSource = AiKnowledgeWebSource::create([
+            'title' => 'eSIMZone API',
+            'type' => AiKnowledgeWebSource::TYPE_ENDPOINT_JSON,
+            'url' => 'https://esimzone.test/api/v1/ai-knowledge/export',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'esim',
+            'frequency' => 'manual',
+            'import_status' => 'published',
+            'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
+        ]);
+
+        $source = AiKnowledgeSource::create([
+            'ai_knowledge_web_source_id' => $webSource->id,
+            'type' => AiKnowledgeSource::TYPE_WEB_ENDPOINT,
+            'title' => 'Old offer',
+            'source_url' => 'https://esimzone.test/fr/packages?country=FRA',
+            'content_hash' => str_repeat('c', 64),
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'status' => 'published',
+        ]);
+        $source->chunks()->create([
+            'title' => 'Old offer',
+            'content' => 'Ancienne offre a supprimer.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'offer',
+            'status' => 'published',
+        ]);
+
+        Http::fake([
+            'https://esimzone.test/api/v1/ai-knowledge/export' => Http::response([
+                'items' => [[
+                    'external_id' => 'offer-france-1gb-fr',
+                    'title' => 'Forfait eSIM France - 1 Go - 7 jours',
+                    'locale' => 'fr',
+                    'category' => 'offer',
+                    'canonical_url' => 'https://esimzone.test/fr/packages?country=FRA',
+                    'status' => 'deleted',
+                    'deleted_at' => '2026-06-04T10:15:00+00:00',
+                ]],
+                'links' => ['next' => null],
+            ], 200),
+        ]);
+
+        app(\App\Services\Ai\AiWebKnowledgeImporter::class)->sync($webSource);
+
+        $this->assertDatabaseMissing('ai_knowledge_sources', [
+            'id' => $source->id,
+        ]);
+        $this->assertSame(0, AiKnowledgeChunk::query()->count());
+    }
+
+    public function test_esimzone_endpoint_source_can_be_seeded_from_configuration(): void
+    {
+        config([
+            'dream-digital.ai.web_sources.esimzone.enabled' => true,
+            'dream-digital.ai.web_sources.esimzone.title' => 'eSIMZone API',
+            'dream-digital.ai.web_sources.esimzone.url' => 'https://esimzone.fr/api/ai-knowledge/export',
+            'dream-digital.ai.web_sources.esimzone.auth_token' => 'esimzone-secret',
+            'dream-digital.ai.web_sources.esimzone.locale' => 'fr',
+            'dream-digital.ai.web_sources.esimzone.country_code' => 'global',
+            'dream-digital.ai.web_sources.esimzone.category' => 'esim',
+            'dream-digital.ai.web_sources.esimzone.frequency' => 'weekly',
+            'dream-digital.ai.web_sources.esimzone.import_status' => 'draft',
+        ]);
+
+        $this->seed(AiWebSourceSeeder::class);
+        $this->seed(AiWebSourceSeeder::class);
+
+        $source = AiKnowledgeWebSource::query()
+            ->where('url', 'https://esimzone.fr/api/ai-knowledge/export')
+            ->firstOrFail();
+
+        $this->assertSame(1, AiKnowledgeWebSource::query()->count());
+        $this->assertSame('eSIMZone API', $source->title);
+        $this->assertSame(AiKnowledgeWebSource::TYPE_ENDPOINT_JSON, $source->type);
+        $this->assertSame(AiKnowledgeWebSource::FREQUENCY_WEEKLY, $source->frequency);
+        $this->assertSame('draft', $source->import_status);
+        $this->assertSame('esim', $source->category);
+        $this->assertNotNull($source->next_sync_at);
+        $this->assertSame('esimzone-secret', Crypt::decryptString($source->metadata['auth_token']));
     }
 
     /**

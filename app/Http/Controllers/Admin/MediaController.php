@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MediaUploadRequest;
 use App\Models\MediaAsset;
 use App\Models\Page;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class MediaController extends Controller
@@ -31,6 +34,41 @@ class MediaController extends Controller
             });
 
         return view('admin.media.index', ['media' => $media]);
+    }
+
+    public function store(MediaUploadRequest $request): JsonResponse
+    {
+        $file = $request->file('image');
+        $directory = public_path('img/cms/pages');
+        File::ensureDirectoryExists($directory);
+
+        $extension = strtolower($file->extension() ?: $file->getClientOriginalExtension() ?: 'jpg');
+        $filename = now()->format('YmdHis') . '-' . Str::uuid() . '.' . $extension;
+        $file->move($directory, $filename);
+
+        $path = '/img/cms/pages/' . $filename;
+        $fullPath = public_path(ltrim($path, '/'));
+        $dimensions = @getimagesize($fullPath);
+
+        $asset = MediaAsset::create([
+            'path' => $path,
+            'filename' => $filename,
+            'mime_type' => $dimensions['mime'] ?? $file->getMimeType(),
+            'size_bytes' => is_file($fullPath) ? filesize($fullPath) : null,
+            'width' => $dimensions[0] ?? null,
+            'height' => $dimensions[1] ?? null,
+            'alt_text' => $request->validated('alt_text'),
+            'credit' => $request->validated('credit'),
+            'source_url' => $request->validated('source_url'),
+            'uploaded_by_id' => auth()->id(),
+        ]);
+
+        return response()->json([
+            'id' => $asset->id,
+            'path' => $asset->path,
+            'url' => asset(ltrim($asset->path, '/')),
+            'filename' => $asset->filename,
+        ], 201);
     }
 
     public function update(Request $request, MediaAsset $media): RedirectResponse
@@ -99,9 +137,29 @@ class MediaController extends Controller
     private function usageFor(string $path)
     {
         return Page::query()
-            ->where('meta_image_path', $path)
             ->orderBy('section')
             ->orderBy('slug')
-            ->get(['id', 'section', 'slug', 'locale', 'title']);
+            ->get(['id', 'section', 'slug', 'locale', 'title', 'meta_image_path', 'content_blocks'])
+            ->filter(fn (Page $page) => $page->meta_image_path === $path || $this->contentContainsPath($page->content_blocks ?? [], $path))
+            ->values();
+    }
+
+    private function contentContainsPath(mixed $content, string $path): bool
+    {
+        if (is_string($content)) {
+            return str_contains($content, $path);
+        }
+
+        if (! is_array($content)) {
+            return false;
+        }
+
+        foreach ($content as $value) {
+            if ($this->contentContainsPath($value, $path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

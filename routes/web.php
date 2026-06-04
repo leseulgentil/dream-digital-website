@@ -191,6 +191,9 @@ Route::get('/_reset-country', [GeoDetectController::class, 'resetToGlobal'])->na
 Route::post('/ai-chat/message', [AiChatController::class, 'message'])
   ->middleware('throttle:12,1')
   ->name('front.ai-chat.message');
+Route::post('/ai-chat/lead', [AiChatController::class, 'lead'])
+  ->middleware('throttle:10,1')
+  ->name('front.ai-chat.lead');
 Route::get('/{locale}', [Landing::class, 'index'])
   ->whereIn('locale', ['fr', 'en'])
   ->name('front.localized.home');
@@ -357,6 +360,7 @@ Route::middleware(['auth', 'admin.access', 'throttle:120,1'])->group(function ()
         ->middleware('admin.permission:media.manage')
         ->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
             Route::put('/{media}', 'update')->name('update');
             Route::delete('/{media}', 'destroy')->name('destroy');
         });

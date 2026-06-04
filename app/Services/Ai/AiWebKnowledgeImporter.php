@@ -7,11 +7,14 @@ use App\Models\AiKnowledgeWebSource;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class AiWebKnowledgeImporter
 {
+    private const MAX_ENDPOINT_JSON_PAGES = 100;
+
     public function __construct(
         private readonly AiKnowledgeChunker $chunker,
     ) {}
@@ -75,51 +78,74 @@ class AiWebKnowledgeImporter
     private function importEndpointJson(AiKnowledgeWebSource $webSource): int
     {
         $this->guardPublicUrl($webSource->url);
-
-        $payload = $this->http($webSource)
-            ->acceptJson()
-            ->get($webSource->url)
-            ->throw()
-            ->json();
-
-        $items = is_array($payload) ? data_get($payload, 'items', []) : [];
+        $url = $webSource->url;
+        $visited = [];
         $imported = 0;
 
-        foreach ($items as $item) {
-            if (! is_array($item)) {
-                continue;
+        for ($page = 0; $page < self::MAX_ENDPOINT_JSON_PAGES; $page++) {
+            if (isset($visited[$url])) {
+                break;
             }
 
-            $content = trim((string) ($item['content_markdown'] ?? $item['content'] ?? ''));
-            $title = trim((string) ($item['title'] ?? ''));
+            $visited[$url] = true;
+            $payload = $this->endpointPayload($webSource, $url);
+            $items = is_array($payload) ? data_get($payload, 'items', []) : [];
 
-            if ($content === '' || $title === '') {
-                continue;
+            foreach ($items as $item) {
+                if (is_array($item)) {
+                    $imported += $this->importEndpointJsonItem($webSource, $item);
+                }
             }
 
-            $url = trim((string) ($item['canonical_url'] ?? ''));
+            $nextUrl = $this->nextEndpointUrl($payload, $url);
 
-            if ($url === '') {
-                $externalId = trim((string) ($item['external_id'] ?? hash('sha256', $title.$content)));
-                $url = rtrim($webSource->url, '#').'#'.$externalId;
+            if ($nextUrl === null) {
+                break;
             }
 
-            $this->guardPublicUrl($url);
-
-            $imported += $this->storeKnowledgePage(
-                $webSource,
-                $url,
-                Str::limit($title, 180, ''),
-                $content,
-                trim((string) ($item['content_hash'] ?? '')) ?: hash('sha256', $content),
-                AiKnowledgeSource::TYPE_WEB_ENDPOINT,
-                $this->normalizedLocale($item['locale'] ?? null, $webSource->locale),
-                $this->normalizedCountryCode($item['country'] ?? null, $webSource->country_code),
-                trim((string) ($item['category'] ?? '')) ?: $webSource->category,
-            );
+            $this->guardSameHost($webSource->url, $nextUrl);
+            $url = $nextUrl;
         }
 
         return $imported;
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function importEndpointJsonItem(AiKnowledgeWebSource $webSource, array $item): int
+    {
+        $content = trim((string) ($item['content_markdown'] ?? $item['content'] ?? ''));
+        $title = trim((string) ($item['title'] ?? ''));
+        $url = $this->endpointItemUrl($webSource, $item, $title, $content);
+
+        if ($this->endpointItemIsDeleted($item)) {
+            $this->deleteKnowledgePage($webSource, $url);
+
+            return 0;
+        }
+
+        if ($content === '' || $title === '') {
+            return 0;
+        }
+
+        $this->guardPublicUrl($url);
+
+        $category = trim((string) ($item['category'] ?? '')) ?: $webSource->category;
+
+        return $this->storeKnowledgePage(
+            $webSource,
+            $url,
+            Str::limit($title, 180, ''),
+            $content,
+            $this->normalizedContentHash($item['content_hash'] ?? null, $content),
+            AiKnowledgeSource::TYPE_WEB_ENDPOINT,
+            $this->normalizedLocale($item['locale'] ?? null, $webSource->locale),
+            $this->normalizedCountryCode($item['audience_country'] ?? null, $webSource->country_code),
+            $category,
+            $this->endpointItemMetadata($item, $category),
+            $this->nullableTimestamp($item['expires_at'] ?? null),
+        );
     }
 
     private function storeKnowledgePage(
@@ -132,19 +158,34 @@ class AiWebKnowledgeImporter
         ?string $locale = null,
         ?string $countryCode = null,
         ?string $category = null,
+        array $metadata = [],
+        ?Carbon $expiresAt = null,
     ): int {
         $locale ??= $webSource->locale;
         $countryCode ??= $webSource->country_code;
         $category ??= $webSource->category;
+        $metadata = array_filter([
+            ...$metadata,
+            'category' => $category,
+        ], fn ($value): bool => $value !== null && $value !== '');
 
-        return DB::transaction(function () use ($webSource, $url, $title, $content, $hash, $type, $locale, $countryCode, $category): int {
+        return DB::transaction(function () use ($webSource, $url, $title, $content, $hash, $type, $locale, $countryCode, $category, $metadata, $expiresAt): int {
             $source = AiKnowledgeSource::query()
                 ->where('ai_knowledge_web_source_id', $webSource->id)
                 ->where('source_url', $url)
                 ->first();
 
             if ($source && $source->content_hash === $hash) {
-                $source->update(['fetched_at' => now()]);
+                $source->update([
+                    'fetched_at' => now(),
+                    'metadata' => [
+                        ...($source->metadata ?? []),
+                        ...$metadata,
+                    ],
+                ]);
+                $source->chunks()->update([
+                    'expires_at' => $expiresAt,
+                ]);
 
                 return 0;
             }
@@ -160,9 +201,7 @@ class AiWebKnowledgeImporter
                     'locale' => $locale,
                     'country_code' => $countryCode,
                     'status' => $webSource->import_status,
-                    'metadata' => [
-                        'category' => $category,
-                    ],
+                    'metadata' => $metadata,
                     'created_by_id' => $webSource->created_by_id,
                 ]);
             } else {
@@ -177,7 +216,7 @@ class AiWebKnowledgeImporter
                     'status' => $webSource->import_status,
                     'metadata' => [
                         ...($source->metadata ?? []),
-                        'category' => $category,
+                        ...$metadata,
                     ],
                 ]);
             }
@@ -193,11 +232,132 @@ class AiWebKnowledgeImporter
                     'category' => $category,
                     'status' => $webSource->import_status,
                     'priority' => 0,
+                    'expires_at' => $expiresAt,
                 ]);
                 $created++;
             }
 
             return $created;
+        });
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function endpointPayload(AiKnowledgeWebSource $webSource, string $url): array
+    {
+        $payload = $this->http($webSource)
+            ->acceptJson()
+            ->get($url)
+            ->throw()
+            ->json();
+
+        return is_array($payload) ? $payload : [];
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function nextEndpointUrl(array $payload, string $currentUrl): ?string
+    {
+        $next = data_get($payload, 'links.next');
+
+        if (is_string($next) && trim($next) !== '') {
+            return trim($next);
+        }
+
+        $currentPage = (int) data_get($payload, 'meta.current_page', 0);
+        $lastPage = (int) data_get($payload, 'meta.last_page', 0);
+
+        if ($currentPage <= 0 || $lastPage <= 0 || $currentPage >= $lastPage) {
+            return null;
+        }
+
+        return $this->urlWithPage($currentUrl, $currentPage + 1);
+    }
+
+    private function urlWithPage(string $url, int $page): string
+    {
+        $parts = parse_url($url);
+        $query = [];
+
+        if (is_string($parts['query'] ?? null)) {
+            parse_str($parts['query'], $query);
+        }
+
+        $query['page'] = $page;
+        $rebuilt = ($parts['scheme'] ?? 'https') . '://' . ($parts['host'] ?? '');
+
+        if (isset($parts['port'])) {
+            $rebuilt .= ':' . $parts['port'];
+        }
+
+        $rebuilt .= $parts['path'] ?? '';
+
+        return $rebuilt . '?' . http_build_query($query);
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function endpointItemUrl(AiKnowledgeWebSource $webSource, array $item, string $title, string $content): string
+    {
+        $url = trim((string) ($item['canonical_url'] ?? ''));
+
+        if ($url !== '') {
+            return $url;
+        }
+
+        $externalId = trim((string) ($item['external_id'] ?? hash('sha256', $title.$content)));
+
+        return rtrim($webSource->url, '#') . '#' . rawurlencode($externalId);
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function endpointItemIsDeleted(array $item): bool
+    {
+        $status = strtolower(trim((string) ($item['status'] ?? 'active')));
+
+        return filled($item['deleted_at'] ?? null)
+            || in_array($status, ['deleted', 'inactive', 'archived', 'disabled'], true);
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     * @return array<string, mixed>
+     */
+    private function endpointItemMetadata(array $item, ?string $category): array
+    {
+        return [
+            'category' => $category,
+            'external_id' => $this->nullableString($item['external_id'] ?? null),
+            'destination_country' => $this->nullableString($item['destination_country'] ?? $item['country'] ?? null),
+            'audience_country' => $this->nullableString($item['audience_country'] ?? null),
+            'status' => $this->nullableString($item['status'] ?? null),
+            'updated_at' => $this->nullableString($item['updated_at'] ?? null),
+            'deleted_at' => $this->nullableString($item['deleted_at'] ?? null),
+            'expires_at' => $this->nullableString($item['expires_at'] ?? null),
+        ];
+    }
+
+    private function deleteKnowledgePage(AiKnowledgeWebSource $webSource, string $url): void
+    {
+        $this->guardPublicUrl($url);
+
+        $source = AiKnowledgeSource::query()
+            ->where('ai_knowledge_web_source_id', $webSource->id)
+            ->where('source_url', $url)
+            ->first();
+
+        if (! $source) {
+            return;
+        }
+
+        DB::transaction(function () use ($source): void {
+            $source->chunks()->delete();
+            $source->delete();
         });
     }
 
@@ -284,6 +444,59 @@ class AiWebKnowledgeImporter
         $countryCode = strtolower(trim((string) $value));
 
         return in_array($countryCode, ['global', 'cd', 'ci', 'cg'], true) ? $countryCode : $fallback;
+    }
+
+    private function normalizedContentHash(mixed $value, string $content): string
+    {
+        $hash = strtolower(trim((string) $value));
+
+        if (str_starts_with($hash, 'sha256:')) {
+            $hash = substr($hash, 7);
+        }
+
+        if (preg_match('/^[a-f0-9]{64}$/', $hash) === 1) {
+            return $hash;
+        }
+
+        if ($hash !== '' && strlen($hash) <= 64) {
+            return $hash;
+        }
+
+        return hash('sha256', $content);
+    }
+
+    private function nullableTimestamp(mixed $value): ?Carbon
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function nullableString(mixed $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
+    }
+
+    private function guardSameHost(string $sourceUrl, string $nextUrl): void
+    {
+        $this->guardPublicUrl($nextUrl);
+
+        $sourceHost = strtolower((string) parse_url($sourceUrl, PHP_URL_HOST));
+        $nextHost = strtolower((string) parse_url($nextUrl, PHP_URL_HOST));
+
+        if ($sourceHost === '' || $nextHost === '' || $sourceHost !== $nextHost) {
+            throw new InvalidArgumentException('Endpoint pagination must stay on the same public host.');
+        }
     }
 
     private function guardPublicUrl(string $url): void

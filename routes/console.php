@@ -2,12 +2,14 @@
 
 use App\Models\Country;
 use App\Models\CompanyProfile;
+use App\Models\AiKnowledgeChunk;
 use App\Models\AiKnowledgeWebSource;
 use App\Models\Page;
 use App\Models\Service;
 use App\Models\ServicePrice;
 use App\Models\User;
 use App\Services\Ai\AiWebKnowledgeImporter;
+use App\Services\Ai\AiTextEmbedding;
 use App\Services\CompanyProfileService;
 use App\Support\DatabaseBackup;
 use Illuminate\Foundation\Console\ClosureCommand;
@@ -347,6 +349,38 @@ Artisan::command('dd:backup-db {--connection= : Database connection name} {--pat
 
     return 0;
 })->purpose('Create a timestamped database backup before deploy');
+
+Artisan::command('dd:ai-embed-knowledge {--limit=500 : Maximum chunks to process}', function (AiTextEmbedding $embedding) {
+    /** @var ClosureCommand $this */
+    $limit = max(1, min(5000, (int) $this->option('limit')));
+    $processed = 0;
+
+    AiKnowledgeChunk::query()
+        ->orderBy('id')
+        ->limit($limit)
+        ->get()
+        ->each(function (AiKnowledgeChunk $chunk) use ($embedding, &$processed): void {
+            $text = trim($chunk->title . "\n\n" . $chunk->content);
+            $hash = AiTextEmbedding::hash($text);
+
+            if ($chunk->embedding_model === AiTextEmbedding::LOCAL_MODEL && $chunk->embedding_hash === $hash && $chunk->embedding !== null) {
+                return;
+            }
+
+            $chunk->forceFill([
+                'embedding' => $embedding->embed($text),
+                'embedding_model' => AiTextEmbedding::LOCAL_MODEL,
+                'embedding_hash' => $hash,
+                'embedded_at' => now(),
+            ])->save();
+
+            $processed++;
+        });
+
+    $this->info("Embedded {$processed} knowledge chunk(s).");
+
+    return 0;
+})->purpose('Generate local embeddings for AI knowledge chunks');
 
 Artisan::command('dd:sync-ai-web-sources', function (AiWebKnowledgeImporter $importer) {
     /** @var ClosureCommand $this */

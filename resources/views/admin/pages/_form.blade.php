@@ -4,9 +4,10 @@
   $blocks = $page->content_blocks ?? [];
   $schema = ($cmsSchemas ?? [])[old('section', $page->section)] ?? null;
   $faqJson = old('faq_json', json_encode($blocks['faq'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+  $productDetailJson = old('product_detail_json', $productDetailJson ?? json_encode($blocks['product_detail'] ?? ['proofs' => [], 'workflow' => []], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 @endphp
 
-<form method="POST" action="{{ $formAction }}" id="dd-cms-page-form" class="card-body row g-4" enctype="multipart/form-data" data-generate-article-url="{{ route('admin.pages.generate-article') }}" data-csrf-token="{{ csrf_token() }}" novalidate>
+<form method="POST" action="{{ $formAction }}" id="dd-cms-page-form" class="card-body row g-4" enctype="multipart/form-data" data-generate-article-url="{{ route('admin.pages.generate-article') }}" data-media-upload-url="{{ route('admin.media.store') }}" data-csrf-token="{{ csrf_token() }}" novalidate>
   @csrf
   @if($isEdit)
     @method('PUT')
@@ -16,7 +17,7 @@
     <label class="form-label" for="section">Section <span class="text-danger">*</span></label>
     <select id="section" name="section" class="form-select @error('section') is-invalid @enderror" required>
       @foreach($sections as $sec)
-        <option value="{{ $sec }}" @selected(old('section', $page->section) === $sec)>{{ $sec }}</option>
+        <option value="{{ $sec }}" @selected(old('section', $page->section) === $sec)>{{ $sectionLabels[$sec] ?? $sec }}</option>
       @endforeach
     </select>
     @error('section')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -94,9 +95,9 @@
 
   <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center">
     <div>
-      <h5 class="mb-1">Assistant Blog SEO</h5>
+      <h5 class="mb-1">Assistant IA CMS</h5>
       <p class="text-muted mb-0">
-        Genere un article complet puis remplis le formulaire apres validation.
+        Genere une page complete ou des sections puis remplis le formulaire apres validation.
         Source: {{ config('services.openai.article_provider') === 'openai' ? 'OpenAI / ' . config('services.openai.model') : 'local' }}.
       </p>
     </div>
@@ -237,18 +238,68 @@
     </details>
   </div>
 
+  <div class="col-12" data-dd-product-detail-panel>
+    <div class="border rounded p-3 bg-body">
+      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="mb-1">Blocs produit structures</h5>
+          <p class="text-muted small mb-0">Preuves et workflow affiches sur les pages produit, avec override CMS par langue.</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label mb-0" for="dd_product_proofs_repeater">Preuves</label>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="dd_product_proof_add">
+              <i class="bx bx-plus me-1"></i>Ajouter
+            </button>
+          </div>
+          <div id="dd_product_proofs_repeater" class="d-flex flex-column gap-3"></div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label mb-0" for="dd_product_workflow_repeater">Workflow</label>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="dd_product_workflow_add">
+              <i class="bx bx-plus me-1"></i>Ajouter
+            </button>
+          </div>
+          <div id="dd_product_workflow_repeater" class="d-flex flex-column gap-3"></div>
+        </div>
+      </div>
+
+      <details class="mt-3">
+        <summary class="fw-medium">Blocs produit (JSON avance)</summary>
+        <div class="mt-3">
+          <label class="form-label" for="product_detail_json">Blocs produit (JSON)</label>
+          <textarea id="product_detail_json" name="product_detail_json" rows="8" class="form-control font-monospace small @error('product_detail_json') is-invalid @enderror">{{ $productDetailJson }}</textarea>
+          @error('product_detail_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          <small class="text-muted">Format attendu : <code>{"proofs":[{"icon":"bx-check","title":"...","body":"..."}],"workflow":[{"label":"...","body":"..."}]}</code>.</small>
+        </div>
+      </details>
+    </div>
+  </div>
+
   <div class="modal fade" id="ddGenerateArticleModal" tabindex="-1" aria-labelledby="ddGenerateArticleTitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="modal-title h5" id="ddGenerateArticleTitle">Generate Article</h2>
+          <h2 class="modal-title h5" id="ddGenerateArticleTitle">Assistant IA CMS</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
           <div class="row g-4">
-            <div class="col-md-8">
+            <div class="col-md-5">
               <label class="form-label" for="article_generator_idea">Titre ou idee principale</label>
               <input type="text" id="article_generator_idea" class="form-control" placeholder="SMS A2P, OTP, CPaaS Afrique">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="article_generator_target_section">Type CMS</label>
+              <select id="article_generator_target_section" class="form-select">
+                <option value="blog" @selected(old('section', $page->section) !== 'product')>Article blog</option>
+                <option value="product" @selected(old('section', $page->section) === 'product')>Page produit</option>
+              </select>
             </div>
             <div class="col-md-2">
               <label class="form-label" for="article_generator_locale">Langue</label>
@@ -260,6 +311,11 @@
             <div class="col-md-2">
               <label class="form-label" for="article_generator_variants">Articles</label>
               <input type="number" id="article_generator_variants" min="1" max="5" value="3" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="article_generator_target_slug">Slug cible</label>
+              <input type="text" id="article_generator_target_slug" class="form-control" value="{{ old('slug', $page->slug) }}" placeholder="voice">
+              <small class="text-muted">Pour une page produit, utilisez le slug du service: voice, sms-a2p, dialo...</small>
             </div>
             <div class="col-md-6">
               <label class="form-label" for="article_generator_keywords">Mots cles</label>

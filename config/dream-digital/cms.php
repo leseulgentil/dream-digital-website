@@ -1,7 +1,56 @@
 <?php
 
 return [
+    'rich_text' => [
+        'allowed_html' => [
+            'p',
+            'br',
+            'strong',
+            'b',
+            'em',
+            'i',
+            'u',
+            's',
+            'blockquote',
+            'pre',
+            'code',
+            'ul',
+            'ol',
+            'li',
+            'h2',
+            'h3',
+            'h4',
+            'a[href|target|rel|title]',
+            'img[src|alt|title|width|height]',
+        ],
+        'allowed_schemes' => [
+            'http' => true,
+            'https' => true,
+            'mailto' => true,
+            'tel' => true,
+        ],
+        'allowed_image_prefixes' => [
+            '/img/cms/pages/',
+        ],
+    ],
+
     'schemas' => [
+        'home' => [
+            'label' => 'Page accueil',
+            'fields' => ['eyebrow', 'lead', 'sections'],
+            'sections_example' => [
+                ['heading' => 'Bloc accueil', 'body' => 'Texte riche affiche sous le hero avant les services.'],
+            ],
+        ],
+        'product' => [
+            'label' => 'Page produit',
+            'fields' => ['seo_title', 'meta_description', 'eyebrow', 'lead', 'faq', 'sections'],
+            'sections_example' => [
+                ['heading' => 'Positionnement', 'body' => 'Expliquez le probleme client et la promesse du produit.'],
+                ['heading' => 'Cas d usage', 'body' => "Listez les usages prioritaires et les criteres de qualification."],
+                ['heading' => 'Mise en route', 'body' => 'Detaillez les prochaines etapes: qualification, test, go-live.'],
+            ],
+        ],
         'marketing' => [
             'label' => 'Page marketing',
             'fields' => ['eyebrow', 'lead', 'sections'],

@@ -19,6 +19,189 @@
 */
 
 return [
+    'home_cards' => [
+        [
+            'id' => 'sms-wholesale',
+            'title' => ['fr' => 'SMS Wholesale', 'en' => 'SMS Wholesale'],
+            'excerpt' => [
+                'fr' => 'Routes SMS A2P grossiste pour operateurs, aggregateurs et plateformes CPaaS avec supervision DLR.',
+                'en' => 'Wholesale A2P SMS routes for operators, aggregators and CPaaS platforms with DLR supervision.',
+            ],
+            'badges' => [
+                ['fr' => 'SMPP/API', 'en' => 'SMPP/API'],
+                ['fr' => 'DLR temps reel', 'en' => 'Real-time DLR'],
+            ],
+            'proof_points' => [
+                ['fr' => 'Routes premium et volumes negocies', 'en' => 'Premium routes and negotiated volume'],
+                ['fr' => 'Monitoring qualite par destination', 'en' => 'Quality monitoring by destination'],
+            ],
+            'illustration' => [
+                'src' => '/img/services/sms-wholesale.webp',
+                'alt' => ['fr' => 'Illustration SMS Wholesale Dream Digital', 'en' => 'Dream Digital SMS Wholesale illustration'],
+                'width' => 960,
+                'height' => 640,
+            ],
+            'icon' => 'bx-message-detail',
+            'cta' => [
+                'url' => '/{locale}/products/sms-a2p',
+                'label' => ['fr' => 'Voir SMS Wholesale', 'en' => 'View SMS Wholesale'],
+                'external' => false,
+            ],
+            'order' => 1,
+            'active' => true,
+        ],
+        [
+            'id' => 'sms-retail',
+            'title' => ['fr' => 'SMS Retail', 'en' => 'SMS Retail'],
+            'excerpt' => [
+                'fr' => 'Campagnes SMS retail, OTP et notifications client pour equipes marketing, fintech, retail et support.',
+                'en' => 'Retail SMS campaigns, OTP flows and customer notifications for marketing, fintech, retail and support teams.',
+            ],
+            'badges' => [
+                ['fr' => 'OTP', 'en' => 'OTP'],
+                ['fr' => 'Marketing', 'en' => 'Marketing'],
+            ],
+            'proof_points' => [
+                ['fr' => 'Sender IDs, unicode et concatenation', 'en' => 'Sender IDs, unicode and concatenation'],
+                ['fr' => 'Parcours simples pour demarrer vite', 'en' => 'Simple paths to start quickly'],
+            ],
+            'illustration' => [
+                'src' => '/img/services/sms-retail.webp',
+                'alt' => ['fr' => 'Illustration SMS Retail Dream Digital', 'en' => 'Dream Digital SMS Retail illustration'],
+                'width' => 960,
+                'height' => 640,
+            ],
+            'icon' => 'bx-chat',
+            'cta' => [
+                'url' => '/{locale}/products/sms-a2p',
+                'label' => ['fr' => 'Lancer SMS Retail', 'en' => 'Launch SMS Retail'],
+                'external' => false,
+            ],
+            'order' => 2,
+            'active' => true,
+        ],
+        [
+            'id' => 'voice-wholesale-card',
+            'title' => ['fr' => 'Voice Wholesale', 'en' => 'Voice Wholesale'],
+            'excerpt' => [
+                'fr' => 'Terminaison voix wholesale pour operateurs, integrateurs et plateformes avec qualite carrier-grade.',
+                'en' => 'Wholesale voice routes for operators, integrators and platforms with carrier-grade quality.',
+            ],
+            'badges' => [
+                ['fr' => 'SIP', 'en' => 'SIP'],
+                ['fr' => 'ASR/ACD', 'en' => 'ASR/ACD'],
+            ],
+            'proof_points' => [
+                ['fr' => 'Tarifs par destination et volume', 'en' => 'Destination and volume pricing'],
+                ['fr' => 'Failover et supervision route', 'en' => 'Failover and route supervision'],
+            ],
+            'illustration' => [
+                'src' => '/img/services/voice-wholesale.webp',
+                'alt' => ['fr' => 'Illustration Voice Wholesale Dream Digital', 'en' => 'Dream Digital Voice Wholesale illustration'],
+                'width' => 960,
+                'height' => 640,
+            ],
+            'icon' => 'bx-phone-call',
+            'cta' => [
+                'url' => '/{locale}/products/voice',
+                'label' => ['fr' => 'Voir Voice Wholesale', 'en' => 'View Voice Wholesale'],
+                'external' => false,
+            ],
+            'order' => 3,
+            'active' => true,
+        ],
+        [
+            'id' => 'voice-retail',
+            'title' => ['fr' => 'Voice Retail', 'en' => 'Voice Retail'],
+            'excerpt' => [
+                'fr' => 'Offres voix retail pour entreprises, centres de contact, numerotation et appels sortants fiables.',
+                'en' => 'Retail voice offers for enterprises, contact centers, numbering and reliable outbound calling.',
+            ],
+            'badges' => [
+                ['fr' => 'Entreprises', 'en' => 'Enterprise'],
+                ['fr' => 'Support', 'en' => 'Support'],
+            ],
+            'proof_points' => [
+                ['fr' => 'DID, SIP et appels sortants', 'en' => 'DID, SIP and outbound calls'],
+                ['fr' => 'Mise en service accompagnee', 'en' => 'Guided onboarding'],
+            ],
+            'illustration' => [
+                'src' => '/img/services/voice-retail.webp',
+                'alt' => ['fr' => 'Illustration Voice Retail Dream Digital', 'en' => 'Dream Digital Voice Retail illustration'],
+                'width' => 960,
+                'height' => 640,
+            ],
+            'icon' => 'bx-phone',
+            'cta' => [
+                'url' => '/{locale}/products/voice',
+                'label' => ['fr' => 'Decouvrir Voice Retail', 'en' => 'Explore Voice Retail'],
+                'external' => false,
+            ],
+            'order' => 4,
+            'active' => true,
+        ],
+        [
+            'id' => 'esimzone',
+            'title' => ['fr' => 'eSIMZone', 'en' => 'eSIMZone'],
+            'excerpt' => [
+                'fr' => 'Plateforme eSIM data pour voyageurs et entreprises : forfaits locaux, regionaux, globaux et activation rapide.',
+                'en' => 'Data eSIM platform for travelers and companies: local, regional and global plans with fast activation.',
+            ],
+            'badges' => [
+                ['fr' => 'eSIM data', 'en' => 'Data eSIM'],
+                ['fr' => 'QR activation', 'en' => 'QR activation'],
+            ],
+            'proof_points' => [
+                ['fr' => 'Plans par destination et region', 'en' => 'Destination and regional plans'],
+                ['fr' => 'Experience autonome sur esimzone.fr', 'en' => 'Self-service on esimzone.fr'],
+            ],
+            'illustration' => [
+                'src' => '/img/services/esimzone.webp',
+                'alt' => ['fr' => 'Illustration eSIMZone Dream Digital', 'en' => 'Dream Digital eSIMZone illustration'],
+                'width' => 960,
+                'height' => 640,
+            ],
+            'icon' => 'bx-mobile-alt',
+            'cta' => [
+                'url' => 'https://esimzone.fr/',
+                'label' => ['fr' => 'Visiter eSIMZone', 'en' => 'Visit eSIMZone'],
+                'external' => true,
+            ],
+            'order' => 5,
+            'active' => true,
+        ],
+        [
+            'id' => 'dialo-platform',
+            'title' => ['fr' => 'DIALO', 'en' => 'DIALO'],
+            'excerpt' => [
+                'fr' => 'Plateforme call center omnicanale pour voix, WhatsApp, email, chat et SMS avec supervision agents.',
+                'en' => 'Omnichannel call center platform for voice, WhatsApp, email, chat and SMS with agent supervision.',
+            ],
+            'badges' => [
+                ['fr' => 'Omnicanal', 'en' => 'Omnichannel'],
+                ['fr' => 'Supervision', 'en' => 'Supervision'],
+            ],
+            'proof_points' => [
+                ['fr' => 'Routage, IVR, enregistrement et analytics', 'en' => 'Routing, IVR, recording and analytics'],
+                ['fr' => 'Interface unifiee agents et superviseurs', 'en' => 'Unified agent and supervisor workspace'],
+            ],
+            'illustration' => [
+                'src' => '/img/services/dialo-platform.webp',
+                'alt' => ['fr' => 'Illustration DIALO Dream Digital', 'en' => 'Dream Digital DIALO illustration'],
+                'width' => 960,
+                'height' => 640,
+            ],
+            'icon' => 'bx-headphone',
+            'cta' => [
+                'url' => '/{locale}/products/dialo',
+                'label' => ['fr' => 'Demander une demo DIALO', 'en' => 'Request a DIALO demo'],
+                'external' => false,
+            ],
+            'order' => 6,
+            'active' => true,
+        ],
+    ],
+
     'items' => [
         [
             'id'          => 'sms-a2p',

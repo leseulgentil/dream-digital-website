@@ -9,6 +9,7 @@ use App\Models\MediaAsset;
 use App\Models\Page;
 use App\Models\PageRevision;
 use App\Services\Admin\ArticleGeneratorService;
+use App\Services\Cms\PageContentNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,9 +21,20 @@ use Illuminate\View\View;
 
 class PagesController extends Controller
 {
-    private const SECTIONS = ['legal', 'marketing', 'blog', 'help'];
+    private const SECTIONS = ['home', 'product', 'legal', 'marketing', 'blog', 'help'];
+    private const SECTION_LABELS = [
+        'home' => 'Page accueil',
+        'product' => 'Page produit',
+        'legal' => 'Page legale',
+        'marketing' => 'Page marketing',
+        'blog' => 'Article blog',
+        'help' => 'Aide / support',
+    ];
 
-    public function __construct(private readonly ArticleGeneratorService $articleGenerator)
+    public function __construct(
+        private readonly ArticleGeneratorService $articleGenerator,
+        private readonly PageContentNormalizer $contentNormalizer,
+    )
     {
     }
 
@@ -51,6 +63,7 @@ class PagesController extends Controller
         return view('admin.pages.index', [
             'pages' => $query->paginate(25)->withQueryString(),
             'sections' => self::SECTIONS,
+            'sectionLabels' => self::SECTION_LABELS,
             'editorialStatuses' => Page::EDITORIAL_STATUSES,
             'filters' => [
                 'section' => $section,
@@ -67,8 +80,10 @@ class PagesController extends Controller
             'page' => new Page(['is_published' => true, 'locale' => 'fr', 'section' => 'legal']),
             'countries' => Country::active()->orderBy('sort_order')->get(),
             'sections' => self::SECTIONS,
+            'sectionLabels' => self::SECTION_LABELS,
             'editorialStatuses' => Page::EDITORIAL_STATUSES,
             'sectionsJson' => '[]',
+            'productDetailJson' => $this->productDetailJson([]),
             'cmsSchemas' => config('dream-digital.cms.schemas', []),
         ]);
     }
@@ -90,6 +105,7 @@ class PagesController extends Controller
             'page' => $page,
             'countries' => Country::active()->orderBy('sort_order')->get(),
             'sections' => self::SECTIONS,
+            'sectionLabels' => self::SECTION_LABELS,
             'editorialStatuses' => Page::EDITORIAL_STATUSES,
             'cmsSchemas' => config('dream-digital.cms.schemas', []),
             'revisions' => $page->revisions()->with('user')->limit(8)->get(),
@@ -97,6 +113,7 @@ class PagesController extends Controller
                 $blocks['sections'] ?? [],
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
             ),
+            'productDetailJson' => $this->productDetailJson($blocks['product_detail'] ?? []),
         ]);
     }
 
@@ -138,7 +155,9 @@ class PagesController extends Controller
                 'site' => config('dream-digital.site'),
                 'allPages' => $this->legalPagesFor($page),
             ]),
+            'product' => view('content.front-pages.marketing-page', $this->productPreviewData($page)),
             'marketing' => view('content.front-pages.marketing-page', $this->marketingPreviewData($page)),
+            'home' => view('content.front-pages.landing-page', $this->homePreviewData($page)),
             default => view('content.front-pages.cms-preview', [
                 'pageConfigs' => ['myLayout' => 'front'],
                 'locale' => $page->locale,
@@ -200,6 +219,8 @@ class PagesController extends Controller
             'guidelines' => ['nullable', 'string', 'max:2000'],
             'locale' => ['required', Rule::in(['fr', 'en'])],
             'variants' => ['required', 'integer', 'min:1', 'max:5'],
+            'target_section' => ['nullable', Rule::in(['blog', 'product'])],
+            'target_slug' => ['nullable', 'string', 'max:120', 'regex:/^[a-z0-9-]+$/'],
         ]);
 
         try {
@@ -218,8 +239,9 @@ class PagesController extends Controller
     {
         $validated = $request->validated();
         $existingBlocks = $page?->content_blocks ?? [];
-        $sectionsArray = $request->decodedSections() ?? [];
+        $sectionsArray = $this->contentNormalizer->normalizeSections($request->decodedSections() ?? []);
         $faqArray = $request->decodedFaq();
+        $productDetail = $request->decodedProductDetail();
         $uploadedImagePath = $this->uploadedImagePath($request, $validated);
         $editorialStatus = $validated['editorial_status'] ?? null;
         $isPublished = ($validated['is_published'] ?? false) || $editorialStatus === Page::STATUS_PUBLISHED;
@@ -256,6 +278,7 @@ class PagesController extends Controller
                 'tags' => $request->decodedTags(),
                 'last_updated' => $validated['last_updated'] ?? null,
                 'faq' => $faqArray ?? ($existingBlocks['faq'] ?? []),
+                'product_detail' => $productDetail ?? ($existingBlocks['product_detail'] ?? []),
                 'sections' => $sectionsArray,
             ]),
             'is_published' => $isPublished,
@@ -414,6 +437,88 @@ class PagesController extends Controller
         ];
     }
 
+    private function productPreviewData(Page $page): array
+    {
+        $blocks = $page->content_blocks ?? [];
+        $locale = $page->locale;
+        $serviceData = $this->serviceForSlug($page->slug);
+
+        return [
+            'pageConfigs' => ['myLayout' => 'front'],
+            'locale' => $locale,
+            'page' => 'product',
+            'pageData' => [
+                'eyebrow' => $blocks['eyebrow'] ?? '',
+                'title' => $page->title,
+                'seo_title' => $blocks['seo_title'] ?? $page->title,
+                'meta_description' => $page->meta_description,
+                'meta_image_path' => $page->meta_image_path,
+                'lead' => $blocks['lead'] ?? '',
+                'image_alt' => $blocks['image_alt'] ?? $page->title,
+                'image_credit' => $blocks['image_credit'] ?? null,
+                'image_source_url' => $blocks['image_source_url'] ?? null,
+                'seo_focus_keywords' => $blocks['seo_focus_keywords'] ?? ($blocks['tags'] ?? []),
+                'faq' => $blocks['faq'] ?? [],
+                'internal_links' => $blocks['internal_links'] ?? [],
+                'sections' => $blocks['sections'] ?? [],
+                'product_detail' => $blocks['product_detail'] ?? [],
+                'source' => 'preview',
+            ],
+            'site' => config('dream-digital.site'),
+            'home' => config('dream-digital.home'),
+            'services' => $this->activeItems(config('dream-digital.services.items', [])),
+            'industries' => $this->activeItems(config('dream-digital.industries.items', [])),
+            'coverage' => config('dream-digital.coverage'),
+            'stats' => config('dream-digital.pages.stats', []),
+            'features' => config('dream-digital.pages.features', []),
+            'corridors' => config('dream-digital.pages.corridors', []),
+            'liveFeed' => config('dream-digital.pages.live_feed', []),
+            'service' => $serviceData,
+            'productDetail' => $this->productDetailFor($serviceData['slug'] ?? $page->slug, $blocks['product_detail'] ?? []),
+            'blogGuides' => [],
+        ];
+    }
+
+    private function homePreviewData(Page $page): array
+    {
+        $blocks = $page->content_blocks ?? [];
+        $locale = $page->locale;
+        $site = config('dream-digital.site');
+        $home = config('dream-digital.home');
+
+        data_set($home, "hero.headline.{$locale}", $page->title);
+
+        if (!empty($blocks['eyebrow'])) {
+            data_set($site, "tagline.{$locale}", $blocks['eyebrow']);
+        }
+
+        if (!empty($blocks['lead'])) {
+            data_set($site, "sub_headline.{$locale}", $blocks['lead']);
+        }
+
+        return [
+            'pageConfigs' => ['myLayout' => 'front'],
+            'locale' => $locale,
+            'site' => $site,
+            'home' => $home,
+            'homePage' => [
+                'title' => $page->title,
+                'eyebrow' => $blocks['eyebrow'] ?? null,
+                'lead' => $blocks['lead'] ?? null,
+                'sections' => $blocks['sections'] ?? [],
+                'updated_at' => $page->updated_at,
+            ],
+            'services' => $this->activeItems(config('dream-digital.services.items', [])),
+            'homeServiceCards' => $this->activeItems(config('dream-digital.services.home_cards', [])),
+            'industries' => $this->activeItems(config('dream-digital.industries.items', [])),
+            'trustSignals' => $this->activeItems(config('dream-digital.trust-signals.items', [])),
+            'coverage' => config('dream-digital.coverage'),
+            'stats' => config('dream-digital.pages.stats', []),
+            'corridors' => config('dream-digital.pages.corridors', []),
+            'liveFeed' => config('dream-digital.pages.live_feed', []),
+        ];
+    }
+
     private function activeItems(array $items): array
     {
         return Collection::make($items)
@@ -421,5 +526,49 @@ class PagesController extends Controller
             ->sortBy('order')
             ->values()
             ->all();
+    }
+
+    private function serviceForSlug(string $slug): array
+    {
+        return Collection::make($this->activeItems(config('dream-digital.services.items', [])))
+            ->first(fn (array $item): bool => in_array($slug, [$item['slug'] ?? null, $item['id'] ?? null], true))
+            ?? [
+                'slug' => $slug,
+                'id' => $slug,
+                'name' => ['fr' => $slug, 'en' => $slug],
+                'description' => ['fr' => '', 'en' => ''],
+                'icon' => 'bx-radio-circle',
+            ];
+    }
+
+    private function productDetailFor(string $slug, mixed $cmsDetail): array
+    {
+        $detail = config('dream-digital.product-pages.items.' . $slug, []);
+
+        if (! is_array($detail)) {
+            $detail = [];
+        }
+
+        if (! is_array($cmsDetail)) {
+            return $detail;
+        }
+
+        foreach (['proofs', 'workflow'] as $key) {
+            if (array_key_exists($key, $cmsDetail) && is_array($cmsDetail[$key])) {
+                $detail[$key] = $cmsDetail[$key];
+            }
+        }
+
+        return $detail;
+    }
+
+    private function productDetailJson(array $detail): string
+    {
+        $detail = $detail ?: [
+            'proofs' => [],
+            'workflow' => [],
+        ];
+
+        return json_encode($detail, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{"proofs":[],"workflow":[]}';
     }
 }

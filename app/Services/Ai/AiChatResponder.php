@@ -153,12 +153,16 @@ class AiChatResponder
      */
     private function sources(Collection $chunks): array
     {
+        $chunks->loadMissing('source');
+
         return $chunks
             ->map(fn (AiKnowledgeChunk $chunk): array => [
                 'id' => $chunk->id,
                 'title' => $chunk->title,
                 'category' => $chunk->category,
                 'country_code' => $chunk->country_code,
+                'url' => $chunk->source?->source_url,
+                'source_title' => $chunk->source?->title,
             ])
             ->values()
             ->all();

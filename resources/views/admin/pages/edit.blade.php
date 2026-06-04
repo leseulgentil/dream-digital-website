@@ -16,6 +16,8 @@
       'blog' => url("/{$page->locale}/blog/{$page->slug}"),
       'legal' => url("/{$page->locale}/legal/{$page->slug}"),
       'marketing' => url("/{$page->locale}/{$page->slug}"),
+      'home' => url("/{$page->locale}"),
+      'product' => url("/{$page->locale}/products/{$page->slug}"),
       default => null,
     };
     $targetLocale = $page->locale === 'fr' ? 'en' : 'fr';

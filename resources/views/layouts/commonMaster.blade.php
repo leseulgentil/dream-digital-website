@@ -200,9 +200,12 @@
         null,
         false
     );
+    $ddAiChatVisible = $ddAiChatSettings
+        ? app(\App\Services\Ai\AiChatVisibility::class)->shouldRender($ddAiChatSettings, request())
+        : false;
   @endphp
 
-  @if($isFront === 'Front' && $ddAiChatSettings?->enabled)
+  @if($isFront === 'Front' && $ddAiChatVisible)
     @include('front.components.ai-chat-widget', ['settings' => $ddAiChatSettings])
     @vite(['resources/assets/css/dd-ai-chat-widget.css', 'resources/assets/js/dd-ai-chat-widget.js'])
   @endif

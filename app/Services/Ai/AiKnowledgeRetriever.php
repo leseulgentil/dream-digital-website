@@ -46,6 +46,14 @@ class AiKnowledgeRetriever
 
         $query = $this->baseQuery($locale, $countryCode);
 
+        if (filter_var(config('dream-digital.ai.rag.embedding_search_enabled', false), FILTER_VALIDATE_BOOLEAN)) {
+            $embeddingResults = $this->retrieveWithEmbeddings(clone $query, $message, $limit);
+
+            if ($embeddingResults->isNotEmpty()) {
+                return $embeddingResults;
+            }
+        }
+
         if (config('database.default') === 'pgsql') {
             return $this->retrieveWithPostgres($query, $message, $limit);
         }
@@ -105,6 +113,36 @@ class AiKnowledgeRetriever
             ->get();
 
         return $matched;
+    }
+
+    private function retrieveWithEmbeddings(Builder $query, string $message, int $limit): Collection
+    {
+        $embedding = app(AiTextEmbedding::class);
+        $queryVector = $embedding->embed($message);
+
+        if (array_sum(array_map('abs', $queryVector)) <= 0.0) {
+            return collect();
+        }
+
+        $candidateLimit = max(25, min(1000, (int) config('dream-digital.ai.rag.embedding_candidate_limit', 200)));
+        $candidates = $query
+            ->whereNotNull('embedding')
+            ->orderByDesc('priority')
+            ->limit($candidateLimit)
+            ->get();
+
+        return $candidates
+            ->map(function (AiKnowledgeChunk $chunk) use ($embedding, $queryVector): array {
+                return [
+                    'chunk' => $chunk,
+                    'score' => $embedding->cosine($queryVector, is_array($chunk->embedding) ? $chunk->embedding : []),
+                ];
+            })
+            ->filter(fn (array $scored): bool => $scored['score'] > 0.05)
+            ->sortByDesc('score')
+            ->take($limit)
+            ->pluck('chunk')
+            ->values();
     }
 
     /**

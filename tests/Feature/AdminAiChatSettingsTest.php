@@ -31,6 +31,10 @@ class AdminAiChatSettingsTest extends TestCase
                 'fr' => 'Bonjour',
                 'en' => 'Hello',
             ],
+            'display_rules_json' => json_encode([
+                'pages' => ['/fr/products/*', '/en/products/*'],
+                'countries' => ['global', 'cd'],
+            ]),
             'system_prompt' => AiChatSetting::defaultSystemPrompt(),
         ]);
 
@@ -41,6 +45,8 @@ class AdminAiChatSettingsTest extends TestCase
         $this->assertSame(4, $settings->max_sources);
         $this->assertSame('whatsapp', $settings->fallback_contact_mode);
         $this->assertSame('Bonjour', $settings->greetings['fr']);
+        $this->assertSame(['/fr/products/*', '/en/products/*'], $settings->display_rules['pages']);
+        $this->assertSame(['global', 'cd'], $settings->display_rules['countries']);
     }
 
     public function test_owner_can_view_conversation(): void

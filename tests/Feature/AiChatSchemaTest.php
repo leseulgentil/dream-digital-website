@@ -165,7 +165,7 @@ class AiChatSchemaTest extends TestCase
         $settings = AiChatSetting::current();
 
         $this->assertFalse($settings->enabled);
-        $this->assertSame('gpt-5.4-mini', $settings->model);
+        $this->assertSame('gpt-5-mini', $settings->model);
         $this->assertSame(5, $settings->max_sources);
         $this->assertSame([
             'fr' => 'Bonjour, comment puis-je aider ?',

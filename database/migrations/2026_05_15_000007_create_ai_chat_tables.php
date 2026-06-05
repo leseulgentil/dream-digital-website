@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('ai_chat_settings', function (Blueprint $table) {
             $table->id();
             $table->boolean('enabled')->default(false);
-            $table->string('model')->default('gpt-5.4-mini');
+            $table->string('model')->default('gpt-5-mini');
             $table->unsignedSmallInteger('max_sources')->default(5);
             $table->unsignedSmallInteger('max_message_chars')->default(1200);
             $table->string('provider')->default('openai');

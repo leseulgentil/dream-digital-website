@@ -31,7 +31,7 @@ class AiChatSetting extends Model
     {
         return self::query()->firstOrCreate([], [
             'enabled' => false,
-            'model' => 'gpt-5.4-mini',
+            'model' => (string) config('services.openai.model', 'gpt-5-mini'),
             'max_sources' => 5,
             'max_message_chars' => 1200,
             'provider' => 'openai',

@@ -48,4 +48,50 @@ class AiKnowledgeEmbeddingRetrieverTest extends TestCase
 
         $this->assertSame([$chunk->id], $results->pluck('id')->all());
     }
+
+    public function test_lexical_match_is_preferred_before_embedding_search(): void
+    {
+        config([
+            'database.default' => 'sqlite',
+            'dream-digital.ai.rag.embedding_search_enabled' => true,
+        ]);
+
+        $source = AiKnowledgeSource::create([
+            'type' => AiKnowledgeSource::TYPE_MANUAL,
+            'title' => 'Hybrid source',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'status' => 'published',
+        ]);
+
+        $exact = AiKnowledgeChunk::create([
+            'ai_knowledge_source_id' => $source->id,
+            'title' => 'eSIM FRA: offres disponibles',
+            'content' => 'Dream Digital propose des offres eSIM pour la France via eSIMZone.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'destination',
+            'status' => 'published',
+            'priority' => 0,
+        ]);
+
+        AiKnowledgeChunk::create([
+            'ai_knowledge_source_id' => $source->id,
+            'title' => 'Match vectoriel general',
+            'content' => 'Ce contenu ne contient volontairement pas les mots visiteurs exacts.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'faq',
+            'status' => 'published',
+            'priority' => 100,
+            'embedding' => app(AiTextEmbedding::class)->embed('je cherche une eSIM pour la France'),
+            'embedding_model' => AiTextEmbedding::LOCAL_MODEL,
+            'embedding_hash' => AiTextEmbedding::hash('je cherche une eSIM pour la France'),
+            'embedded_at' => now(),
+        ]);
+
+        $results = app(AiKnowledgeRetriever::class)->retrieve('je cherche une eSIM pour la France', 'fr', 'global', 3);
+
+        $this->assertSame($exact->id, $results->first()?->id);
+    }
 }

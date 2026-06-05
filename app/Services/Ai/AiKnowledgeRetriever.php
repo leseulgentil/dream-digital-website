@@ -46,19 +46,19 @@ class AiKnowledgeRetriever
 
         $query = $this->baseQuery($locale, $countryCode);
 
-        if (filter_var(config('dream-digital.ai.rag.embedding_search_enabled', false), FILTER_VALIDATE_BOOLEAN)) {
-            $embeddingResults = $this->retrieveWithEmbeddings(clone $query, $message, $limit);
+        $lexicalResults = config('database.default') === 'pgsql'
+            ? $this->retrieveWithPostgres(clone $query, $message, $limit)
+            : $this->retrieveWithLikeFallback(clone $query, $message, $limit);
 
-            if ($embeddingResults->isNotEmpty()) {
-                return $embeddingResults;
-            }
+        if ($lexicalResults->isNotEmpty()) {
+            return $lexicalResults;
         }
 
-        if (config('database.default') === 'pgsql') {
-            return $this->retrieveWithPostgres($query, $message, $limit);
+        if (! filter_var(config('dream-digital.ai.rag.embedding_search_enabled', false), FILTER_VALIDATE_BOOLEAN)) {
+            return collect();
         }
 
-        return $this->retrieveWithLikeFallback($query, $message, $limit);
+        return $this->retrieveWithEmbeddings(clone $query, $message, $limit);
     }
 
     private function baseQuery(string $locale, string $countryCode): Builder

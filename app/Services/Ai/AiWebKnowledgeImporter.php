@@ -181,12 +181,19 @@ class AiWebKnowledgeImporter
             if ($source && $source->content_hash === $hash) {
                 $source->update([
                     'fetched_at' => now(),
+                    'locale' => $locale,
+                    'country_code' => $countryCode,
+                    'status' => $webSource->import_status,
                     'metadata' => [
                         ...($source->metadata ?? []),
                         ...$metadata,
                     ],
                 ]);
                 $source->chunks()->update([
+                    'locale' => $locale,
+                    'country_code' => $countryCode,
+                    'category' => $category,
+                    'status' => $webSource->import_status,
                     'expires_at' => $expiresAt,
                 ]);
 

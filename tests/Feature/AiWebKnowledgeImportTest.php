@@ -379,6 +379,58 @@ class AiWebKnowledgeImportTest extends TestCase
         $this->assertSame('global', $chunk->country_code);
     }
 
+    public function test_endpoint_json_sync_updates_status_when_content_is_unchanged(): void
+    {
+        Http::fake([
+            'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&category=offer&country=COD&page=1&per_page=50' => Http::response([
+                'items' => [[
+                    'external_id' => 'offer-cod-2gb-fr',
+                    'title' => 'Forfait eSIM RDC - 2 Go',
+                    'locale' => 'fr',
+                    'canonical_url' => 'https://esimzone.test/fr/packages/cod-2gb',
+                    'status' => 'active',
+                    'content_hash' => 'sha256:'.str_repeat('e', 64),
+                    'content_markdown' => 'Offre RDC 2 Go pour validation statut publication.',
+                ]],
+                'links' => ['next' => null],
+            ], 200),
+        ]);
+
+        $webSource = AiKnowledgeWebSource::create([
+            'title' => 'eSIMZone API FR offer COD',
+            'type' => AiKnowledgeWebSource::TYPE_ENDPOINT_JSON,
+            'url' => 'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&category=offer&country=COD&page=1&per_page=50',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'offer',
+            'frequency' => 'manual',
+            'import_status' => 'draft',
+            'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
+            'metadata' => [
+                'destination_country' => 'COD',
+                'audience_country' => 'global',
+                'endpoint_category' => 'offer',
+            ],
+        ]);
+
+        app(AiWebKnowledgeImporter::class)->sync($webSource);
+
+        $source = AiKnowledgeSource::query()
+            ->where('source_url', 'https://esimzone.test/fr/packages/cod-2gb')
+            ->firstOrFail();
+        $chunk = $source->chunks()->firstOrFail();
+
+        $this->assertSame('draft', $source->status);
+        $this->assertSame('draft', $chunk->status);
+
+        $webSource->forceFill(['import_status' => 'published'])->save();
+        app(AiWebKnowledgeImporter::class)->sync($webSource->fresh());
+
+        $this->assertSame('published', $source->refresh()->status);
+        $this->assertSame('published', $chunk->refresh()->status);
+        $this->assertSame(1, AiKnowledgeChunk::query()->count());
+    }
+
     public function test_esimzone_endpoint_source_can_be_seeded_from_configuration(): void
     {
         config([

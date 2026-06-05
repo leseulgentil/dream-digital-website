@@ -94,4 +94,44 @@ class AiKnowledgeEmbeddingRetrieverTest extends TestCase
 
         $this->assertSame($exact->id, $results->first()?->id);
     }
+
+    public function test_country_name_expansion_prefers_matching_iso_code_chunk(): void
+    {
+        config([
+            'database.default' => 'sqlite',
+            'dream-digital.ai.rag.embedding_search_enabled' => false,
+        ]);
+
+        $source = AiKnowledgeSource::create([
+            'type' => AiKnowledgeSource::TYPE_MANUAL,
+            'title' => 'eSIM destinations',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'status' => 'published',
+        ]);
+
+        AiKnowledgeChunk::create([
+            'ai_knowledge_source_id' => $source->id,
+            'title' => 'eSIM COD: offres disponibles',
+            'content' => 'Destination COD.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'destination',
+            'status' => 'published',
+        ]);
+
+        $france = AiKnowledgeChunk::create([
+            'ai_knowledge_source_id' => $source->id,
+            'title' => 'eSIM FRA: offres disponibles',
+            'content' => 'Destination FRA.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'destination',
+            'status' => 'published',
+        ]);
+
+        $results = app(AiKnowledgeRetriever::class)->retrieve('je cherche une eSIM pour la France', 'fr', 'global', 3);
+
+        $this->assertSame($france->id, $results->first()?->id);
+    }
 }

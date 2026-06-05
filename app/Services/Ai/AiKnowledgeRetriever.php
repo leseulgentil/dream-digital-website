@@ -38,6 +38,12 @@ class AiKnowledgeRetriever
         'your',
     ];
 
+    private const TERM_SYNONYMS = [
+        'drc' => ['cod'],
+        'france' => ['fra'],
+        'rdc' => ['cod'],
+    ];
+
     public function retrieve(string $message, string $locale, string $countryCode, int $limit = 5): Collection
     {
         $limit = max(1, min(10, $limit));
@@ -154,6 +160,7 @@ class AiKnowledgeRetriever
             ->map(fn (string $term) => trim($term))
             ->filter(fn (string $term) => mb_strlen($term) >= 3)
             ->reject(fn (string $term) => in_array($term, self::STOP_WORDS, true))
+            ->flatMap(fn (string $term): array => [$term, ...(self::TERM_SYNONYMS[$term] ?? [])])
             ->unique()
             ->take(8)
             ->values()

@@ -4,10 +4,11 @@ namespace App\Services\Ai;
 
 use App\Models\AiKnowledgeSource;
 use App\Models\AiKnowledgeWebSource;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -111,7 +112,7 @@ class AiWebKnowledgeImporter
     }
 
     /**
-     * @param array<string, mixed> $item
+     * @param  array<string, mixed>  $item
      */
     private function importEndpointJsonItem(AiKnowledgeWebSource $webSource, array $item): int
     {
@@ -131,7 +132,9 @@ class AiWebKnowledgeImporter
 
         $this->guardPublicUrl($url);
 
-        $category = trim((string) ($item['category'] ?? '')) ?: $webSource->category;
+        $webSourceMetadata = $webSource->metadata ?? [];
+        $category = trim((string) ($item['category'] ?? data_get($webSourceMetadata, 'endpoint_category') ?? '')) ?: $webSource->category;
+        $audienceCountry = $item['audience_country'] ?? data_get($webSourceMetadata, 'audience_country');
 
         return $this->storeKnowledgePage(
             $webSource,
@@ -141,9 +144,9 @@ class AiWebKnowledgeImporter
             $this->normalizedContentHash($item['content_hash'] ?? null, $content),
             AiKnowledgeSource::TYPE_WEB_ENDPOINT,
             $this->normalizedLocale($item['locale'] ?? null, $webSource->locale),
-            $this->normalizedCountryCode($item['audience_country'] ?? null, $webSource->country_code),
+            $this->normalizedCountryCode($audienceCountry, $webSource->country_code),
             $category,
-            $this->endpointItemMetadata($item, $category),
+            $this->endpointItemMetadata($webSource, $item, $category),
             $this->nullableTimestamp($item['expires_at'] ?? null),
         );
     }
@@ -256,7 +259,7 @@ class AiWebKnowledgeImporter
     }
 
     /**
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     private function nextEndpointUrl(array $payload, string $currentUrl): ?string
     {
@@ -286,19 +289,19 @@ class AiWebKnowledgeImporter
         }
 
         $query['page'] = $page;
-        $rebuilt = ($parts['scheme'] ?? 'https') . '://' . ($parts['host'] ?? '');
+        $rebuilt = ($parts['scheme'] ?? 'https').'://'.($parts['host'] ?? '');
 
         if (isset($parts['port'])) {
-            $rebuilt .= ':' . $parts['port'];
+            $rebuilt .= ':'.$parts['port'];
         }
 
         $rebuilt .= $parts['path'] ?? '';
 
-        return $rebuilt . '?' . http_build_query($query);
+        return $rebuilt.'?'.http_build_query($query);
     }
 
     /**
-     * @param array<string, mixed> $item
+     * @param  array<string, mixed>  $item
      */
     private function endpointItemUrl(AiKnowledgeWebSource $webSource, array $item, string $title, string $content): string
     {
@@ -310,11 +313,11 @@ class AiWebKnowledgeImporter
 
         $externalId = trim((string) ($item['external_id'] ?? hash('sha256', $title.$content)));
 
-        return rtrim($webSource->url, '#') . '#' . rawurlencode($externalId);
+        return rtrim($webSource->url, '#').'#'.rawurlencode($externalId);
     }
 
     /**
-     * @param array<string, mixed> $item
+     * @param  array<string, mixed>  $item
      */
     private function endpointItemIsDeleted(array $item): bool
     {
@@ -325,16 +328,18 @@ class AiWebKnowledgeImporter
     }
 
     /**
-     * @param array<string, mixed> $item
+     * @param  array<string, mixed>  $item
      * @return array<string, mixed>
      */
-    private function endpointItemMetadata(array $item, ?string $category): array
+    private function endpointItemMetadata(AiKnowledgeWebSource $webSource, array $item, ?string $category): array
     {
+        $webSourceMetadata = $webSource->metadata ?? [];
+
         return [
             'category' => $category,
             'external_id' => $this->nullableString($item['external_id'] ?? null),
-            'destination_country' => $this->nullableString($item['destination_country'] ?? $item['country'] ?? null),
-            'audience_country' => $this->nullableString($item['audience_country'] ?? null),
+            'destination_country' => $this->nullableString($item['destination_country'] ?? $item['country'] ?? data_get($webSourceMetadata, 'destination_country')),
+            'audience_country' => $this->nullableString($item['audience_country'] ?? data_get($webSourceMetadata, 'audience_country')),
             'status' => $this->nullableString($item['status'] ?? null),
             'updated_at' => $this->nullableString($item['updated_at'] ?? null),
             'deleted_at' => $this->nullableString($item['deleted_at'] ?? null),
@@ -520,7 +525,7 @@ class AiWebKnowledgeImporter
         }
     }
 
-    private function http(AiKnowledgeWebSource $webSource): \Illuminate\Http\Client\PendingRequest
+    private function http(AiKnowledgeWebSource $webSource): PendingRequest
     {
         $request = Http::timeout(20);
         $encryptedToken = $webSource->metadata['auth_token'] ?? null;

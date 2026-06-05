@@ -43,6 +43,7 @@ class PageRequest extends FormRequest
             'editorial_status' => ['nullable', Rule::in(array_keys(Page::EDITORIAL_STATUSES))],
             'review_notes' => ['nullable', 'string', 'max:3000'],
             'is_published' => ['sometimes', 'boolean'],
+            'generate_translation' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -54,6 +55,7 @@ class PageRequest extends FormRequest
 
         $this->merge([
             'is_published' => $this->boolean('is_published'),
+            'generate_translation' => $this->boolean('generate_translation'),
             'country_id' => $rawCountry !== '' && $rawCountry !== null ? $rawCountry : null,
             'slug' => $rawSlug ? strtolower(trim($rawSlug)) : null,
             'locale' => $rawLocale ? strtolower($rawLocale) : null,
@@ -85,6 +87,7 @@ class PageRequest extends FormRequest
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
+
         return is_array($decoded) ? $decoded : null;
     }
 
@@ -95,7 +98,7 @@ class PageRequest extends FormRequest
             return null;
         }
         $decoded = json_decode($raw, true);
-        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
             return null;
         }
 
@@ -146,17 +149,17 @@ class PageRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $raw = $this->input('sections_json');
-            if (!empty($raw) && $this->decodedSections() === null) {
+            if (! empty($raw) && $this->decodedSections() === null) {
                 $validator->errors()->add('sections_json', 'Le champ "Sections (JSON)" doit etre un JSON valide (tableau).');
             }
 
             $faqRaw = $this->input('faq_json');
-            if (!empty($faqRaw) && $this->decodedFaq() === null) {
+            if (! empty($faqRaw) && $this->decodedFaq() === null) {
                 $validator->errors()->add('faq_json', 'Le champ "FAQ SEO (JSON)" doit etre un JSON valide (tableau).');
             }
 
             $productDetailRaw = $this->input('product_detail_json');
-            if (!empty($productDetailRaw) && $this->decodedProductDetail() === null) {
+            if (! empty($productDetailRaw) && $this->decodedProductDetail() === null) {
                 $validator->errors()->add('product_detail_json', 'Le champ "Blocs produit (JSON)" doit etre un JSON valide.');
             }
         });

@@ -6,6 +6,7 @@ use App\Models\AiKnowledgeChunk;
 use App\Models\AiKnowledgeSource;
 use App\Models\AiKnowledgeWebSource;
 use App\Models\User;
+use App\Services\Ai\AiWebKnowledgeImporter;
 use Database\Seeders\AiWebSourceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
@@ -198,7 +199,7 @@ class AiWebKnowledgeImportTest extends TestCase
                     'status' => 'active',
                     'deleted_at' => null,
                     'expires_at' => '2026-12-31T23:59:59+00:00',
-                    'content_hash' => 'sha256:' . str_repeat('a', 64),
+                    'content_hash' => 'sha256:'.str_repeat('a', 64),
                     'content_markdown' => 'Offre France 1 Go valable sept jours.',
                 ]],
                 'meta' => [
@@ -252,7 +253,7 @@ class AiWebKnowledgeImportTest extends TestCase
             'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
         ]);
 
-        app(\App\Services\Ai\AiWebKnowledgeImporter::class)->sync($webSource);
+        app(AiWebKnowledgeImporter::class)->sync($webSource);
 
         Http::assertSentCount(2);
         $this->assertSame(2, AiKnowledgeChunk::query()->count());
@@ -321,12 +322,61 @@ class AiWebKnowledgeImportTest extends TestCase
             ], 200),
         ]);
 
-        app(\App\Services\Ai\AiWebKnowledgeImporter::class)->sync($webSource);
+        app(AiWebKnowledgeImporter::class)->sync($webSource);
 
         $this->assertDatabaseMissing('ai_knowledge_sources', [
             'id' => $source->id,
         ]);
         $this->assertSame(0, AiKnowledgeChunk::query()->count());
+    }
+
+    public function test_endpoint_json_source_uses_seeded_destination_metadata_when_item_omits_it(): void
+    {
+        Http::fake([
+            'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&category=offer&country=COD&page=1&per_page=50' => Http::response([
+                'items' => [[
+                    'external_id' => 'offer-cod-1gb-fr',
+                    'title' => 'Forfait eSIM RDC - 1 Go',
+                    'locale' => 'fr',
+                    'canonical_url' => 'https://esimzone.test/fr/packages/cod-1gb',
+                    'status' => 'active',
+                    'content_hash' => 'sha256:'.str_repeat('d', 64),
+                    'content_markdown' => 'Offre RDC 1 Go pour validation metadata fallback.',
+                ]],
+                'links' => ['next' => null],
+            ], 200),
+        ]);
+
+        $webSource = AiKnowledgeWebSource::create([
+            'title' => 'eSIMZone API FR offer COD',
+            'type' => AiKnowledgeWebSource::TYPE_ENDPOINT_JSON,
+            'url' => 'https://esimzone.test/api/v1/ai-knowledge/export?locale=fr&category=offer&country=COD&page=1&per_page=50',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'esim',
+            'frequency' => 'manual',
+            'import_status' => 'published',
+            'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
+            'metadata' => [
+                'destination_country' => 'COD',
+                'audience_country' => 'global',
+                'endpoint_category' => 'offer',
+            ],
+        ]);
+
+        app(AiWebKnowledgeImporter::class)->sync($webSource);
+
+        $source = AiKnowledgeSource::query()
+            ->where('source_url', 'https://esimzone.test/fr/packages/cod-1gb')
+            ->firstOrFail();
+
+        $this->assertSame('COD', $source->metadata['destination_country']);
+        $this->assertSame('global', $source->metadata['audience_country']);
+        $this->assertSame('offer', $source->metadata['category']);
+
+        $chunk = $source->chunks()->firstOrFail();
+        $this->assertSame('offer', $chunk->category);
+        $this->assertSame('global', $chunk->country_code);
     }
 
     public function test_esimzone_endpoint_source_can_be_seeded_from_configuration(): void
@@ -357,6 +407,40 @@ class AiWebKnowledgeImportTest extends TestCase
         $this->assertSame('draft', $source->import_status);
         $this->assertSame('esim', $source->category);
         $this->assertNotNull($source->next_sync_at);
+        $this->assertSame('esimzone-secret', Crypt::decryptString($source->metadata['auth_token']));
+    }
+
+    public function test_esimzone_endpoint_sources_can_be_seeded_for_configured_destination_countries(): void
+    {
+        config([
+            'dream-digital.ai.web_sources.esimzone.enabled' => true,
+            'dream-digital.ai.web_sources.esimzone.title' => 'eSIMZone API',
+            'dream-digital.ai.web_sources.esimzone.url' => 'https://staging.esimzone.fr/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=50',
+            'dream-digital.ai.web_sources.esimzone.auth_token' => 'esimzone-secret',
+            'dream-digital.ai.web_sources.esimzone.locales' => ['fr', 'en'],
+            'dream-digital.ai.web_sources.esimzone.categories' => ['offer', 'destination'],
+            'dream-digital.ai.web_sources.esimzone.destination_countries' => ['COD', 'FRA'],
+            'dream-digital.ai.web_sources.esimzone.per_page' => 200,
+            'dream-digital.ai.web_sources.esimzone.country_code' => 'global',
+            'dream-digital.ai.web_sources.esimzone.frequency' => 'weekly',
+            'dream-digital.ai.web_sources.esimzone.import_status' => 'published',
+        ]);
+
+        $this->seed(AiWebSourceSeeder::class);
+        $this->seed(AiWebSourceSeeder::class);
+
+        $this->assertSame(8, AiKnowledgeWebSource::query()->count());
+
+        $source = AiKnowledgeWebSource::query()
+            ->where('url', 'https://staging.esimzone.fr/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=200&category=offer&country=COD')
+            ->firstOrFail();
+
+        $this->assertSame('eSIMZone API FR offer COD', $source->title);
+        $this->assertSame('global', $source->country_code);
+        $this->assertSame('offer', $source->category);
+        $this->assertSame('published', $source->import_status);
+        $this->assertSame('COD', $source->metadata['destination_country']);
+        $this->assertSame('global', $source->metadata['audience_country']);
         $this->assertSame('esimzone-secret', Crypt::decryptString($source->metadata['auth_token']));
     }
 

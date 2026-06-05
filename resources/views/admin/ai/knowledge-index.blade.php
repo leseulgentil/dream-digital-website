@@ -29,7 +29,7 @@
     <div class="col-12">
       <div class="card">
         <form method="GET" action="{{ route('admin.ai.knowledge.index') }}" class="card-body row g-3">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label" for="locale">Locale</label>
             <select class="form-select" id="locale" name="locale">
               <option value="">Toutes</option>
@@ -38,7 +38,7 @@
             </select>
           </div>
           <div class="col-md-3">
-            <label class="form-label" for="country_code">Pays</label>
+            <label class="form-label" for="country_code">Audience</label>
             <select class="form-select" id="country_code" name="country_code">
               <option value="">Tous</option>
               @foreach(['global' => 'Global', 'cd' => 'RDC', 'ci' => 'Cote d Ivoire', 'cg' => 'Congo'] as $code => $label)
@@ -46,7 +46,18 @@
               @endforeach
             </select>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
+            <label class="form-label" for="destination_country">Destination ISO3</label>
+            <input
+              class="form-control text-uppercase"
+              id="destination_country"
+              name="destination_country"
+              value="{{ $filters['destination_country'] }}"
+              maxlength="3"
+              placeholder="COD"
+            >
+          </div>
+          <div class="col-md-2">
             <label class="form-label" for="status">Statut</label>
             <select class="form-select" id="status" name="status">
               <option value="">Tous</option>
@@ -275,7 +286,8 @@
               <tr>
                 <th>Titre</th>
                 <th>Locale</th>
-                <th>Pays</th>
+                <th>Audience</th>
+                <th>Destination</th>
                 <th>Categorie</th>
                 <th>Statut</th>
                 <th>Priorite</th>
@@ -288,10 +300,16 @@
             </thead>
             <tbody>
               @forelse($chunks as $chunk)
+                @php
+                  $sourceMetadata = $chunk->source?->metadata ?? [];
+                  $audienceCountry = data_get($sourceMetadata, 'audience_country') ?: $chunk->country_code;
+                  $destinationCountry = data_get($sourceMetadata, 'destination_country') ?: '-';
+                @endphp
                 <tr>
                   <td>{{ \Illuminate\Support\Str::limit($chunk->title, 60) }}</td>
                   <td><span class="badge bg-label-secondary">{{ strtoupper($chunk->locale) }}</span></td>
-                  <td><span class="text-muted">{{ $chunk->country_code }}</span></td>
+                  <td><span class="text-muted">{{ $audienceCountry }}</span></td>
+                  <td><span class="badge bg-label-primary">{{ $destinationCountry }}</span></td>
                   <td>{{ $chunk->category ?: '-' }}</td>
                   <td><span class="badge bg-label-{{ $chunk->status === 'published' ? 'success' : ($chunk->status === 'archived' ? 'secondary' : 'warning') }}">{{ $chunk->status }}</span></td>
                   <td>{{ $chunk->priority }}</td>
@@ -314,14 +332,19 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="{{ $canManageAiKnowledge ? 9 : 8 }}" class="text-center text-muted py-4">Aucun segment.</td>
+                  <td colspan="{{ $canManageAiKnowledge ? 10 : 9 }}" class="text-center text-muted py-4">Aucun segment.</td>
                 </tr>
               @endforelse
             </tbody>
           </table>
         </div>
         @if($chunks->hasPages())
-          <div class="card-footer">{{ $chunks->links() }}</div>
+          <div class="card-footer d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div class="small text-muted">
+              Affichage {{ $chunks->firstItem() }}-{{ $chunks->lastItem() }} sur {{ $chunks->total() }} segments.
+            </div>
+            {{ $chunks->onEachSide(1)->links('vendor.pagination.admin-bootstrap') }}
+          </div>
         @endif
       </div>
     </div>

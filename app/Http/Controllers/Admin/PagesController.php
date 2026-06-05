@@ -9,19 +9,23 @@ use App\Models\MediaAsset;
 use App\Models\Page;
 use App\Models\PageRevision;
 use App\Services\Admin\ArticleGeneratorService;
+use App\Services\Admin\PageTranslationService;
 use App\Services\Cms\PageContentNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use RuntimeException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use RuntimeException;
+use Throwable;
 
 class PagesController extends Controller
 {
     private const SECTIONS = ['home', 'product', 'legal', 'marketing', 'blog', 'help'];
+
     private const SECTION_LABELS = [
         'home' => 'Page accueil',
         'product' => 'Page produit',
@@ -33,10 +37,9 @@ class PagesController extends Controller
 
     public function __construct(
         private readonly ArticleGeneratorService $articleGenerator,
+        private readonly PageTranslationService $pageTranslation,
         private readonly PageContentNormalizer $contentNormalizer,
-    )
-    {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -93,8 +96,12 @@ class PagesController extends Controller
         $page = Page::create($this->payload($request));
         $this->recordRevision($page, 'created');
 
+        $translationStatus = $request->boolean('generate_translation')
+            ? ' '.$this->createTranslatedDraft($page)
+            : '';
+
         return redirect()->route('admin.pages.index')
-            ->with('status', "Page creee : {$page->title} ({$page->section}/{$page->locale})");
+            ->with('status', "Page creee : {$page->title} ({$page->section}/{$page->locale}).{$translationStatus}");
     }
 
     public function edit(Page $page): View
@@ -150,7 +157,7 @@ class PagesController extends Controller
             'legal' => view('content.front-pages.legal-page', [
                 'pageConfigs' => ['myLayout' => 'front'],
                 'locale' => $page->locale,
-                'page' => 'legal-' . $page->slug,
+                'page' => 'legal-'.$page->slug,
                 'legal' => $this->pageToLegal($page),
                 'site' => config('dream-digital.site'),
                 'allPages' => $this->legalPagesFor($page),
@@ -191,7 +198,7 @@ class PagesController extends Controller
 
         $duplicate = $page->replicate();
         $duplicate->locale = $targetLocale;
-        $duplicate->title = '[' . strtoupper($targetLocale) . '] ' . $page->title;
+        $duplicate->title = '['.strtoupper($targetLocale).'] '.$page->title;
         $duplicate->is_published = false;
         $duplicate->published_at = null;
         $duplicate->save();
@@ -307,9 +314,73 @@ class PagesController extends Controller
         ]);
     }
 
+    private function createTranslatedDraft(Page $page): string
+    {
+        $targetLocale = $page->locale === 'fr' ? 'en' : 'fr';
+        $existing = Page::query()
+            ->where('slug', $page->slug)
+            ->where('section', $page->section)
+            ->where('locale', $targetLocale)
+            ->when($page->country_id, fn ($query) => $query->where('country_id', $page->country_id), fn ($query) => $query->whereNull('country_id'))
+            ->first();
+
+        if ($existing) {
+            return 'Version '.strtoupper($targetLocale)." deja existante : {$existing->title}.";
+        }
+
+        try {
+            $translation = $this->pageTranslation->translate($page, $targetLocale);
+        } catch (Throwable $exception) {
+            Log::warning('CMS translated draft generation failed.', [
+                'page_id' => $page->id,
+                'target_locale' => $targetLocale,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return 'Traduction '.strtoupper($targetLocale).' non generee; la page source est sauvegardee.';
+        }
+
+        $translated = Page::create([
+            'slug' => $page->slug,
+            'section' => $page->section,
+            'country_id' => $page->country_id,
+            'locale' => $targetLocale,
+            'title' => $translation['title'],
+            'meta_description' => $translation['meta_description'],
+            'meta_image_path' => $page->meta_image_path,
+            'content_blocks' => $translation['content_blocks'],
+            'is_published' => false,
+            'editorial_status' => Page::STATUS_DRAFT,
+            'review_notes' => $this->translationReviewNotes($page, $targetLocale, $translation),
+            'updated_by_id' => auth()->id(),
+            'published_at' => null,
+        ]);
+        $this->recordRevision($translated, 'translated');
+
+        return 'Brouillon '.strtoupper($targetLocale)." genere : {$translated->title}.";
+    }
+
+    /**
+     * @param  array{provider: string, fallback_used: bool, fallback_reason: ?string}  $translation
+     */
+    private function translationReviewNotes(Page $page, string $targetLocale, array $translation): string
+    {
+        $notes = [
+            'Traduction IA '.strtoupper($targetLocale).' generee depuis '.strtoupper($page->locale).'.',
+            'Relire avant publication.',
+            'Source: '.$translation['provider'].'.',
+        ];
+
+        if ($translation['fallback_used']) {
+            $notes[] = 'Fallback: '.($translation['fallback_reason'] ?: 'local').'.';
+        }
+
+        return implode(' ', $notes);
+    }
+
     private function uploadedImagePath(PageRequest $request, array $validated): ?string
     {
-        if (!$request->hasFile('image_file')) {
+        if (! $request->hasFile('image_file')) {
             return null;
         }
 
@@ -318,11 +389,11 @@ class PagesController extends Controller
         File::ensureDirectoryExists($directory);
 
         $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
-        $filename = now()->format('YmdHis') . '-' . $validated['section'] . '-' . $validated['slug'] . '-' . $validated['locale'] . '.' . $extension;
+        $filename = now()->format('YmdHis').'-'.$validated['section'].'-'.$validated['slug'].'-'.$validated['locale'].'.'.$extension;
 
         $file->move($directory, $filename);
 
-        return '/img/cms/pages/' . $filename;
+        return '/img/cms/pages/'.$filename;
     }
 
     private function syncMediaAsset(string $path, array $validated): void
@@ -373,7 +444,7 @@ class PagesController extends Controller
             'sections' => $blocks['sections'] ?? [],
             'published_at' => $page->published_at ?? $page->created_at,
             'updated_at' => $page->updated_at,
-            'url' => url('/' . $page->locale . '/blog/' . $page->slug),
+            'url' => url('/'.$page->locale.'/blog/'.$page->slug),
         ];
     }
 
@@ -488,11 +559,11 @@ class PagesController extends Controller
 
         data_set($home, "hero.headline.{$locale}", $page->title);
 
-        if (!empty($blocks['eyebrow'])) {
+        if (! empty($blocks['eyebrow'])) {
             data_set($site, "tagline.{$locale}", $blocks['eyebrow']);
         }
 
-        if (!empty($blocks['lead'])) {
+        if (! empty($blocks['lead'])) {
             data_set($site, "sub_headline.{$locale}", $blocks['lead']);
         }
 
@@ -543,7 +614,7 @@ class PagesController extends Controller
 
     private function productDetailFor(string $slug, mixed $cmsDetail): array
     {
-        $detail = config('dream-digital.product-pages.items.' . $slug, []);
+        $detail = config('dream-digital.product-pages.items.'.$slug, []);
 
         if (! is_array($detail)) {
             $detail = [];

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AdminAiKnowledgeTest extends TestCase
@@ -215,5 +216,106 @@ class AdminAiKnowledgeTest extends TestCase
             ->assertDontSee(route('admin.ai.knowledge.edit', $chunk))
             ->assertDontSee(route('admin.ai.knowledge.destroy', $chunk))
             ->assertDontSee('Actions');
+    }
+
+    public function test_index_uses_admin_safe_pagination_and_shows_endpoint_destination_metadata(): void
+    {
+        $source = AiKnowledgeSource::create([
+            'type' => AiKnowledgeSource::TYPE_WEB_ENDPOINT,
+            'title' => 'eSIMZone RDC',
+            'source_url' => 'https://esimzone.test/fr/packages?country=COD',
+            'status' => 'published',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'metadata' => [
+                'destination_country' => 'COD',
+                'audience_country' => 'global',
+            ],
+        ]);
+
+        foreach (range(1, 26) as $index) {
+            AiKnowledgeChunk::create([
+                'ai_knowledge_source_id' => $source->id,
+                'title' => sprintf('Forfait RDC %02d', $index),
+                'content' => 'Forfait eSIM RDC disponible.',
+                'locale' => 'fr',
+                'country_code' => 'global',
+                'category' => 'offer',
+                'status' => 'published',
+                'priority' => 0,
+            ]);
+        }
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_OWNER,
+            'is_active' => true,
+        ]));
+
+        $response = $this->get(route('admin.ai.knowledge.index', ['page' => 2]));
+
+        $response
+            ->assertOk()
+            ->assertSee('Destination', false)
+            ->assertSee('COD')
+            ->assertSee('Audience', false)
+            ->assertSee('pagination pagination-sm', false);
+
+        $paginationHtml = Str::between(
+            $response->getContent(),
+            '<nav aria-label="Pagination">',
+            '</nav>',
+        );
+
+        $this->assertStringNotContainsString('<svg', $paginationHtml);
+    }
+
+    public function test_index_can_filter_endpoint_chunks_by_destination_country_metadata(): void
+    {
+        $codSource = AiKnowledgeSource::create([
+            'type' => AiKnowledgeSource::TYPE_WEB_ENDPOINT,
+            'title' => 'eSIMZone RDC',
+            'source_url' => 'https://esimzone.test/fr/packages?country=COD',
+            'status' => 'published',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'metadata' => ['destination_country' => 'COD'],
+        ]);
+        $codSource->chunks()->create([
+            'title' => 'Forfait eSIM RDC',
+            'content' => 'Forfait RDC.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'offer',
+            'status' => 'published',
+        ]);
+
+        $fraSource = AiKnowledgeSource::create([
+            'type' => AiKnowledgeSource::TYPE_WEB_ENDPOINT,
+            'title' => 'eSIMZone France',
+            'source_url' => 'https://esimzone.test/fr/packages?country=FRA',
+            'status' => 'published',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'metadata' => ['destination_country' => 'FRA'],
+        ]);
+        $fraSource->chunks()->create([
+            'title' => 'Forfait eSIM France',
+            'content' => 'Forfait France.',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'offer',
+            'status' => 'published',
+        ]);
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_OWNER,
+            'is_active' => true,
+        ]));
+
+        $this->get(route('admin.ai.knowledge.index', ['destination_country' => 'cod']))
+            ->assertOk()
+            ->assertSee('Forfait eSIM RDC')
+            ->assertSee('value="COD"', false)
+            ->assertDontSee('Forfait eSIM France');
     }
 }

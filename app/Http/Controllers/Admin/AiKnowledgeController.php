@@ -10,6 +10,7 @@ use App\Models\AiKnowledgeWebSource;
 use App\Models\RoleProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class AiKnowledgeController extends Controller
@@ -26,6 +27,12 @@ class AiKnowledgeController extends Controller
         if ($countryCode = $request->input('country_code')) {
             $query->where('country_code', $countryCode);
         }
+        $destinationCountry = Str::upper(trim((string) $request->input('destination_country', '')));
+        if ($destinationCountry !== '') {
+            $query->whereHas('source', function ($sourceQuery) use ($destinationCountry): void {
+                $sourceQuery->where('metadata->destination_country', $destinationCountry);
+            });
+        }
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
@@ -40,6 +47,7 @@ class AiKnowledgeController extends Controller
             'filters' => [
                 'locale' => $locale,
                 'country_code' => $countryCode,
+                'destination_country' => $destinationCountry,
                 'status' => $status,
             ],
         ]);

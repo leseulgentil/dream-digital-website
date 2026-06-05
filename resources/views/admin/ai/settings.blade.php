@@ -85,7 +85,7 @@
             <textarea class="form-control font-monospace small @error('display_rules_json') is-invalid @enderror" id="display_rules_json" name="display_rules_json" rows="6">{{ $displayRulesJson }}</textarea>
             @error('display_rules_json')<div class="invalid-feedback">{{ $message }}</div>@enderror
             <small class="text-muted d-block mt-1">
-              Exemple: <code>{"pages":["/fr/products/*","/en/products/*"],"countries":["global","cd"],"locales":["fr","en"]}</code>. Utilisez <code>*</code> pour tout autoriser.
+              Exemple publication: <code>{"pages":["*"],"countries":["*"],"locales":["fr","en"]}</code>. Utilisez <code>*</code> pour tout autoriser.
             </small>
           </div>
 

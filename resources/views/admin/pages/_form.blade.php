@@ -75,6 +75,17 @@
     </div>
   </div>
 
+  @unless($isEdit)
+    <div class="col-md-8 d-flex align-items-end">
+      <div class="form-check form-switch w-100">
+        <input type="hidden" name="generate_translation" value="0">
+        <input class="form-check-input" type="checkbox" id="generate_translation" name="generate_translation" value="1" @checked((bool) old('generate_translation', true))>
+        <label class="form-check-label" for="generate_translation">Generer aussi la version EN/FR</label>
+        <small class="text-muted d-block">Cree un brouillon traduit dans l'autre langue pour validation avant publication.</small>
+      </div>
+    </div>
+  @endunless
+
   <div class="col-12">
     <label class="form-label" for="meta_description">Meta description SEO <small class="text-muted">(500 char max)</small></label>
     <textarea id="meta_description" name="meta_description" rows="2" maxlength="500" class="form-control @error('meta_description') is-invalid @enderror">{{ old('meta_description', $page->meta_description) }}</textarea>

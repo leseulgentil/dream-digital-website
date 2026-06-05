@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             NavigationItemSeeder::class,
             CompanyProfileSeeder::class,
             RoleProfileSeeder::class,
+            AiCoreKnowledgeSeeder::class,
             AiWebSourceSeeder::class,
             AdminUserSeeder::class,
         ]);

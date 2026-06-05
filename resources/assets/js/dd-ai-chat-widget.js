@@ -180,10 +180,6 @@ const initWidget = widget => {
         data.sources || [],
         sourcesLabel
       );
-
-      if (data.answered === false) {
-        showLeadForm(message);
-      }
     } catch (error) {
       setMessageContent(
         pending,
@@ -195,7 +191,6 @@ const initWidget = widget => {
         [],
         sourcesLabel
       );
-      showLeadForm(message);
     } finally {
       if (timeoutId) window.clearTimeout(timeoutId);
 
@@ -214,13 +209,31 @@ const initWidget = widget => {
     sendMessage(textarea.value);
   });
 
+  textarea.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+
+    event.preventDefault();
+
+    if (typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+      return;
+    }
+
+    sendMessage(textarea.value);
+  });
+
   suggestions.forEach(suggestion => {
     suggestion.addEventListener('click', () => {
+      const suggestedMessage = suggestion.dataset.aiChatSuggestion || suggestion.textContent || '';
+
       setOpen(true);
       if (suggestion.dataset.aiChatLeadTrigger === 'true') {
-        showLeadForm(suggestion.dataset.aiChatSuggestion || suggestion.textContent || '');
+        showLeadForm(suggestedMessage);
+        return;
       }
-      sendMessage(suggestion.dataset.aiChatSuggestion || suggestion.textContent || '');
+
+      hideLeadForm();
+      sendMessage(suggestedMessage);
     });
   });
 

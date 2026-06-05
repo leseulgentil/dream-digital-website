@@ -34,7 +34,11 @@ class AiWebSourceSeeder extends Seeder
         $title = trim((string) ($config['title'] ?? 'eSIMZone API')) ?: 'eSIMZone API';
         $countryCode = $this->allowed((string) ($config['country_code'] ?? 'global'), ['global', 'cd', 'ci', 'cg'], 'global');
 
-        foreach ($this->esimZoneSourceDefinitions($config, $url, $title, $countryCode) as $definition) {
+        $definitions = $this->esimZoneSourceDefinitions($config, $url, $title, $countryCode);
+        $activeUrls = [];
+
+        foreach ($definitions as $definition) {
+            $activeUrls[] = $definition['url'];
             $source = AiKnowledgeWebSource::query()->firstOrNew(['url' => $definition['url']]);
             $metadata = $source->metadata ?? [];
 
@@ -70,7 +74,12 @@ class AiWebSourceSeeder extends Seeder
             $seeded++;
         }
 
+        $paused = $this->pauseObsoleteEsimZoneSources($title, $url, $activeUrls);
         $this->command?->info("AI web source ready: {$title} ({$seeded})");
+
+        if ($paused > 0) {
+            $this->command?->info("Paused obsolete eSIMZone web source(s): {$paused}");
+        }
     }
 
     /**
@@ -176,6 +185,48 @@ class AiWebSourceSeeder extends Seeder
         $queryString = http_build_query($query, '', '&', PHP_QUERY_RFC3986);
 
         return $queryString === '' ? $rebuilt : $rebuilt.'?'.$queryString;
+    }
+
+    /**
+     * @param  array<int, string>  $activeUrls
+     */
+    private function pauseObsoleteEsimZoneSources(string $title, string $baseUrl, array $activeUrls): int
+    {
+        $baseHost = parse_url($baseUrl, PHP_URL_HOST);
+        $basePath = parse_url($baseUrl, PHP_URL_PATH);
+        $paused = 0;
+
+        AiKnowledgeWebSource::query()
+            ->where('type', AiKnowledgeWebSource::TYPE_ENDPOINT_JSON)
+            ->where('status', AiKnowledgeWebSource::STATUS_ACTIVE)
+            ->where(function ($query) use ($title): void {
+                $query->where('title', $title)
+                    ->orWhere('title', 'like', $title.' %');
+            })
+            ->get()
+            ->each(function (AiKnowledgeWebSource $source) use ($activeUrls, $baseHost, $basePath, &$paused): void {
+                if (in_array($source->url, $activeUrls, true) || ! $this->sameEndpoint($source->url, $baseHost, $basePath)) {
+                    return;
+                }
+
+                $source->forceFill([
+                    'status' => AiKnowledgeWebSource::STATUS_PAUSED,
+                    'next_sync_at' => null,
+                    'last_error' => null,
+                ])->save();
+
+                $paused++;
+            });
+
+        return $paused;
+    }
+
+    private function sameEndpoint(string $url, mixed $baseHost, mixed $basePath): bool
+    {
+        return is_string($baseHost)
+            && is_string($basePath)
+            && parse_url($url, PHP_URL_HOST) === $baseHost
+            && parse_url($url, PHP_URL_PATH) === $basePath;
     }
 
     /**

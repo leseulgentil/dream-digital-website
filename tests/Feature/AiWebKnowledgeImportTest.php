@@ -444,6 +444,50 @@ class AiWebKnowledgeImportTest extends TestCase
         $this->assertSame('esimzone-secret', Crypt::decryptString($source->metadata['auth_token']));
     }
 
+    public function test_esimzone_seeder_pauses_obsolete_generated_sources(): void
+    {
+        config([
+            'dream-digital.ai.web_sources.esimzone.enabled' => true,
+            'dream-digital.ai.web_sources.esimzone.title' => 'eSIMZone API',
+            'dream-digital.ai.web_sources.esimzone.url' => 'https://staging.esimzone.fr/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=50',
+            'dream-digital.ai.web_sources.esimzone.auth_token' => 'esimzone-secret',
+            'dream-digital.ai.web_sources.esimzone.locales' => ['fr', 'en'],
+            'dream-digital.ai.web_sources.esimzone.categories' => ['offer', 'destination'],
+            'dream-digital.ai.web_sources.esimzone.destination_countries' => ['COD'],
+            'dream-digital.ai.web_sources.esimzone.per_page' => 200,
+            'dream-digital.ai.web_sources.esimzone.country_code' => 'global',
+            'dream-digital.ai.web_sources.esimzone.frequency' => 'weekly',
+            'dream-digital.ai.web_sources.esimzone.import_status' => 'draft',
+        ]);
+
+        $obsolete = AiKnowledgeWebSource::create([
+            'title' => 'eSIMZone API',
+            'type' => AiKnowledgeWebSource::TYPE_ENDPOINT_JSON,
+            'url' => 'https://staging.esimzone.fr/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=50',
+            'locale' => 'fr',
+            'country_code' => 'global',
+            'category' => 'esim',
+            'frequency' => AiKnowledgeWebSource::FREQUENCY_WEEKLY,
+            'import_status' => 'draft',
+            'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
+            'next_sync_at' => now()->subMinute(),
+            'last_error' => 'Previous failure',
+        ]);
+
+        $this->seed(AiWebSourceSeeder::class);
+
+        $this->assertSame(AiKnowledgeWebSource::STATUS_PAUSED, $obsolete->refresh()->status);
+        $this->assertNull($obsolete->next_sync_at);
+        $this->assertNull($obsolete->last_error);
+        $this->assertSame(4, AiKnowledgeWebSource::query()->where('status', AiKnowledgeWebSource::STATUS_ACTIVE)->count());
+
+        $this->assertDatabaseHas('ai_knowledge_web_sources', [
+            'title' => 'eSIMZone API FR offer COD',
+            'url' => 'https://staging.esimzone.fr/api/v1/ai-knowledge/export?locale=fr&page=1&per_page=200&category=offer&country=COD',
+            'status' => AiKnowledgeWebSource::STATUS_ACTIVE,
+        ]);
+    }
+
     /**
      * @param  array<int, string>  $urls
      */
